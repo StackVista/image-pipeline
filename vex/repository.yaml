@@ -1,0 +1,7 @@
+repositories:
+  - name: stackvista
+    url: https://github.com/StackVista/vexhub
+    enabled: true
+  - name: rancher
+    url: https://github.com/rancher/vexhub
+    enabled: true

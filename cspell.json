@@ -1,0 +1,22 @@
+{
+    "version": "0.2",
+    "ignorePaths": [
+        "/cspell.json",
+        "*go.mod",
+        "*go.sum",
+        ".golangci.yml",
+        ".gitignore",
+        "*_test.go"
+    ],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
+        "zizmor",
+		"sarif",
+        "syft",
+        "anchore",
+        "stackstate",
+    ],
+    "ignoreWords": [],
+    "import": []
+}

@@ -1,0 +1,43 @@
+[tools]
+go = "1.25"
+goreleaser = "2"
+zizmor = "1"
+
+[tasks.build-evaluator]
+description = "Build the image-pipeline-evaluate binary into ./bin/"
+dir = "evaluator"
+run = "go build -o ../bin/image-pipeline-evaluate ."
+
+[tasks.build]
+description = "Build all image-pipeline binaries into ./bin/"
+depends = ["build-evaluator"]
+
+[tasks.test-evaluator]
+description = "Run Go tests for the image-pipeline evaluator"
+dir = "evaluator"
+run = "go test ./..."
+
+[tasks.test]
+description = "Run all image-pipeline tests"
+depends = ["test-evaluator"]
+
+[tasks.lint-evaluator]
+description = "gofmt + go vet on the evaluator"
+dir = "evaluator"
+run = '''
+issues=$(gofmt -l .)
+if [ -n "$issues" ]; then
+  echo "gofmt issues:"
+  echo "$issues"
+  exit 1
+fi
+go vet ./...
+'''
+
+[tasks.lint-workflows]
+description = "Run zizmor security audit on workflows, composite actions, and Dependabot config"
+run = "zizmor --collect=workflows,actions,dependabot ."
+
+[tasks.lint]
+description = "Run all image-pipeline linters"
+depends = ["lint-evaluator", "lint-workflows"]

@@ -1,0 +1,82 @@
+name: Evaluator CI
+
+# Lint, test, and verify release config for the image-pipeline-evaluate
+# Go binary (see ../../evaluator).
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "evaluator/**"
+      - ".goreleaser.yml"
+      - ".github/workflows/evaluator-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "evaluator/**"
+      - ".goreleaser.yml"
+      - ".github/workflows/evaluator-ci.yml"
+
+concurrency:
+  group: evaluator-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: lint + test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: evaluator
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version-file: evaluator/go.mod
+          cache-dependency-path: evaluator/go.sum
+
+      - name: gofmt
+        run: |
+          issues=$(gofmt -l .)
+          if [ -n "$issues" ]; then
+            echo "::error::gofmt: the following files need formatting:"
+            echo "$issues"
+            exit 1
+          fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test
+        run: go test -race -coverprofile=coverage.out ./...
+
+      - name: build
+        run: go build -ldflags "-X main.version=ci-${{ github.sha }}" -o /tmp/image-pipeline-evaluate .
+
+  goreleaser-check:
+    name: goreleaser config check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version-file: evaluator/go.mod
+          cache-dependency-path: evaluator/go.sum
+          cache: false
+
+      - uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: check

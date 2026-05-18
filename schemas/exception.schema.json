@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/StackVista/image-pipeline/schemas/exception.schema.json",
+  "title": "Exception",
+  "description": "An accepted, time-limited exception for a real CVE in an artefact we publish. Distinct from VEX (which asserts non-impact in stackvista/vexhub) and distinct from Trivy's .trivyignore.yaml (which would auto-apply silently).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "vulnerability",
+    "product",
+    "component",
+    "status",
+    "reason",
+    "expires",
+    "owner",
+    "statement"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional reference to this JSON Schema. Used by IDEs (IntelliJ, VS Code, etc.) for native validation and autocomplete."
+    },
+    "schema_version": {
+      "const": "1",
+      "description": "Exception schema version. Bumped on breaking changes."
+    },
+    "vulnerability": {
+      "type": "object",
+      "required": ["id", "severity"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "CVE id or vendor advisory id (e.g. CVE-2026-2332, SUSE-SU-2026:1040-1)."
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        }
+      }
+    },
+    "product": {
+      "type": "object",
+      "required": ["consumer", "image"],
+      "additionalProperties": false,
+      "properties": {
+        "consumer": {
+          "type": "string",
+          "description": "Consumer repo this exception applies to (e.g. docker-images, helm-charts)."
+        },
+        "image": {
+          "type": "string",
+          "description": "The downstream image name we publish, e.g. quay.io/stackstate/kafka."
+        },
+        "source_image": {
+          "type": "string",
+          "description": "For retag-only images, the upstream source image (e.g. AppCo)."
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "For retag-only images, the upstream manifest digest the exception is bound to."
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "anyOf": [
+        {"required": ["purl"]},
+        {"required": ["name"]}
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string"},
+        "purl": {"type": "string"},
+        "paths": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Optional file paths inside the image where the vulnerable component lives."
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "accepted_pending_upstream_fix",
+        "accepted_with_compensating_control",
+        "under_investigation"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "description": "Short machine-friendly reason code, e.g. preserve_appco_provenance."
+    },
+    "expires": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date after which the exception expires and the gate fails again."
+    },
+    "owner": {
+      "type": "string",
+      "description": "GitHub team or user owning the exception, e.g. @StackVista/observability-team."
+    },
+    "upstream_owner": {
+      "type": "string",
+      "description": "Upstream maintainer responsible for the fix, e.g. suse_application_collection."
+    },
+    "upstream_reference": {
+      "type": "string",
+      "format": "uri",
+      "description": "Link to the upstream tracking issue, advisory, or thread."
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "approved_by": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "statement": {
+      "type": "string",
+      "description": "Free-text justification visible to reviewers."
+    }
+  }
+}

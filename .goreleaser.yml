@@ -1,0 +1,63 @@
+version: 2
+
+project_name: image-pipeline-evaluate
+
+before:
+  hooks:
+    - sh -c "cd evaluator && go mod tidy"
+
+builds:
+  - id: image-pipeline-evaluate
+    main: .
+    dir: evaluator
+    binary: image-pipeline-evaluate
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin]
+    goarch: [amd64, arm64]
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: image-pipeline-evaluate
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats: [tar.gz]
+    files:
+      - README.md
+      - src: evaluator/README.md
+        dst: evaluator-README.md
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ .Tag }}-snapshot-{{ .ShortCommit }}"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "merge conflict"
+  groups:
+    - title: Features
+      regexp: "^.*?feat(\\(.+\\))??!?:.+$"
+      order: 0
+    - title: Bug fixes
+      regexp: "^.*?fix(\\(.+\\))??!?:.+$"
+      order: 1
+    - title: Other
+      order: 999
+
+release:
+  draft: false
+  prerelease: auto
+  mode: append

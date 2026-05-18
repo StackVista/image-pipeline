@@ -1,0 +1,233 @@
+name: "scan-image"
+description: "Scan a published container image and evaluate vulnerabilities"
+
+inputs:
+  image:
+    description: "Image ref to scan"
+    required: true
+  exceptions-path:
+    description: "Optional path in the caller workspace containing exception YAML files"
+    required: false
+    default: ""
+  mode:
+    description: "gate | inform"
+    required: false
+    default: gate
+  severity:
+    description: "Comma-separated severities to gate on"
+    required: false
+    default: HIGH,CRITICAL
+  with-grype:
+    description: "Also run Grype against the SBOM"
+    required: false
+    default: "true"
+  upload-sarif:
+    description: "Upload SARIF to GHAS Code Scanning"
+    required: false
+    default: "true"
+  sarif-category:
+    description: "SARIF category for GHAS filterability"
+    required: false
+    default: release-gate
+  source_registry:
+    description: "Optional source registry to docker login to before SBOM generation"
+    required: false
+    default: ""
+  source_registry_user:
+    description: "Username for source_registry login. Required when source_registry is set"
+    required: false
+    default: ""
+  source_registry_password:
+    description: "Password/token for source_registry login. Required when source_registry is set"
+    required: false
+    default: ""
+
+outputs:
+  decision:
+    description: "passed | failed"
+    value: ${{ steps.evaluate.outputs.decision }}
+  sarif-path:
+    description: "Path to the generated SARIF file"
+    value: ${{ steps.evaluate.outputs.sarif-path }}
+
+runs:
+  using: composite
+  steps:
+    # Shared assets (evaluator/, vex/, schemas/) live at the repo root,
+    # three levels above this action: .github/actions/scan-image/ → repo root.
+    # Resolve to an absolute path up front: actions/setup-go's
+    # cache-dependency-path runs through @actions/glob, which rejects `..`
+    # in patterns. Using realpath sidesteps that and keeps downstream refs tidy.
+    - name: Resolve repo root
+      id: paths
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        echo "repo_root=$(realpath "${ACTION_PATH}/../../..")" >> "$GITHUB_OUTPUT"
+
+    - name: Set up Go
+      uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+      with:
+        go-version-file: ${{ steps.paths.outputs.repo_root }}/evaluator/go.mod
+        cache-dependency-path: ${{ steps.paths.outputs.repo_root }}/evaluator/go.sum
+
+    - name: Build evaluator
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.repo_root }}/evaluator
+      run: |
+        go build -o /tmp/image-pipeline-evaluate .
+        sudo install -m 0755 /tmp/image-pipeline-evaluate /usr/local/bin/
+
+    - name: Set up Syft
+      uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+      with:
+        syft-version: v1.44.0
+
+    - name: Set up Trivy
+      uses: aquasecurity/setup-trivy@3fb12ec12f41e471780db15c232d5dd185dcb514 # v0.2.6
+      with:
+        version: v0.70.0
+
+    - name: Set up Grype
+      if: ${{ inputs.with-grype == 'true' }}
+      shell: bash
+      env:
+        GRYPE_VERSION: 0.112.0
+        INSTALL_SHA: 244f2a10a5668078fcf771454bbd832b3a5b9e8a
+      run: |
+        curl -sSfL "https://raw.githubusercontent.com/anchore/grype/${INSTALL_SHA}/install.sh" \
+          | sudo sh -s -- -b /usr/local/bin "v${GRYPE_VERSION}"
+
+    - name: Configure Trivy VEX repos
+      shell: bash
+      env:
+        REPO_ROOT: ${{ steps.paths.outputs.repo_root }}
+      run: |
+        mkdir -p ~/.trivy/vex
+        cp "${REPO_ROOT}/vex/repository.yaml" ~/.trivy/vex/repository.yaml
+
+    - name: Log in to source registry
+      if: ${{ inputs.source_registry != '' }}
+      shell: bash
+      env:
+        SOURCE_REGISTRY: ${{ inputs.source_registry }}
+        SOURCE_REGISTRY_USER: ${{ inputs.source_registry_user }}
+        SOURCE_REGISTRY_PASSWORD: ${{ inputs.source_registry_password }}
+      run: |
+        printf '%s' "${SOURCE_REGISTRY_PASSWORD}" | \
+          docker login "${SOURCE_REGISTRY}" \
+            --username "${SOURCE_REGISTRY_USER}" \
+            --password-stdin
+
+    - name: Generate SBOM
+      shell: bash
+      env:
+        INPUT_IMAGE: ${{ inputs.image }}
+      run: |
+        mkdir -p reports
+        syft "${INPUT_IMAGE}" -o cyclonedx-json=reports/sbom.cdx.json
+
+    - name: Trivy secrets scan
+      shell: bash
+      env:
+        INPUT_IMAGE: ${{ inputs.image }}
+        # Authenticate Trivy's GitHub API calls (VEX repo metadata,
+        # advisory DB downloads). Unauthenticated requests share GHA
+        # runner IP quotas and hit the 60/hr ceiling fast.
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        trivy image \
+          --scanners secret \
+          --format json \
+          --output reports/trivy-secrets.json \
+          --exit-code 0 \
+          "${INPUT_IMAGE}"
+        found=$(jq '[.Results[]?.Secrets // [] | .[]] | length' reports/trivy-secrets.json)
+        if [ "$found" -gt 0 ]; then
+          echo "::error::Trivy detected $found secret(s) in image - failing scan (no exception path for secrets)"
+          jq '.Results[]?.Secrets // []' reports/trivy-secrets.json
+          exit 1
+        fi
+        echo "No secrets detected in image."
+
+    - name: Trivy vuln scan
+      shell: bash
+      env:
+        INPUT_SEVERITY: ${{ inputs.severity }}
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        trivy sbom \
+          --format json \
+          --output reports/trivy.json \
+          --severity "${INPUT_SEVERITY}" \
+          --vex repo \
+          --exit-code 0 \
+          reports/sbom.cdx.json
+        echo "::group::Trivy vuln report (table)"
+        trivy convert --format table reports/trivy.json
+        echo "::endgroup::"
+
+    - name: Grype vuln scan
+      if: ${{ inputs.with-grype == 'true' }}
+      shell: bash
+      run: |
+        echo "::group::Grype vuln report (table)"
+        grype "sbom:reports/sbom.cdx.json" -o table -o "json=reports/grype.json"
+        echo "::endgroup::"
+
+    - name: Evaluate
+      id: evaluate
+      shell: bash
+      env:
+        INPUT_IMAGE: ${{ inputs.image }}
+        INPUT_SEVERITY: ${{ inputs.severity }}
+        INPUT_MODE: ${{ inputs.mode }}
+        INPUT_EXCEPTIONS_PATH: ${{ inputs.exceptions-path }}
+        SARIF_PATH: reports/image-pipeline.sarif
+      run: |
+        args=(
+          --image "${INPUT_IMAGE}"
+          --severity "${INPUT_SEVERITY}"
+          --mode "${INPUT_MODE}"
+          --trivy-json reports/trivy.json
+          --sarif "${SARIF_PATH}"
+        )
+        if [ -n "${INPUT_EXCEPTIONS_PATH}" ]; then
+          if [ ! -d "${INPUT_EXCEPTIONS_PATH}" ]; then
+            echo "::error::exceptions-path '${INPUT_EXCEPTIONS_PATH}' does not exist or is not a directory"
+            exit 1
+          fi
+          args+=(--exceptions "${INPUT_EXCEPTIONS_PATH}")
+          echo "::notice::Using exceptions from '${INPUT_EXCEPTIONS_PATH}'"
+        else
+          echo "::notice::No exceptions-path provided; evaluating without local exceptions"
+        fi
+        if [ -f reports/grype.json ]; then
+          args+=(--grype-json reports/grype.json)
+        fi
+        set +e
+        image-pipeline-evaluate "${args[@]}"
+        code=$?
+        set -e
+        echo "sarif-path=${SARIF_PATH}" >> "$GITHUB_OUTPUT"
+        echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+        if [ "$code" -eq 0 ]; then
+          echo "decision=passed" >> "$GITHUB_OUTPUT"
+        else
+          echo "decision=failed" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Upload SARIF
+      if: ${{ inputs.upload-sarif == 'true' }}
+      continue-on-error: true
+      uses: github/codeql-action/upload-sarif@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4.35.4
+      with:
+        sarif_file: ${{ steps.evaluate.outputs.sarif-path }}
+        category: ${{ inputs.sarif-category }}
+
+    - name: Gate result
+      shell: bash
+      env:
+        EXIT_CODE: ${{ steps.evaluate.outputs.exit-code }}
+      run: exit "$EXIT_CODE"
