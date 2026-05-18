@@ -1,0 +1,13 @@
+.idea
+.vscode
+
+# go build outputs
+/bin/
+
+# goreleaser
+/dist/
+
+.claude
+.pytest_cache
+
+evaluator/evaluator

@@ -1,0 +1,64 @@
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "CVE-2026-2332",
+        "severity": "High",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2026-2332",
+        "fix": {
+          "versions": ["9.4.58", "12.0.x"],
+          "state": "fixed"
+        }
+      },
+      "artifact": {
+        "name": "org.eclipse.jetty:jetty-http",
+        "version": "9.4.57.v20241219",
+        "type": "java-archive",
+        "purl": "pkg:maven/org.eclipse.jetty/jetty-http@9.4.57.v20241219",
+        "locations": [
+          {"path": "usr/share/kafka/libs/jetty-http-9.4.57.v20241219.jar"}
+        ]
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-48734",
+        "severity": "High",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-48734",
+        "fix": {
+          "versions": ["1.9.5"],
+          "state": "fixed"
+        }
+      },
+      "artifact": {
+        "name": "commons-beanutils:commons-beanutils",
+        "version": "1.9.4",
+        "type": "java-archive",
+        "purl": "pkg:maven/commons-beanutils/commons-beanutils@1.9.4",
+        "locations": [
+          {"path": "usr/share/kafka/libs/commons-beanutils-1.9.4.jar"}
+        ]
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2099-99999",
+        "severity": "Critical",
+        "dataSource": "https://example.com/cve-2099-99999",
+        "fix": {
+          "versions": ["1.0.1"],
+          "state": "fixed"
+        }
+      },
+      "artifact": {
+        "name": "fictional:demo-pkg",
+        "version": "1.0.0",
+        "type": "java-archive",
+        "purl": "pkg:maven/fictional/demo-pkg@1.0.0",
+        "locations": [
+          {"path": "usr/share/kafka/libs/demo-pkg-1.0.0.jar"}
+        ]
+      }
+    }
+  ]
+}
