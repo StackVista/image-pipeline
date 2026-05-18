@@ -1,0 +1,75 @@
+name: "build-scan-push"
+description: "Build, scan, e push a container image"
+
+inputs:
+  image:
+    description: "Full image name with tag, es: ghcr.io/myorg/app:latest"
+    required: true
+  platform:
+    description: "Single platform, es: linux/amd64"
+    required: false
+    default: "linux/amd64"
+  docker-context:
+    description: "Docker build context"
+    required: false
+    default: "."
+  dockerfile:
+    description: "Path to the Dockerfile"
+    required: false
+    default: "./Dockerfile"
+  scan-exceptions-path:
+    description: "Optional path (in the caller workspace) containing CVE exception YAML files for the scan-pipeline evaluator"
+    required: false
+    default: ""
+  scan-sarif-category:
+    description: "Optional category for the SARIF output"
+    required: false
+    default: "release-gate"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+    - name: Build (local, no push)
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      with:
+        context: ${{ inputs.docker-context }}
+        file: ${{ inputs.dockerfile }}
+        platforms: ${{ inputs.platform }}
+        load: true
+        push: false
+        cache-from: type=gha,scope=${{ inputs.image }}-${{ inputs.platform }}
+        cache-to: type=gha,mode=max,scope=${{ inputs.image }}-${{ inputs.platform }}
+        tags: ${{ inputs.image }}
+
+    - name: Scan image
+      uses: ./.github/actions/scan-image
+      with:
+        image-ref: ${{ inputs.image }}
+        mode: gate
+        with-grype: true
+        scan-exceptions-path: ${{ inputs.scan-exceptions-path }}
+        sarif-category: ${{ inputs.scan-sarif-category }}
+
+    # This provides labels for the push phase.
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+      with:
+        images: ${{ inputs.image }}
+
+    - name: Build and push
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      with:
+        context: ${{ inputs.docker-context }}
+        file: ${{ inputs.dockerfile }}
+        labels: ${{ steps.meta.outputs.labels }}
+        platforms: ${{ inputs.platform }}
+        push: true
+        sbom: false
+        provenance: false
+        cache-from: type=gha,scope=${{ inputs.image }}-${{ inputs.platform }}
+        cache-to: type=gha,mode=max,scope=${{ inputs.image }}-${{ inputs.platform }}
+        tags: ${{ inputs.image }}
