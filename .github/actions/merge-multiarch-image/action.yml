@@ -1,0 +1,95 @@
+name: merge-multiarch-image
+description: merge multi-arch images based on images digests provided
+
+inputs:
+  image:
+    description: "Full image name, e.g. ghcr.io/myorg/app"
+    required: true
+  tag:
+    description: The tag component in a fully qualified image.
+    required: true
+  source_registry:
+    description: "Optional source registry to docker login"
+    required: false
+    default: ""
+  source_registry_user:
+    description: "Username for source_registry login. Required when source_registry is set"
+    required: false
+    default: ""
+  source_registry_password:
+    description: "Password/token for source_registry login. Required when source_registry is set"
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: Download all digests
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        path: ${{ runner.temp }}/digests
+        pattern: digest-*
+        merge-multiple: true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+    # we need to login before pushing if the repo is private
+    - name: Login to source registry
+      if: ${{ inputs.source_registry != '' }}
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      with:
+        registry: ${{ inputs.source_registry }}
+        username: ${{ inputs.source_registry_user }}
+        password: ${{ inputs.source_registry_password }}
+
+    - name: Create and push multi-arch manifest for ${{ inputs.image }}
+      working-directory: ${{ runner.temp }}/digests
+      shell: bash
+      run: |
+        set -e
+
+        #####################################
+        # Create a list of target images with digests, es: "myimage1@sha256 myimage2@sha256"
+        #####################################
+        TARGETS=""
+        for FILE in *.txt
+        do
+          DIGEST=$(cat "$FILE" | tr -d '[:space:]')
+          TARGETS+=" ${INPUTS_IMAGE}@$DIGEST"
+        done
+
+        #####################################
+        # Create the manifest locally
+        #####################################
+        docker buildx imagetools create \
+          -t ${INPUTS_IMAGE}:${INPUTS_TAG} \
+          $TARGETS \
+          --dry-run > expected-multi-arch-manifest.json
+
+        #####################################
+        # Create the manifest and push it
+        #####################################
+        docker buildx imagetools create \
+          -t ${INPUTS_IMAGE}:${INPUTS_TAG} \
+          $TARGETS \
+
+        # The previous command is NOT printing the digest of the multi-arch manifest, we have to obtain it by
+        # fetching it from the OCI registry and **verify** its contents
+
+        #####################################
+        # Fetch the multi arch multi-arch-manifest.json.
+        #####################################
+        docker buildx imagetools inspect ${INPUTS_IMAGE}:${INPUTS_TAG} --raw > multi-arch-manifest.json
+
+        # Compare the contents of the manifest we previously computed and the actual one.
+        # Use jq to sort the contents and build a compact output (removing useless whitespaces),
+        # this is done to ensure the JSON documents have the same structure.
+        expected_digest="sha256:$(jq -S -c . expected-multi-arch-manifest.json | sha256sum | awk '{print $1}')"
+        actual_digest="sha256:$(jq -S -c . multi-arch-manifest.json | sha256sum | awk '{print $1}')"
+        if [ "$expected_digest" != "$actual_digest" ]; then
+          echo "Error: digests do not match!"
+          exit 1
+        fi
+      env:
+        INPUTS_IMAGE: ${{ inputs.image }}
+        INPUTS_TAG: ${{ inputs.tag }}

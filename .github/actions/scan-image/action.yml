@@ -3,7 +3,7 @@ description: "Scan a published container image and evaluate vulnerabilities"
 
 inputs:
   image:
-    description: "Image ref to scan"
+    description: "Full image name + tag, e.g. ghcr.io/myorg/app:latest"
     required: true
   exceptions-path:
     description: "Optional path in the caller workspace containing exception YAML files"
@@ -107,18 +107,13 @@ runs:
         mkdir -p ~/.trivy/vex
         cp "${REPO_ROOT}/vex/repository.yaml" ~/.trivy/vex/repository.yaml
 
-    - name: Log in to source registry
+    - name: Login to source registry
       if: ${{ inputs.source_registry != '' }}
-      shell: bash
-      env:
-        SOURCE_REGISTRY: ${{ inputs.source_registry }}
-        SOURCE_REGISTRY_USER: ${{ inputs.source_registry_user }}
-        SOURCE_REGISTRY_PASSWORD: ${{ inputs.source_registry_password }}
-      run: |
-        printf '%s' "${SOURCE_REGISTRY_PASSWORD}" | \
-          docker login "${SOURCE_REGISTRY}" \
-            --username "${SOURCE_REGISTRY_USER}" \
-            --password-stdin
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      with:
+        registry: ${{ inputs.source_registry }}
+        username: ${{ inputs.source_registry_user }}
+        password: ${{ inputs.source_registry_password }}
 
     - name: Generate SBOM
       shell: bash

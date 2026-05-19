@@ -1,0 +1,132 @@
+name: Reusable image pipeline
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: "Full image name, e.g. ghcr.io/myorg/app"
+        required: true
+        type: string
+      tag:
+        description: "Tag for the final multi-arch image"
+        required: true
+        type: string
+      dockerfile:
+        description: "Path to the Dockerfile"
+        required: false
+        default: "./Dockerfile"
+        type: string
+      docker-context:
+        description: "Docker build context"
+        required: false
+        default: "."
+        type: string
+      scan-mode:
+        description: "gate | inform"
+        required: false
+        default: gate
+        type: string
+      scan-severity:
+        description: "Comma-separated severities to gate on"
+        required: false
+        default: HIGH,CRITICAL
+        type: string
+      exceptions-path:
+        description: "Optional path in the caller workspace containing exception YAML files"
+        required: false
+        default: ""
+        type: string
+      source_registry:
+        description: "Optional source registry to docker login"
+        required: false
+        default: ""
+        type: string
+    secrets:
+      source_registry_user:
+        description: "Username for source_registry login"
+        required: false
+      source_registry_password:
+        description: "Password/token for source_registry login"
+        required: false
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Checkout image-pipeline actions at workflow SHA
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: StackVista/image-pipeline
+          ref: ${{ github.workflow_sha }}
+          path: .image-pipeline
+          persist-credentials: false
+
+      - name: Build image
+        uses: ./.image-pipeline/.github/actions/build-push-image
+        with:
+          image: ${{ inputs.image }}
+          arch: ${{ matrix.arch }}
+          docker-context: ${{ inputs.docker-context }}
+          dockerfile: ${{ inputs.dockerfile }}
+          source_registry: ${{ inputs.source_registry }}
+          source_registry_user: ${{ secrets.source_registry_user }}
+          source_registry_password: ${{ secrets.source_registry_password }}
+
+  merge:
+    runs-on: ubuntu-24.04
+    needs: [build]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout image-pipeline actions at workflow SHA
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: StackVista/image-pipeline
+          ref: ${{ github.workflow_sha }}
+          path: .image-pipeline
+          persist-credentials: false
+
+      - name: Merge images
+        uses: ./.image-pipeline/.github/actions/merge-multiarch-image
+        with:
+          image: ${{ inputs.image }}
+          tag: ${{ inputs.tag }}
+          source_registry: ${{ inputs.source_registry }}
+          source_registry_user: ${{ secrets.source_registry_user }}
+          source_registry_password: ${{ secrets.source_registry_password }}
+
+  scan:
+    runs-on: ubuntu-24.04
+    needs: [merge]
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout image-pipeline actions at workflow SHA
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: StackVista/image-pipeline
+          ref: ${{ github.workflow_sha }}
+          path: .image-pipeline
+          persist-credentials: false
+
+      - name: Scan image
+        uses: ./.image-pipeline/.github/actions/scan-image
+        with:
+          image: ${{ inputs.image }}:${{ inputs.tag }}
+          mode: ${{ inputs.scan-mode }}
+          severity: ${{ inputs.scan-severity }}
+          exceptions-path: ${{ inputs.exceptions-path }}
+          source_registry: ${{ inputs.source_registry }}
+          source_registry_user: ${{ secrets.source_registry_user }}
+          source_registry_password: ${{ secrets.source_registry_password }}
