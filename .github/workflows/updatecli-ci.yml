@@ -1,0 +1,57 @@
+name: Updatecli CI
+
+# Read-only validation for updatecli configuration changes. This runs
+# `updatecli pipeline diff` on PRs and pushes that touch .updatecli/ or the updatecli
+# workflows, so broken manifests are caught before merge. It does not push
+# branches or open PRs.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".updatecli/**"
+      - ".github/workflows/updatecli-ci.yml"
+      - ".github/workflows/bump-upstream-pins.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".updatecli/**"
+      - ".github/workflows/updatecli-ci.yml"
+      - ".github/workflows/bump-upstream-pins.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: updatecli-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  updatecli-diff:
+    name: Validate updatecli configs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # The .updatecli/values.d/values.yaml scm block sets `tokenEnv: GITHUB_TOKEN`;
+      # updatecli evaluates that template at load time even for `diff`.
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install updatecli
+        uses: updatecli/updatecli-action@e71be7554f3f940bc439cf720b3e4e379823c562 # v3.2.0
+
+      - name: updatecli pipeline diff
+        env:
+          UPDATECLI_SCM_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          awk -v branch="${UPDATECLI_SCM_BRANCH}" \
+            '{ if ($0 == "  branch: main") print "  branch: " branch; else print }' \
+            .updatecli/values.d/values.yaml > "${RUNNER_TEMP}/updatecli-values.yaml"
+
+          updatecli pipeline diff \
+            --config .updatecli/updatecli.d/ \
+            --values "${RUNNER_TEMP}/updatecli-values.yaml"

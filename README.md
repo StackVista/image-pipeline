@@ -32,6 +32,21 @@ mise run lint-workflows  # zizmor on workflows + composite actions
 
 Evaluator details: [`evaluator/README.md`](./evaluator/README.md).
 
+## Dependency Updates
+
+Upstream pins are tracked with [updatecli](https://www.updatecli.io/) under
+`.updatecli/`.
+
+- `.github/workflows/updatecli-ci.yml` runs `updatecli pipeline diff` for PRs that change
+  updatecli config or workflows. It is read-only validation and does not open
+  update PRs.
+- `.github/workflows/bump-upstream-pins.yml` runs `updatecli pipeline apply` weekly and
+  on manual dispatch. It uses the updatecli GitHub App token to open or update
+  separate PRs per updatecli pipeline, such as `[updatecli] bump Go
+  dependencies` and `[updatecli] bump GitHub Actions pins`.
+- The updatecli manifest tracks Go module updates, GitHub Actions SHA pins, and
+  tool pins embedded in `.github/actions/scan-image/action.yml`.
+
 ## Releases
 
 The evaluator binary is released by pushing a SemVer tag from `main`:
