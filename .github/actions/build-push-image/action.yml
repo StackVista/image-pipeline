@@ -17,6 +17,18 @@ inputs:
     description: "Path to the Dockerfile"
     required: false
     default: "./Dockerfile"
+  scan-exceptions-path:
+    description: "Optional path (in the caller workspace) containing CVE exception YAML files for the scan-pipeline evaluator"
+    required: false
+    default: ""
+  scan-mode:
+    description: "gate | inform"
+    required: false
+    default: gate
+  scan-severity:
+    description: "Comma-separated severities to gate on"
+    required: false
+    default: HIGH,CRITICAL
   source_registry:
     description: "Optional source registry to docker login"
     required: false
@@ -50,6 +62,27 @@ runs:
       with:
         images: ${{ inputs.image }}
 
+    - name: Build (local, no push) for ${{ inputs.arch }}
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      with:
+        context: ${{ inputs.docker-context }}
+        file: ${{ inputs.dockerfile }}
+        labels: ${{ steps.meta.outputs.labels }}
+        platforms: linux/${{ inputs.arch }}
+        load: true
+        push: false
+        cache-to: type=gha,mode=max,scope=${{ inputs.image }}-${{ inputs.arch }}
+        tags: ${{ inputs.image }}:scan
+
+    - name: Scan image
+      uses: ./.github/actions/scan-image
+      with:
+        image: ${{ inputs.image }}:scan
+        mode: ${{ inputs.scan-mode }}
+        severity: ${{ inputs.scan-severity }}
+        with-grype: true
+        exceptions-path: ${{ inputs.scan-exceptions-path }}
+
     # we need to login before pushing if the repo is private
     - name: Login to source registry
       if: ${{ inputs.source_registry != '' }}
@@ -70,6 +103,7 @@ runs:
         push: true
         sbom: true
         provenance: mode=max
+        cache-from: type=gha,scope=${{ inputs.image }}-${{ inputs.arch }}
         tags: ${{ inputs.image }}
         # the tag of this image will be in this form `@sha256:<digest>`
         outputs: |

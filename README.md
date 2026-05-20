@@ -54,3 +54,70 @@ tagging scheme will need to be revisited.
 - Reusable build workflow (image build + SBOM attestation)
 - Cosign keyless OIDC attestation of SBOM + vuln report per platform
 - Publish workflow (registry push with provenance)
+
+## Reusable workflow usage
+
+The reusable workflow builds, scans and publish a multi-arch image for you.
+
+```yaml
+jobs:
+  image-pipeline:
+    uses: StackVista/image-pipeline/.github/workflows/reusable-image-pipeline.yml@v0.1.0
+    with:
+      image: quay.io/stackstate/stackstate-k8s-process-agent
+      tag: latest
+      scan-mode: gate
+      scan-severity: HIGH,CRITICAL
+      exceptions-path: ./exceptions
+      source_registry: quay.io
+    secrets:
+      source_registry_user: ${{ secrets.QUAY_USERNAME }}
+      source_registry_password: ${{ secrets.QUAY_PASSWORD }}
+```
+
+An alternative is to call single action directly in your workflow:
+
+```yaml
+jobs:
+  build:
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    permissions:
+      contents: read
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Build image
+        uses: StackVista/image-pipeline/.github/actions/build-push-image@v0.1.0
+        with:
+          image: quay.io/stackstate/stackstate-k8s-process-agent
+          arch: ${{ matrix.arch }}
+          dockerfile: ./Dockerfile
+          source_registry: quay.io
+          source_registry_user: ${{ secrets.QUAY_USERNAME }}
+          source_registry_password: ${{ secrets.QUAY_PASSWORD }}
+  merge:
+    runs-on: ubuntu-24.04
+    needs: [build]
+    permissions:
+      contents: read
+    steps:
+      - name: Merge images
+        uses: StackVista/image-pipeline/.github/actions/merge-multiarch-image@v0.1.0
+        with:
+          image: quay.io/stackstate/stackstate-k8s-process-agent
+          # depends on where is called, could be latest/${{ github.ref_name }}...
+          tag: latest
+          source_registry: quay.io
+          source_registry_user: ${{ secrets.QUAY_USERNAME }}
+          source_registry_password: ${{ secrets.QUAY_PASSWORD }}
+```
