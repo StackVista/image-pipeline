@@ -1,0 +1,59 @@
+name: Bump upstream pins
+
+# Privileged update job for tracked upstream pins. This runs `updatecli pipeline apply`
+# on a schedule or manual dispatch, then opens or updates separate PRs per
+# updatecli pipeline, e.g. Go dependencies and GitHub Actions pins. Every bump
+# set requires human review before merge.
+
+run-name: >-
+  Bump upstream pins ·
+  ${{ github.event_name == 'schedule' && 'weekly run' || 'manual run' }}
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  # All write auth uses a short-lived GitHub App installation token. The default
+  # GITHUB_TOKEN remains read-only so generated PR checks are not suppressed by
+  # GitHub's recursion-prevention rule.
+  contents: read
+
+concurrency:
+  group: bump-upstream-pins
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create updatecli GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.UPDATECLI_GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.UPDATECLI_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+
+      - name: Install updatecli
+        uses: updatecli/updatecli-action@e71be7554f3f940bc439cf720b3e4e379823c562 # v3.2.0
+
+      - name: updatecli pipeline apply
+        env:
+          # GITHUB_TOKEN is the SCM credential for updatecli (see
+          # .updatecli/values.d/values.yaml scm.tokenEnv). It must be exposed
+          # as an env var for updatecli's template evaluator to resolve
+          # `requiredEnv "GITHUB_TOKEN"` at load time.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          updatecli pipeline apply \
+            --config .updatecli/updatecli.d/ \
+            --values .updatecli/values.d/values.yaml

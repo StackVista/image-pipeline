@@ -1,0 +1,56 @@
+name: Update image-pipeline Go dependencies
+pipelineid: image-pipeline-go
+
+# Go-specific pipeline. Keeping this separate from GitHub Actions updates gives
+# Go module/toolchain bumps their own working branch and PR.
+
+scms:
+  default:
+    kind: "{{ .scm.kind }}"
+    spec:
+      owner: "{{ .scm.owner }}"
+      repository: "{{ .scm.repository }}"
+      branch: "{{ .scm.branch }}"
+      username: "{{ .scm.username }}"
+      token: "{{ requiredEnv .scm.tokenEnv }}"
+      commitmessage:
+        type: chore
+        scope: deps
+
+actions:
+  default:
+    kind: github/pullrequest
+    scmid: default
+    spec:
+      title: "[updatecli] bump Go dependencies"
+
+autodiscovery:
+  scmid: default
+  actionid: default
+  groupby: all
+  crawlers:
+    golang:
+      rootdir: evaluator
+      versionfilter:
+        kind: semver
+        pattern: minor
+
+targets:
+  evaluatorGoModTidy:
+    # updatecli target: keep go.sum consistent after gomod updates.
+    name: "evaluator: run go mod tidy"
+    kind: shell
+    scmid: default
+    disablesourceinput: true
+    spec:
+      workdir: evaluator
+      command: go mod tidy
+      environments:
+        - name: HOME
+        - name: PATH
+      changedif:
+        kind: file/checksum
+        spec:
+          files:
+            - go.mod
+            - go.sum

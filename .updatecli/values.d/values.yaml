@@ -1,0 +1,16 @@
+# Shared updatecli values for image-pipeline.
+#
+# The .scm block configures updatecli's GitHub SCM for a PR-based flow: each
+# apply pushes bumps to a working branch and the github/pullrequest action opens
+# a single PR for human review and merge.
+
+scm:
+  kind: github
+  owner: StackVista
+  repository: image-pipeline
+  branch: main
+  tokenEnv: GITHUB_TOKEN
+  # GitHub's token-over-HTTPS auth pattern is
+  # `https://<username>:<token>@github.com/...`; x-access-token is the
+  # conventional username for GitHub token authentication.
+  username: x-access-token
