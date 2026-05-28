@@ -93,3 +93,78 @@ func TestGrypeScanner_ParseInline(t *testing.T) {
 		t.Errorf("Paths = %v; want [/usr/lib/foo /opt/foo]", f.Paths)
 	}
 }
+
+func TestCVEIDResolution(t *testing.T) {
+	testCases := []struct {
+		name          string
+		report        *grypeReport
+		expectedCVEID string
+	}{
+		{
+			name: "primary_CVE_ID",
+			report: &grypeReport{
+				Matches: []grypeMatch{
+					{
+						Vulnerability: grypeVulnerability{
+							ID: "CVE-2026-42583",
+						},
+					},
+				},
+			},
+			expectedCVEID: "CVE-2026-42583",
+		},
+		{
+			name: "GHSA_only",
+			report: &grypeReport{
+				Matches: []grypeMatch{
+					{
+						Vulnerability: grypeVulnerability{
+							ID: "GHSA-mj4r-2hfc-f8p6",
+						},
+					},
+				},
+			},
+			expectedCVEID: "GHSA-mj4r-2hfc-f8p6",
+		},
+		{
+			name: "related_CVE_ID",
+			report: &grypeReport{
+				Matches: []grypeMatch{
+					{
+						Vulnerability: grypeVulnerability{
+							ID: "GHSA-mj4r-2hfc-f8p6",
+						},
+						RelatedVulnerabilities: []grypeRelatedVulnerability{
+							{ID: "CVE-2026-42583"},
+						},
+					},
+				},
+			},
+			expectedCVEID: "CVE-2026-42583",
+		},
+		{
+			name: "multiple_related_CVE_ID",
+			report: &grypeReport{
+				Matches: []grypeMatch{
+					{
+						Vulnerability: grypeVulnerability{
+							ID: "GHSA-mj4r-2hfc-f8p6",
+						},
+						RelatedVulnerabilities: []grypeRelatedVulnerability{
+							{ID: "CVE-2026-42583"},
+							{ID: "CVE-2026-42584"},
+						},
+					},
+				},
+			},
+			expectedCVEID: "CVE-2026-42583",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			findings := GrypeScanner{}.getFindingsFromReport(tc.report)
+			require.Len(t, findings, 1)
+			require.Equal(t, tc.expectedCVEID, findings[0].VulnerabilityID)
+		})
+	}
+}
