@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGrypeScanner_Name(t *testing.T) {
-	if got := (GrypeScanner{}).Name(); got != "grype" {
-		t.Errorf("Name = %q; want %q", got, "grype")
-	}
+	require.Equal(t, "grype", (GrypeScanner{}).Name())
 }
 
 func TestGrypeScanner_ParseFixture(t *testing.T) {
