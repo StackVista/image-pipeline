@@ -173,7 +173,7 @@ runs:
       shell: bash
       run: |
         echo "::group::Grype vuln report (table)"
-        grype "sbom:reports/sbom.cdx.json" -o table -o "json=reports/grype.json"
+        grype "sbom:reports/sbom.cdx.json" --by-cve -o table -o "json=reports/grype.json"
         echo "::endgroup::"
 
     - name: Evaluate
