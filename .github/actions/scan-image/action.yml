@@ -18,7 +18,7 @@ inputs:
     required: false
     default: HIGH,CRITICAL
   with-grype:
-    description: "Also run Grype against the SBOM"
+    description: "Also run Grype against the image"
     required: false
     default: "true"
   upload-sarif:
@@ -30,7 +30,7 @@ inputs:
     required: false
     default: release-gate
   source_registry:
-    description: "Optional source registry to docker login to before SBOM generation"
+    description: "Optional source registry to docker login to before scanning"
     required: false
     default: ""
   source_registry_user:
@@ -79,11 +79,6 @@ runs:
         go build -o /tmp/image-pipeline-evaluate .
         sudo install -m 0755 /tmp/image-pipeline-evaluate /usr/local/bin/
 
-    - name: Set up Syft
-      uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
-      with:
-        syft-version: v1.44.0
-
     - name: Set up Trivy
       uses: aquasecurity/setup-trivy@3fb12ec12f41e471780db15c232d5dd185dcb514 # v0.2.6
       with:
@@ -120,14 +115,6 @@ runs:
             --username "${SOURCE_REGISTRY_USER}" \
             --password-stdin
 
-    - name: Generate SBOM
-      shell: bash
-      env:
-        INPUT_IMAGE: ${{ inputs.image }}
-      run: |
-        mkdir -p reports
-        syft "${INPUT_IMAGE}" -o cyclonedx-json=reports/sbom.cdx.json
-
     - name: Trivy secrets scan
       shell: bash
       env:
@@ -137,6 +124,7 @@ runs:
         # runner IP quotas and hit the 60/hr ceiling fast.
         GITHUB_TOKEN: ${{ github.token }}
       run: |
+        mkdir -p reports
         trivy image \
           --scanners secret \
           --format json \
@@ -154,16 +142,18 @@ runs:
     - name: Trivy vuln scan
       shell: bash
       env:
+        INPUT_IMAGE: ${{ inputs.image }}
         INPUT_SEVERITY: ${{ inputs.severity }}
         GITHUB_TOKEN: ${{ github.token }}
       run: |
-        trivy sbom \
+        trivy image \
+          --scanners vuln \
           --format json \
           --output reports/trivy.json \
           --severity "${INPUT_SEVERITY}" \
           --vex repo \
           --exit-code 0 \
-          reports/sbom.cdx.json
+          "${INPUT_IMAGE}"
         echo "::group::Trivy vuln report (table)"
         trivy convert --format table reports/trivy.json
         echo "::endgroup::"
@@ -171,9 +161,11 @@ runs:
     - name: Grype vuln scan
       if: ${{ inputs.with-grype == 'true' }}
       shell: bash
+      env:
+        INPUT_IMAGE: ${{ inputs.image }}
       run: |
         echo "::group::Grype vuln report (table)"
-        grype "sbom:reports/sbom.cdx.json" --by-cve -o table -o "json=reports/grype.json"
+        grype "${INPUT_IMAGE}" --by-cve -o table -o "json=reports/grype.json"
         echo "::endgroup::"
 
     - name: Evaluate
