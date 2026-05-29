@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"slices"
 	"sort"
 )
 
@@ -13,7 +14,7 @@ type Scanner interface {
 	Parse(io.Reader) ([]Finding, error)
 }
 
-// Finding is the normalised representation of a single vulnerability
+// Finding is the normalized representation of a single vulnerability
 // finding, independent of which scanner reported it. Scanner adapters
 // produce []Finding; the evaluator works only on Findings.
 type Finding struct {
@@ -32,14 +33,14 @@ type Finding struct {
 }
 
 // findingKey collapses identical findings reported by multiple
-// scanners. Same CVE on the same package+version is the same
+// scanners. Same vulnerability ID on the same package PURL is the same
 // finding regardless of which tool surfaced it.
 type findingKey struct {
-	vulnID, pkgName, pkgVersion string
+	vulnID, purl string
 }
 
 func (f Finding) key() findingKey {
-	return findingKey{f.VulnerabilityID, f.PackageName, f.PackageVersion}
+	return findingKey{f.VulnerabilityID, f.PackagePURL}
 }
 
 // DedupeFindings collapses identical findings reported by multiple
@@ -51,8 +52,8 @@ func (f Finding) key() findingKey {
 // diverge, the asymmetry is intentional and downstream consumers can
 // inspect SourceScanners to see who reported what.
 //
-// Output is sorted by (vulnID, pkgName, pkgVersion) for deterministic
-// downstream processing.
+// Output is sorted by (vulnID, purl) for deterministic downstream
+// processing.
 func DedupeFindings(findings []Finding) []Finding {
 	merged := map[findingKey]*Finding{}
 	for i := range findings {
@@ -76,27 +77,14 @@ func DedupeFindings(findings []Finding) []Finding {
 		if ki.vulnID != kj.vulnID {
 			return ki.vulnID < kj.vulnID
 		}
-		if ki.pkgName != kj.pkgName {
-			return ki.pkgName < kj.pkgName
-		}
-		return ki.pkgVersion < kj.pkgVersion
+		return ki.purl < kj.purl
 	})
 	return out
 }
 
 // mergeStrings returns the sorted, deduplicated union of two string slices.
 func mergeStrings(a, b []string) []string {
-	seen := map[string]bool{}
-	for _, s := range a {
-		seen[s] = true
-	}
-	for _, s := range b {
-		seen[s] = true
-	}
-	out := make([]string, 0, len(seen))
-	for s := range seen {
-		out = append(out, s)
-	}
-	sort.Strings(out)
-	return out
+	out := slices.Concat(a, b)
+	slices.Sort(out)
+	return slices.Compact(out)
 }

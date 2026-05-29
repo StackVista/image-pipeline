@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"sort"
 	"strings"
 )
 
@@ -11,19 +12,11 @@ type GrypeScanner struct{}
 
 func (GrypeScanner) Name() string { return "grype" }
 
-// Parse reads Grype's JSON report and returns normalised findings.
-// Severity is uppercased; artifact.locations[].path becomes Paths;
-// fix.versions are joined into a single FixedVersion string to match
-// Trivy's representation.
-func (s GrypeScanner) Parse(r io.Reader) ([]Finding, error) {
-	var report grypeReport
-	if err := json.NewDecoder(r).Decode(&report); err != nil {
-		return nil, err
-	}
+func (s GrypeScanner) getFindingsFromReport(report *grypeReport) []Finding {
 	var out []Finding
 	for _, m := range report.Matches {
 		f := Finding{
-			VulnerabilityID: m.Vulnerability.ID,
+			VulnerabilityID: canonicalVulnerabilityID(m.Vulnerability.ID, m.RelatedVulnerabilities),
 			PackageName:     m.Artifact.Name,
 			PackageVersion:  m.Artifact.Version,
 			PackagePURL:     m.Artifact.PURL,
@@ -39,7 +32,19 @@ func (s GrypeScanner) Parse(r io.Reader) ([]Finding, error) {
 		}
 		out = append(out, f)
 	}
-	return out, nil
+	return out
+}
+
+// Parse reads Grype's JSON report and returns normalised findings.
+// Severity is uppercased; artifact.locations[].path becomes Paths;
+// fix.versions are joined into a single FixedVersion string to match
+// Trivy's representation.
+func (s GrypeScanner) Parse(r io.Reader) ([]Finding, error) {
+	var report grypeReport
+	if err := json.NewDecoder(r).Decode(&report); err != nil {
+		return nil, err
+	}
+	return s.getFindingsFromReport(&report), nil
 }
 
 type grypeReport struct {
@@ -47,8 +52,13 @@ type grypeReport struct {
 }
 
 type grypeMatch struct {
-	Vulnerability grypeVulnerability `json:"vulnerability"`
-	Artifact      grypeArtifact      `json:"artifact"`
+	Vulnerability          grypeVulnerability          `json:"vulnerability"`
+	RelatedVulnerabilities []grypeRelatedVulnerability `json:"relatedVulnerabilities,omitempty"`
+	Artifact               grypeArtifact               `json:"artifact"`
+}
+
+type grypeRelatedVulnerability struct {
+	ID string `json:"id"`
 }
 
 type grypeVulnerability struct {
@@ -71,4 +81,50 @@ type grypeArtifact struct {
 
 type grypeLocation struct {
 	Path string `json:"path,omitempty"`
+}
+
+// canonicalVulnerabilityID chooses a stable ID for a Grype match.
+//
+// Grype can report the same issue using different identifiers depending
+// on the provider namespace (for example GHSA as primary ID with a CVE in
+// relatedVulnerabilities). Since Trivy reports CVEs, we prefer a CVE ID
+// when available so cross-scanner deduplication and exception matching converge.
+//
+// Typical grype report structure:
+//
+//	"vulnerability": {
+//		"id": "GHSA-qh8g-58pp-2wxh",
+//       ...
+//	}
+// "relatedVulnerabilities": [
+// 	{
+// 		"id": "CVE-2024-6763",
+// 		...
+// 	}
+// ]
+//
+// In CI we call grype with `--by-cve` so `vulnerability.ID` should be
+// already a CVE ID if available. In any case we keep this fallback code.
+
+func canonicalVulnerabilityID(primaryID string, related []grypeRelatedVulnerability) string {
+	if isCVE(primaryID) {
+		return primaryID
+	}
+
+	var cves []string
+	for _, rv := range related {
+		if isCVE(rv.ID) {
+			cves = append(cves, rv.ID)
+		}
+	}
+	if len(cves) == 0 {
+		return primaryID
+	}
+
+	sort.Strings(cves)
+	return cves[0]
+}
+
+func isCVE(id string) bool {
+	return strings.HasPrefix(strings.ToUpper(id), "CVE-")
 }

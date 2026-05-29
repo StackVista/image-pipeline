@@ -1,0 +1,1803 @@
+{
+	"matches": [
+		{
+			"vulnerability": {
+				"id": "CVE-2024-6763",
+				"dataSource": "https://github.com/advisories/GHSA-qh8g-58pp-2wxh",
+				"namespace": "github:language:java",
+				"severity": "Medium",
+				"urls": [
+					"https://github.com/jetty/jetty.project/security/advisories/GHSA-qh8g-58pp-2wxh",
+					"https://nvd.nist.gov/vuln/detail/CVE-2024-6763",
+					"https://github.com/jetty/jetty.project/pull/12012",
+					"https://gitlab.eclipse.org/security/cve-assignement/-/issues/25",
+					"https://security.netapp.com/advisory/ntap-20250306-0005"
+				],
+				"description": "Eclipse Jetty URI parsing of invalid authority",
+				"cvss": [
+					{
+						"type": "Secondary",
+						"version": "3.1",
+						"vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+						"metrics": {
+							"baseScore": 3.7,
+							"exploitabilityScore": 2.3,
+							"impactScore": 1.5
+						},
+						"vendorMetadata": {}
+					},
+					{
+						"type": "Secondary",
+						"version": "4.0",
+						"vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+						"metrics": {
+							"baseScore": 6.3
+						},
+						"vendorMetadata": {}
+					}
+				],
+				"epss": [
+					{
+						"cve": "CVE-2024-6763",
+						"epss": 0.01074,
+						"percentile": 0.78013,
+						"date": "2026-05-27"
+					}
+				],
+				"cwes": [
+					{
+						"cve": "CVE-2024-6763",
+						"cwe": "CWE-1286",
+						"source": "emo@eclipse.org",
+						"type": "Secondary"
+					},
+					{
+						"cve": "CVE-2024-6763",
+						"cwe": "NVD-CWE-Other",
+						"source": "nvd@nist.gov",
+						"type": "Primary"
+					}
+				],
+				"fix": {
+					"versions": [
+						"12.0.12"
+					],
+					"state": "fixed",
+					"available": [
+						{
+							"version": "12.0.12",
+							"date": "2024-10-15",
+							"kind": "first-observed"
+						}
+					]
+				},
+				"advisories": [],
+				"risk": 0.5369999999999999
+			},
+			"relatedVulnerabilities": [
+				{
+					"id": "GHSA-qh8g-58pp-2wxh",
+					"dataSource": "https://github.com/advisories/GHSA-qh8g-58pp-2wxh",
+					"namespace": "github:language:java",
+					"severity": "Medium",
+					"urls": [
+						"https://github.com/jetty/jetty.project/security/advisories/GHSA-qh8g-58pp-2wxh",
+						"https://nvd.nist.gov/vuln/detail/CVE-2024-6763",
+						"https://github.com/jetty/jetty.project/pull/12012",
+						"https://gitlab.eclipse.org/security/cve-assignement/-/issues/25",
+						"https://security.netapp.com/advisory/ntap-20250306-0005"
+					],
+					"description": "Eclipse Jetty URI parsing of invalid authority",
+					"cvss": [
+						{
+							"type": "Secondary",
+							"version": "3.1",
+							"vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+							"metrics": {
+								"baseScore": 3.7,
+								"exploitabilityScore": 2.3,
+								"impactScore": 1.5
+							},
+							"vendorMetadata": {}
+						},
+						{
+							"type": "Secondary",
+							"version": "4.0",
+							"vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+							"metrics": {
+								"baseScore": 6.3
+							},
+							"vendorMetadata": {}
+						}
+					],
+					"epss": [
+						{
+							"cve": "CVE-2024-6763",
+							"epss": 0.01074,
+							"percentile": 0.78013,
+							"date": "2026-05-27"
+						}
+					],
+					"cwes": [
+						{
+							"cve": "CVE-2024-6763",
+							"cwe": "CWE-1286",
+							"source": "emo@eclipse.org",
+							"type": "Secondary"
+						},
+						{
+							"cve": "CVE-2024-6763",
+							"cwe": "NVD-CWE-Other",
+							"source": "nvd@nist.gov",
+							"type": "Primary"
+						}
+					]
+				}
+			],
+			"matchDetails": [
+				{
+					"type": "exact-direct-match",
+					"matcher": "java-matcher",
+					"searchedBy": {
+						"language": "java",
+						"namespace": "github:language:java",
+						"package": {
+							"name": "org.eclipse.jetty:jetty-http",
+							"version": "9.4.58.v20250814"
+						}
+					},
+					"found": {
+						"vulnerabilityID": "GHSA-qh8g-58pp-2wxh",
+						"versionConstraint": ">=7.0.0,<=12.0.11 (unknown)"
+					},
+					"fix": {
+						"suggestedVersion": "12.0.12"
+					}
+				}
+			],
+			"artifact": {
+				"id": "f8625c8c74fa9f0b",
+				"name": "jetty-http",
+				"version": "9.4.58.v20250814",
+				"type": "java-archive",
+				"locations": [
+					{
+						"path": "/usr/share/zookeeper/lib/jetty-http-9.4.58.v20250814.jar",
+						"layerID": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+						"accessPath": "/usr/share/zookeeper/lib/jetty-http-9.4.58.v20250814.jar",
+						"annotations": {
+							"evidence": "primary"
+						}
+					}
+				],
+				"language": "java",
+				"licenses": [
+					"http://www.apache.org/licenses/LICENSE-2.0, https://www.eclipse.org/org/documents/epl-v10.php"
+				],
+				"cpes": [
+					"cpe:2.3:a:org.eclipse.jetty.http:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty.http:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse-jetty-project:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse-jetty-project:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse_jetty_project:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse_jetty_project:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty.http:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse-jetty-project:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse_jetty_project:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty.http:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse-jetty-project:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse_jetty_project:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty-http:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty-http:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty_http:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty_http:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty-http:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty_http:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:http:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:http:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty-http:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty_http:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:http:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:http:http:9.4.58.v20250814:*:*:*:*:*:*:*"
+				],
+				"purl": "pkg:maven/org.eclipse.jetty/jetty-http@9.4.58.v20250814",
+				"upstreams": [],
+				"metadataType": "JavaMetadata",
+				"metadata": {
+					"virtualPath": "/usr/share/zookeeper/lib/jetty-http-9.4.58.v20250814.jar",
+					"pomArtifactID": "jetty-http",
+					"pomGroupID": "org.eclipse.jetty",
+					"manifestName": "",
+					"archiveDigests": [
+						{
+							"algorithm": "sha1",
+							"value": "98c52c56ecc1eedd9e05327f266f35c5ef8bf0c4"
+						}
+					]
+				}
+			}
+		},
+		{
+			"vulnerability": {
+				"id": "CVE-2026-34743",
+				"dataSource": "https://www.suse.com/security/cve/CVE-2026-34743",
+				"namespace": "sles:distro:sles:15.7",
+				"severity": "High",
+				"urls": [],
+				"description": "XZ Utils provide a general-purpose data-compression library plus command-line tools. Prior to version 5.8.3, if lzma_index_decoder() was used to decode an Index that contained no Records, the resulting lzma_index was left in a state where where a subsequent lzma_index_append() would allocate too little memory, and a buffer overflow would occur. This issue has been patched in version 5.8.3.",
+				"cvss": [
+					{
+						"type": "Secondary",
+						"version": "3.1",
+						"vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+						"metrics": {
+							"baseScore": 7.4,
+							"exploitabilityScore": 1.5,
+							"impactScore": 5.9
+						},
+						"vendorMetadata": {}
+					},
+					{
+						"type": "Secondary",
+						"version": "3.1",
+						"vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+						"metrics": {
+							"baseScore": 5.3,
+							"exploitabilityScore": 3.9,
+							"impactScore": 1.5
+						},
+						"vendorMetadata": {}
+					}
+				],
+				"epss": [
+					{
+						"cve": "CVE-2026-34743",
+						"epss": 0.0006,
+						"percentile": 0.18822,
+						"date": "2026-05-27"
+					}
+				],
+				"cwes": [
+					{
+						"cve": "CVE-2026-34743",
+						"cwe": "CWE-122",
+						"source": "security-advisories@github.com",
+						"type": "Secondary"
+					}
+				],
+				"fix": {
+					"versions": [
+						"0:5.4.1-150600.3.6.1"
+					],
+					"state": "fixed",
+					"available": [
+						{
+							"version": "0:5.4.1-150600.3.6.1",
+							"date": "2026-05-26",
+							"kind": "advisory"
+						}
+					]
+				},
+				"advisories": [],
+				"risk": 0.04155
+			},
+			"relatedVulnerabilities": [
+				{
+					"id": "CVE-2026-34743",
+					"dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2026-34743",
+					"namespace": "nvd:cpe",
+					"severity": "Medium",
+					"urls": [
+						"https://github.com/tukaani-project/xz/commit/c8c22869e780ff57c96b46939c3d79ff99395f87",
+						"https://github.com/tukaani-project/xz/releases/tag/v5.8.3",
+						"https://github.com/tukaani-project/xz/security/advisories/GHSA-x872-m794-cxhv",
+						"http://www.openwall.com/lists/oss-security/2026/03/31/13"
+					],
+					"description": "XZ Utils provide a general-purpose data-compression library plus command-line tools. Prior to version 5.8.3, if lzma_index_decoder() was used to decode an Index that contained no Records, the resulting lzma_index was left in a state where where a subsequent lzma_index_append() would allocate too little memory, and a buffer overflow would occur. This issue has been patched in version 5.8.3.",
+					"cvss": [
+						{
+							"source": "nvd@nist.gov",
+							"type": "Primary",
+							"version": "3.1",
+							"vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+							"metrics": {
+								"baseScore": 5.3,
+								"exploitabilityScore": 3.9,
+								"impactScore": 1.5
+							},
+							"vendorMetadata": {}
+						},
+						{
+							"source": "security-advisories@github.com",
+							"type": "Secondary",
+							"version": "4.0",
+							"vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N/E:U/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+							"metrics": {
+								"baseScore": 1.7
+							},
+							"vendorMetadata": {}
+						}
+					],
+					"epss": [
+						{
+							"cve": "CVE-2026-34743",
+							"epss": 0.0006,
+							"percentile": 0.18822,
+							"date": "2026-05-27"
+						}
+					],
+					"cwes": [
+						{
+							"cve": "CVE-2026-34743",
+							"cwe": "CWE-122",
+							"source": "security-advisories@github.com",
+							"type": "Secondary"
+						}
+					]
+				}
+			],
+			"matchDetails": [
+				{
+					"type": "exact-direct-match",
+					"matcher": "rpm-matcher",
+					"searchedBy": {
+						"distro": {
+							"type": "sles",
+							"version": "15.7"
+						},
+						"package": {
+							"name": "liblzma5",
+							"version": "0:5.4.1-150600.3.3.1"
+						},
+						"namespace": "sles:distro:sles:15.7"
+					},
+					"found": {
+						"vulnerabilityID": "CVE-2026-34743",
+						"versionConstraint": "< 0:5.4.1-150600.3.6.1 (rpm)"
+					},
+					"fix": {
+						"suggestedVersion": "0:5.4.1-150600.3.6.1"
+					}
+				},
+				{
+					"type": "exact-indirect-match",
+					"matcher": "rpm-matcher",
+					"searchedBy": {
+						"distro": {
+							"type": "sles",
+							"version": "15.7"
+						},
+						"package": {
+							"name": "xz",
+							"version": "5.4.1-150600.3.3.1"
+						},
+						"namespace": "sles:distro:sles:15.7"
+					},
+					"found": {
+						"vulnerabilityID": "CVE-2026-34743",
+						"versionConstraint": "< 0:5.4.1-150600.3.6.1 (rpm)"
+					},
+					"fix": {
+						"suggestedVersion": "0:5.4.1-150600.3.6.1"
+					}
+				}
+			],
+			"artifact": {
+				"id": "30d8645be03ba89a",
+				"name": "liblzma5",
+				"version": "5.4.1-150600.3.3.1",
+				"type": "rpm",
+				"locations": [
+					{
+						"path": "/usr/lib/sysimage/rpm/Packages.db",
+						"layerID": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+						"accessPath": "/usr/lib/sysimage/rpm/Packages.db",
+						"annotations": {
+							"evidence": "primary"
+						}
+					}
+				],
+				"language": "",
+				"licenses": [
+					"SUSE-Public-Domain"
+				],
+				"cpes": [
+					"cpe:2.3:a:susellc\\<https\\:\\/\\/www.suse.com\\/\\>:liblzma5:5.4.1-150600.3.3.1:*:*:*:*:*:*:*",
+					"cpe:2.3:a:liblzma5:liblzma5:5.4.1-150600.3.3.1:*:*:*:*:*:*:*"
+				],
+				"purl": "pkg:rpm/sles/liblzma5@5.4.1-150600.3.3.1?arch=x86_64&distro=sles-15.7&upstream=xz-5.4.1-150600.3.3.1.src.rpm",
+				"upstreams": [
+					{
+						"name": "xz",
+						"version": "5.4.1-150600.3.3.1"
+					}
+				],
+				"metadataType": "RpmMetadata",
+				"metadata": {
+					"epoch": null,
+					"modularityLabel": ""
+				}
+			}
+		},
+		{
+			"vulnerability": {
+				"id": "CVE-2025-11226",
+				"dataSource": "https://github.com/advisories/GHSA-25qh-j22f-pwp8",
+				"namespace": "github:language:java",
+				"severity": "Medium",
+				"urls": [
+					"https://nvd.nist.gov/vuln/detail/CVE-2025-11226",
+					"https://logback.qos.ch/news.html#1.5.19",
+					"https://github.com/qos-ch/logback/commit/61f6a2544f36b3016e0efd434ee21f19269f1df7",
+					"https://github.com/qos-ch/logback/releases/tag/v_1.5.19",
+					"https://github.com/qos-ch/logback/issues/974",
+					"https://logback.qos.ch/news.html#1.3.16"
+				],
+				"description": "QOS.CH logback-core is vulnerable to Arbitrary Code Execution through file processing",
+				"cvss": [
+					{
+						"type": "Secondary",
+						"version": "4.0",
+						"vector": "CVSS:4.0/AV:L/AC:L/AT:P/PR:H/UI:P/VC:H/VI:L/VA:L/SC:H/SI:L/SA:L",
+						"metrics": {
+							"baseScore": 5.9
+						},
+						"vendorMetadata": {}
+					}
+				],
+				"epss": [
+					{
+						"cve": "CVE-2025-11226",
+						"epss": 0.00062,
+						"percentile": 0.19311,
+						"date": "2026-05-27"
+					}
+				],
+				"cwes": [
+					{
+						"cve": "CVE-2025-11226",
+						"cwe": "CWE-20",
+						"source": "vulnerability@ncsc.ch",
+						"type": "Secondary"
+					}
+				],
+				"fix": {
+					"versions": [
+						"1.3.16"
+					],
+					"state": "fixed",
+					"available": [
+						{
+							"version": "1.3.16",
+							"date": "2025-11-01",
+							"kind": "first-observed"
+						}
+					]
+				},
+				"advisories": [],
+				"risk": 0.03379
+			},
+			"relatedVulnerabilities": [
+				{
+					"id": "GHSA-25qh-j22f-pwp8",
+					"dataSource": "https://github.com/advisories/GHSA-25qh-j22f-pwp8",
+					"namespace": "github:language:java",
+					"severity": "Medium",
+					"urls": [
+						"https://nvd.nist.gov/vuln/detail/CVE-2025-11226",
+						"https://logback.qos.ch/news.html#1.5.19",
+						"https://github.com/qos-ch/logback/commit/61f6a2544f36b3016e0efd434ee21f19269f1df7",
+						"https://github.com/qos-ch/logback/releases/tag/v_1.5.19",
+						"https://github.com/qos-ch/logback/issues/974",
+						"https://logback.qos.ch/news.html#1.3.16"
+					],
+					"description": "QOS.CH logback-core is vulnerable to Arbitrary Code Execution through file processing",
+					"cvss": [
+						{
+							"type": "Secondary",
+							"version": "4.0",
+							"vector": "CVSS:4.0/AV:L/AC:L/AT:P/PR:H/UI:P/VC:H/VI:L/VA:L/SC:H/SI:L/SA:L",
+							"metrics": {
+								"baseScore": 5.9
+							},
+							"vendorMetadata": {}
+						}
+					],
+					"epss": [
+						{
+							"cve": "CVE-2025-11226",
+							"epss": 0.00062,
+							"percentile": 0.19311,
+							"date": "2026-05-27"
+						}
+					],
+					"cwes": [
+						{
+							"cve": "CVE-2025-11226",
+							"cwe": "CWE-20",
+							"source": "vulnerability@ncsc.ch",
+							"type": "Secondary"
+						}
+					]
+				}
+			],
+			"matchDetails": [
+				{
+					"type": "exact-direct-match",
+					"matcher": "java-matcher",
+					"searchedBy": {
+						"language": "java",
+						"namespace": "github:language:java",
+						"package": {
+							"name": "ch.qos.logback:logback-core",
+							"version": "1.3.15"
+						}
+					},
+					"found": {
+						"vulnerabilityID": "GHSA-25qh-j22f-pwp8",
+						"versionConstraint": "<1.3.16 (unknown)"
+					},
+					"fix": {
+						"suggestedVersion": "1.3.16"
+					}
+				}
+			],
+			"artifact": {
+				"id": "73118798c18b78b7",
+				"name": "logback-core",
+				"version": "1.3.15",
+				"type": "java-archive",
+				"locations": [
+					{
+						"path": "/usr/share/zookeeper/lib/logback-core-1.3.15.jar",
+						"layerID": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+						"accessPath": "/usr/share/zookeeper/lib/logback-core-1.3.15.jar",
+						"annotations": {
+							"evidence": "primary"
+						}
+					}
+				],
+				"language": "java",
+				"licenses": [
+					"http://www.eclipse.org/legal/epl-v10.html, http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+				],
+				"cpes": [
+					"cpe:2.3:a:logback-core:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback-core:logback_core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback_core:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback_core:logback_core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback:logback_core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:qos-ch:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:qos-ch:logback_core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:qos_ch:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:qos_ch:logback_core:1.3.15:*:*:*:*:*:*:*"
+				],
+				"purl": "pkg:maven/ch.qos.logback/logback-core@1.3.15",
+				"upstreams": [],
+				"metadataType": "JavaMetadata",
+				"metadata": {
+					"virtualPath": "/usr/share/zookeeper/lib/logback-core-1.3.15.jar",
+					"pomArtifactID": "logback-core",
+					"pomGroupID": "ch.qos.logback",
+					"manifestName": "",
+					"archiveDigests": [
+						{
+							"algorithm": "sha1",
+							"value": "af8ee7714e901a26e7cf5a95ae483cbe2f298330"
+						}
+					]
+				}
+			}
+		},
+		{
+			"vulnerability": {
+				"id": "CVE-2026-2332",
+				"dataSource": "https://github.com/advisories/GHSA-355h-qmc2-wpwf",
+				"namespace": "github:language:java",
+				"severity": "High",
+				"urls": [
+					"https://github.com/jetty/jetty.project/security/advisories/GHSA-355h-qmc2-wpwf",
+					"https://nvd.nist.gov/vuln/detail/CVE-2026-2332",
+					"https://gitlab.eclipse.org/security/cve-assignment/-/issues/89",
+					"https://w4ke.info/2025/06/18/funky-chunks.html"
+				],
+				"description": "Jetty has HTTP Request Smuggling via Chunked Extension Quoted-String Parsing",
+				"cvss": [
+					{
+						"type": "Secondary",
+						"version": "3.1",
+						"vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+						"metrics": {
+							"baseScore": 7.4,
+							"exploitabilityScore": 2.3,
+							"impactScore": 5.2
+						},
+						"vendorMetadata": {}
+					}
+				],
+				"epss": [
+					{
+						"cve": "CVE-2026-2332",
+						"epss": 0.00026,
+						"percentile": 0.07688,
+						"date": "2026-05-27"
+					}
+				],
+				"cwes": [
+					{
+						"cve": "CVE-2026-2332",
+						"cwe": "CWE-444",
+						"source": "emo@eclipse.org",
+						"type": "Primary"
+					}
+				],
+				"fix": {
+					"versions": [],
+					"state": "not-fixed"
+				},
+				"advisories": [],
+				"risk": 0.01937
+			},
+			"relatedVulnerabilities": [
+				{
+					"id": "GHSA-355h-qmc2-wpwf",
+					"dataSource": "https://github.com/advisories/GHSA-355h-qmc2-wpwf",
+					"namespace": "github:language:java",
+					"severity": "High",
+					"urls": [
+						"https://github.com/jetty/jetty.project/security/advisories/GHSA-355h-qmc2-wpwf",
+						"https://nvd.nist.gov/vuln/detail/CVE-2026-2332",
+						"https://gitlab.eclipse.org/security/cve-assignment/-/issues/89",
+						"https://w4ke.info/2025/06/18/funky-chunks.html"
+					],
+					"description": "Jetty has HTTP Request Smuggling via Chunked Extension Quoted-String Parsing",
+					"cvss": [
+						{
+							"type": "Secondary",
+							"version": "3.1",
+							"vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+							"metrics": {
+								"baseScore": 7.4,
+								"exploitabilityScore": 2.3,
+								"impactScore": 5.2
+							},
+							"vendorMetadata": {}
+						}
+					],
+					"epss": [
+						{
+							"cve": "CVE-2026-2332",
+							"epss": 0.00026,
+							"percentile": 0.07688,
+							"date": "2026-05-27"
+						}
+					],
+					"cwes": [
+						{
+							"cve": "CVE-2026-2332",
+							"cwe": "CWE-444",
+							"source": "emo@eclipse.org",
+							"type": "Primary"
+						}
+					]
+				}
+			],
+			"matchDetails": [
+				{
+					"type": "exact-direct-match",
+					"matcher": "java-matcher",
+					"searchedBy": {
+						"language": "java",
+						"namespace": "github:language:java",
+						"package": {
+							"name": "org.eclipse.jetty:jetty-http",
+							"version": "9.4.58.v20250814"
+						}
+					},
+					"found": {
+						"vulnerabilityID": "GHSA-355h-qmc2-wpwf",
+						"versionConstraint": ">=9.4.0,<=9.4.59 (unknown)"
+					}
+				}
+			],
+			"artifact": {
+				"id": "f8625c8c74fa9f0b",
+				"name": "jetty-http",
+				"version": "9.4.58.v20250814",
+				"type": "java-archive",
+				"locations": [
+					{
+						"path": "/usr/share/zookeeper/lib/jetty-http-9.4.58.v20250814.jar",
+						"layerID": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+						"accessPath": "/usr/share/zookeeper/lib/jetty-http-9.4.58.v20250814.jar",
+						"annotations": {
+							"evidence": "primary"
+						}
+					}
+				],
+				"language": "java",
+				"licenses": [
+					"http://www.apache.org/licenses/LICENSE-2.0, https://www.eclipse.org/org/documents/epl-v10.php"
+				],
+				"cpes": [
+					"cpe:2.3:a:org.eclipse.jetty.http:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty.http:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse-jetty-project:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse-jetty-project:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse_jetty_project:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse_jetty_project:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty.http:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse-jetty-project:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse_jetty_project:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty.http:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse-jetty-project:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse_jetty_project:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:org.eclipse.jetty:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty-http:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty-http:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty_http:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty_http:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty-http:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty_http:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:http:jetty-http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:http:jetty_http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty-http:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty_http:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:eclipse:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:http:jetty:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jetty:http:9.4.58.v20250814:*:*:*:*:*:*:*",
+					"cpe:2.3:a:http:http:9.4.58.v20250814:*:*:*:*:*:*:*"
+				],
+				"purl": "pkg:maven/org.eclipse.jetty/jetty-http@9.4.58.v20250814",
+				"upstreams": [],
+				"metadataType": "JavaMetadata",
+				"metadata": {
+					"virtualPath": "/usr/share/zookeeper/lib/jetty-http-9.4.58.v20250814.jar",
+					"pomArtifactID": "jetty-http",
+					"pomGroupID": "org.eclipse.jetty",
+					"manifestName": "",
+					"archiveDigests": [
+						{
+							"algorithm": "sha1",
+							"value": "98c52c56ecc1eedd9e05327f266f35c5ef8bf0c4"
+						}
+					]
+				}
+			}
+		},
+		{
+			"vulnerability": {
+				"id": "CVE-2026-42583",
+				"dataSource": "https://github.com/advisories/GHSA-mj4r-2hfc-f8p6",
+				"namespace": "github:language:java",
+				"severity": "High",
+				"urls": [
+					"https://github.com/netty/netty/security/advisories/GHSA-mj4r-2hfc-f8p6",
+					"https://nvd.nist.gov/vuln/detail/CVE-2026-42583"
+				],
+				"description": "Netty Lz4FrameDecoder is vulnerable to resource exhaustion",
+				"cvss": [
+					{
+						"type": "Secondary",
+						"version": "3.1",
+						"vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+						"metrics": {
+							"baseScore": 7.5,
+							"exploitabilityScore": 3.9,
+							"impactScore": 3.6
+						},
+						"vendorMetadata": {}
+					}
+				],
+				"epss": [
+					{
+						"cve": "CVE-2026-42583",
+						"epss": 0.00017,
+						"percentile": 0.04388,
+						"date": "2026-05-27"
+					}
+				],
+				"cwes": [
+					{
+						"cve": "CVE-2026-42583",
+						"cwe": "CWE-400",
+						"source": "security-advisories@github.com",
+						"type": "Secondary"
+					},
+					{
+						"cve": "CVE-2026-42583",
+						"cwe": "CWE-770",
+						"source": "security-advisories@github.com",
+						"type": "Secondary"
+					}
+				],
+				"fix": {
+					"versions": [
+						"4.1.133.Final"
+					],
+					"state": "fixed",
+					"available": [
+						{
+							"version": "4.1.133.Final",
+							"date": "2026-05-07",
+							"kind": "first-observed"
+						}
+					]
+				},
+				"advisories": [],
+				"risk": 0.012750000000000001
+			},
+			"relatedVulnerabilities": [
+				{
+					"id": "GHSA-mj4r-2hfc-f8p6",
+					"dataSource": "https://github.com/advisories/GHSA-mj4r-2hfc-f8p6",
+					"namespace": "github:language:java",
+					"severity": "High",
+					"urls": [
+						"https://github.com/netty/netty/security/advisories/GHSA-mj4r-2hfc-f8p6",
+						"https://nvd.nist.gov/vuln/detail/CVE-2026-42583"
+					],
+					"description": "Netty Lz4FrameDecoder is vulnerable to resource exhaustion",
+					"cvss": [
+						{
+							"type": "Secondary",
+							"version": "3.1",
+							"vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+							"metrics": {
+								"baseScore": 7.5,
+								"exploitabilityScore": 3.9,
+								"impactScore": 3.6
+							},
+							"vendorMetadata": {}
+						}
+					],
+					"epss": [
+						{
+							"cve": "CVE-2026-42583",
+							"epss": 0.00017,
+							"percentile": 0.04388,
+							"date": "2026-05-27"
+						}
+					],
+					"cwes": [
+						{
+							"cve": "CVE-2026-42583",
+							"cwe": "CWE-400",
+							"source": "security-advisories@github.com",
+							"type": "Secondary"
+						},
+						{
+							"cve": "CVE-2026-42583",
+							"cwe": "CWE-770",
+							"source": "security-advisories@github.com",
+							"type": "Secondary"
+						}
+					]
+				}
+			],
+			"matchDetails": [
+				{
+					"type": "exact-direct-match",
+					"matcher": "java-matcher",
+					"searchedBy": {
+						"language": "java",
+						"namespace": "github:language:java",
+						"package": {
+							"name": "io.netty:netty-codec",
+							"version": "4.1.130.Final"
+						}
+					},
+					"found": {
+						"vulnerabilityID": "GHSA-mj4r-2hfc-f8p6",
+						"versionConstraint": "<=4.1.132.Final (unknown)"
+					},
+					"fix": {
+						"suggestedVersion": "4.1.133.Final"
+					}
+				}
+			],
+			"artifact": {
+				"id": "ebcf8966ea28d616",
+				"name": "netty-codec",
+				"version": "4.1.130.Final",
+				"type": "java-archive",
+				"locations": [
+					{
+						"path": "/usr/share/zookeeper/lib/netty-codec-4.1.130.Final.jar",
+						"layerID": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+						"accessPath": "/usr/share/zookeeper/lib/netty-codec-4.1.130.Final.jar",
+						"annotations": {
+							"evidence": "primary"
+						}
+					}
+				],
+				"language": "java",
+				"licenses": [
+					"https://www.apache.org/licenses/LICENSE-2.0"
+				],
+				"cpes": [
+					"cpe:2.3:a:io.netty.codec:netty-codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:io.netty.codec:netty_codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty-project:netty-codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty-project:netty_codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty_project:netty-codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty_project:netty_codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty-codec:netty-codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty-codec:netty_codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty_codec:netty-codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty_codec:netty_codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:io.netty.codec:codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:io.netty:netty-codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:io.netty:netty_codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty-project:codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty_project:codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:codec:netty-codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:codec:netty_codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty-codec:codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty:netty-codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty:netty_codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty_codec:codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:io.netty:codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:codec:codec:4.1.130.Final:*:*:*:*:*:*:*",
+					"cpe:2.3:a:netty:codec:4.1.130.Final:*:*:*:*:*:*:*"
+				],
+				"purl": "pkg:maven/io.netty/netty-codec@4.1.130.Final",
+				"upstreams": [],
+				"metadataType": "JavaMetadata",
+				"metadata": {
+					"virtualPath": "/usr/share/zookeeper/lib/netty-codec-4.1.130.Final.jar",
+					"pomArtifactID": "netty-codec",
+					"pomGroupID": "io.netty",
+					"manifestName": "",
+					"archiveDigests": [
+						{
+							"algorithm": "sha1",
+							"value": "a645e96a5db4c6266f995d0d3d6ad04726e6c87a"
+						}
+					]
+				}
+			}
+		},
+		{
+			"vulnerability": {
+				"id": "CVE-2026-5958",
+				"dataSource": "https://www.suse.com/security/cve/CVE-2026-5958",
+				"namespace": "sles:distro:sles:15.7",
+				"severity": "Medium",
+				"urls": [],
+				"description": "When sed is invoked with both -i (in-place edit) and --follow-symlinks, the function open_next_file() performs two separate, non-atomic filesystem operations on the same path: \n1. resolves symlink to its target and stores  the resolved path for determining when output is written,\n2. opens the original symlink path  (not the resolved one) to read the file. \nBetween these two calls there is a race window. If an attacker atomically replaces the symlink with a different target during that window, sed will: read content from the new (attacker-chosen) symlink target and write the processed result to the path recorded in step 1.  This can lead to arbitrary file overwrite with attacker-controlled content in the context of the sed process.\n\n\nThis issue was fixed in version 4.10.",
+				"cvss": [
+					{
+						"type": "Secondary",
+						"version": "3.1",
+						"vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:C/C:H/I:H/A:N",
+						"metrics": {
+							"baseScore": 6.9,
+							"exploitabilityScore": 0.7,
+							"impactScore": 5.8
+						},
+						"vendorMetadata": {}
+					}
+				],
+				"epss": [
+					{
+						"cve": "CVE-2026-5958",
+						"epss": 0.00006,
+						"percentile": 0.00325,
+						"date": "2026-05-27"
+					}
+				],
+				"cwes": [
+					{
+						"cve": "CVE-2026-5958",
+						"cwe": "CWE-367",
+						"source": "cvd@cert.pl",
+						"type": "Secondary"
+					}
+				],
+				"fix": {
+					"versions": [
+						"0:4.9-150600.3.3.1"
+					],
+					"state": "fixed",
+					"available": [
+						{
+							"version": "0:4.9-150600.3.3.1",
+							"date": "2026-05-02",
+							"kind": "advisory"
+						}
+					]
+				},
+				"advisories": [],
+				"risk": 0.0035700000000000003
+			},
+			"relatedVulnerabilities": [
+				{
+					"id": "CVE-2026-5958",
+					"dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2026-5958",
+					"namespace": "nvd:cpe",
+					"severity": "Low",
+					"urls": [
+						"https://cert.pl/en/posts/2026/04/CVE-2026-5958",
+						"https://www.gnu.org/software/sed/",
+						"http://www.openwall.com/lists/oss-security/2026/05/13/1"
+					],
+					"description": "When sed is invoked with both -i (in-place edit) and --follow-symlinks, the function open_next_file() performs two separate, non-atomic filesystem operations on the same path: \n1. resolves symlink to its target and stores the resolved path for determining when output is written,\n2. opens the original symlink path (not the resolved one) to read the file. \nBetween these two calls there is a race window. If an attacker atomically replaces the symlink with a different target during that window, sed will: read content from the new (attacker-chosen) symlink target and write the processed result to the path recorded in step 1. This can lead to arbitrary file overwrite with attacker-controlled content in the context of the sed process.\n\n\nThis issue was fixed in version 4.10.",
+					"cvss": [
+						{
+							"source": "cvd@cert.pl",
+							"type": "Secondary",
+							"version": "4.0",
+							"vector": "CVSS:4.0/AV:L/AC:L/AT:P/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+							"metrics": {
+								"baseScore": 2.1
+							},
+							"vendorMetadata": {}
+						}
+					],
+					"epss": [
+						{
+							"cve": "CVE-2026-5958",
+							"epss": 0.00006,
+							"percentile": 0.00325,
+							"date": "2026-05-27"
+						}
+					],
+					"cwes": [
+						{
+							"cve": "CVE-2026-5958",
+							"cwe": "CWE-367",
+							"source": "cvd@cert.pl",
+							"type": "Secondary"
+						}
+					]
+				}
+			],
+			"matchDetails": [
+				{
+					"type": "exact-direct-match",
+					"matcher": "rpm-matcher",
+					"searchedBy": {
+						"distro": {
+							"type": "sles",
+							"version": "15.7"
+						},
+						"package": {
+							"name": "sed",
+							"version": "0:4.9-150600.1.4"
+						},
+						"namespace": "sles:distro:sles:15.7"
+					},
+					"found": {
+						"vulnerabilityID": "CVE-2026-5958",
+						"versionConstraint": "< 0:4.9-150600.3.3.1 (rpm)"
+					},
+					"fix": {
+						"suggestedVersion": "0:4.9-150600.3.3.1"
+					}
+				}
+			],
+			"artifact": {
+				"id": "45c8682620cfcc16",
+				"name": "sed",
+				"version": "4.9-150600.1.4",
+				"type": "rpm",
+				"locations": [
+					{
+						"path": "/usr/lib/sysimage/rpm/Packages.db",
+						"layerID": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+						"accessPath": "/usr/lib/sysimage/rpm/Packages.db",
+						"annotations": {
+							"evidence": "primary"
+						}
+					}
+				],
+				"language": "",
+				"licenses": [
+					"GPL-3.0-or-later"
+				],
+				"cpes": [
+					"cpe:2.3:a:susellc\\<https\\:\\/\\/www.suse.com\\/\\>:sed:4.9-150600.1.4:*:*:*:*:*:*:*",
+					"cpe:2.3:a:sed:sed:4.9-150600.1.4:*:*:*:*:*:*:*"
+				],
+				"purl": "pkg:rpm/sles/sed@4.9-150600.1.4?arch=x86_64&distro=sles-15.7&upstream=sed-4.9-150600.1.4.src.rpm",
+				"upstreams": [],
+				"metadataType": "RpmMetadata",
+				"metadata": {
+					"epoch": null,
+					"modularityLabel": ""
+				}
+			}
+		},
+		{
+			"vulnerability": {
+				"id": "CVE-2026-1225",
+				"dataSource": "https://github.com/advisories/GHSA-qqpg-mvqg-649v",
+				"namespace": "github:language:java",
+				"severity": "Low",
+				"urls": [
+					"https://nvd.nist.gov/vuln/detail/CVE-2026-1225",
+					"https://logback.qos.ch/news.html#1.5.25",
+					"https://github.com/qos-ch/logback/issues/997",
+					"https://github.com/qos-ch/logback/commit/1f97ae1844b1be8486e4e9cade98d7123d3eded5"
+				],
+				"description": "Logback allows an attacker to instantiate classes already present on the class path",
+				"cvss": [
+					{
+						"type": "Secondary",
+						"version": "4.0",
+						"vector": "CVSS:4.0/AV:L/AC:H/AT:P/PR:H/UI:N/VC:L/VI:L/VA:L/SC:L/SI:L/SA:L",
+						"metrics": {
+							"baseScore": 1.8
+						},
+						"vendorMetadata": {}
+					}
+				],
+				"epss": [
+					{
+						"cve": "CVE-2026-1225",
+						"epss": 0.00014,
+						"percentile": 0.02847,
+						"date": "2026-05-27"
+					}
+				],
+				"cwes": [
+					{
+						"cve": "CVE-2026-1225",
+						"cwe": "CWE-20",
+						"source": "vulnerability@ncsc.ch",
+						"type": "Secondary"
+					}
+				],
+				"fix": {
+					"versions": [
+						"1.5.25"
+					],
+					"state": "fixed",
+					"available": [
+						{
+							"version": "1.5.25",
+							"date": "2026-01-23",
+							"kind": "first-observed"
+						}
+					]
+				},
+				"advisories": [],
+				"risk": 0.0033599999999999997
+			},
+			"relatedVulnerabilities": [
+				{
+					"id": "GHSA-qqpg-mvqg-649v",
+					"dataSource": "https://github.com/advisories/GHSA-qqpg-mvqg-649v",
+					"namespace": "github:language:java",
+					"severity": "Low",
+					"urls": [
+						"https://nvd.nist.gov/vuln/detail/CVE-2026-1225",
+						"https://logback.qos.ch/news.html#1.5.25",
+						"https://github.com/qos-ch/logback/issues/997",
+						"https://github.com/qos-ch/logback/commit/1f97ae1844b1be8486e4e9cade98d7123d3eded5"
+					],
+					"description": "Logback allows an attacker to instantiate classes already present on the class path",
+					"cvss": [
+						{
+							"type": "Secondary",
+							"version": "4.0",
+							"vector": "CVSS:4.0/AV:L/AC:H/AT:P/PR:H/UI:N/VC:L/VI:L/VA:L/SC:L/SI:L/SA:L",
+							"metrics": {
+								"baseScore": 1.8
+							},
+							"vendorMetadata": {}
+						}
+					],
+					"epss": [
+						{
+							"cve": "CVE-2026-1225",
+							"epss": 0.00014,
+							"percentile": 0.02847,
+							"date": "2026-05-27"
+						}
+					],
+					"cwes": [
+						{
+							"cve": "CVE-2026-1225",
+							"cwe": "CWE-20",
+							"source": "vulnerability@ncsc.ch",
+							"type": "Secondary"
+						}
+					]
+				}
+			],
+			"matchDetails": [
+				{
+					"type": "exact-direct-match",
+					"matcher": "java-matcher",
+					"searchedBy": {
+						"language": "java",
+						"namespace": "github:language:java",
+						"package": {
+							"name": "ch.qos.logback:logback-core",
+							"version": "1.3.15"
+						}
+					},
+					"found": {
+						"vulnerabilityID": "GHSA-qqpg-mvqg-649v",
+						"versionConstraint": "<1.5.25 (unknown)"
+					},
+					"fix": {
+						"suggestedVersion": "1.5.25"
+					}
+				}
+			],
+			"artifact": {
+				"id": "73118798c18b78b7",
+				"name": "logback-core",
+				"version": "1.3.15",
+				"type": "java-archive",
+				"locations": [
+					{
+						"path": "/usr/share/zookeeper/lib/logback-core-1.3.15.jar",
+						"layerID": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+						"accessPath": "/usr/share/zookeeper/lib/logback-core-1.3.15.jar",
+						"annotations": {
+							"evidence": "primary"
+						}
+					}
+				],
+				"language": "java",
+				"licenses": [
+					"http://www.eclipse.org/legal/epl-v10.html, http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+				],
+				"cpes": [
+					"cpe:2.3:a:logback-core:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback-core:logback_core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback_core:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback_core:logback_core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:logback:logback_core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:qos-ch:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:qos-ch:logback_core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:qos_ch:logback-core:1.3.15:*:*:*:*:*:*:*",
+					"cpe:2.3:a:qos_ch:logback_core:1.3.15:*:*:*:*:*:*:*"
+				],
+				"purl": "pkg:maven/ch.qos.logback/logback-core@1.3.15",
+				"upstreams": [],
+				"metadataType": "JavaMetadata",
+				"metadata": {
+					"virtualPath": "/usr/share/zookeeper/lib/logback-core-1.3.15.jar",
+					"pomArtifactID": "logback-core",
+					"pomGroupID": "ch.qos.logback",
+					"manifestName": "",
+					"archiveDigests": [
+						{
+							"algorithm": "sha1",
+							"value": "af8ee7714e901a26e7cf5a95ae483cbe2f298330"
+						}
+					]
+				}
+			}
+		},
+		{
+			"vulnerability": {
+				"id": "GHSA-72hv-8253-57qq",
+				"dataSource": "https://github.com/advisories/GHSA-72hv-8253-57qq",
+				"namespace": "github:language:java",
+				"severity": "Medium",
+				"urls": [
+					"https://github.com/FasterXML/jackson-core/security/advisories/GHSA-72hv-8253-57qq",
+					"https://github.com/FasterXML/jackson-core/pull/1555",
+					"https://github.com/FasterXML/jackson-core/commit/b0c428e6f993e1b5ece5c1c3cb2523e887cd52cf"
+				],
+				"description": "jackson-core: Number Length Constraint Bypass in Async Parser Leads to Potential DoS Condition",
+				"cvss": [
+					{
+						"type": "Secondary",
+						"version": "4.0",
+						"vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+						"metrics": {
+							"baseScore": 6.9
+						},
+						"vendorMetadata": {}
+					}
+				],
+				"fix": {
+					"versions": [
+						"2.18.6"
+					],
+					"state": "fixed",
+					"available": [
+						{
+							"version": "2.18.6",
+							"date": "2026-02-28",
+							"kind": "first-observed"
+						}
+					]
+				},
+				"advisories": [],
+				"risk": 0
+			},
+			"relatedVulnerabilities": [],
+			"matchDetails": [
+				{
+					"type": "exact-direct-match",
+					"matcher": "java-matcher",
+					"searchedBy": {
+						"language": "java",
+						"namespace": "github:language:java",
+						"package": {
+							"name": "com.fasterxml.jackson.core:jackson-core",
+							"version": "2.15.2"
+						}
+					},
+					"found": {
+						"vulnerabilityID": "GHSA-72hv-8253-57qq",
+						"versionConstraint": ">=2.0.0,<=2.18.5 (unknown)"
+					},
+					"fix": {
+						"suggestedVersion": "2.18.6"
+					}
+				}
+			],
+			"artifact": {
+				"id": "ba00d5274dce12aa",
+				"name": "jackson-core",
+				"version": "2.15.2",
+				"type": "java-archive",
+				"locations": [
+					{
+						"path": "/usr/share/zookeeper/lib/jackson-core-2.15.2.jar",
+						"layerID": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+						"accessPath": "/usr/share/zookeeper/lib/jackson-core-2.15.2.jar",
+						"annotations": {
+							"evidence": "primary"
+						}
+					}
+				],
+				"language": "java",
+				"licenses": [
+					"https://www.apache.org/licenses/LICENSE-2.0.txt"
+				],
+				"cpes": [
+					"cpe:2.3:a:com.fasterxml.jackson.core.jackson-core:jackson-core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson.core.jackson-core:jackson_core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson.core.jackson-core:jackson:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson.core.jackson-core:core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson.core:jackson-core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson.core:jackson_core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson.core:jackson:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson:jackson-core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson:jackson_core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson.core:core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson:jackson:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:com.fasterxml.jackson:core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson-core:jackson-core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson-core:jackson_core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson_core:jackson-core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson_core:jackson_core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:fasterxml:jackson-core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:fasterxml:jackson_core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson-core:jackson:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson:jackson-core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson:jackson_core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson_core:jackson:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:core:jackson-core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:core:jackson_core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:fasterxml:jackson:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson-core:core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson_core:core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson:jackson:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:fasterxml:core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:core:jackson:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:jackson:core:2.15.2:*:*:*:*:*:*:*",
+					"cpe:2.3:a:core:core:2.15.2:*:*:*:*:*:*:*"
+				],
+				"purl": "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.15.2",
+				"upstreams": [],
+				"metadataType": "JavaMetadata",
+				"metadata": {
+					"virtualPath": "/usr/share/zookeeper/lib/jackson-core-2.15.2.jar",
+					"pomArtifactID": "jackson-core",
+					"pomGroupID": "com.fasterxml.jackson.core",
+					"manifestName": "",
+					"archiveDigests": [
+						{
+							"algorithm": "sha1",
+							"value": "a6fe1836469a69b3ff66037c324d75fc66ef137c"
+						}
+					]
+				}
+			}
+		}
+	],
+	"source": {
+		"type": "image",
+		"target": {
+			"userInput": "quay.io/stackstate/zookeeper:3.9.5-7c9dc1f5-main-28",
+			"imageID": "sha256:e83a4deb4ca077140a759e980dabedbb7fafa9f8ae5254bd748a1de983d82791",
+			"manifestDigest": "sha256:7577e0458afa6b890c2f0fd9a6c49ecd6b96d56a11188af792e227b8d4881aac",
+			"mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+			"tags": [
+				"quay.io/stackstate/zookeeper:3.9.5-7c9dc1f5-main-28"
+			],
+			"imageSize": 249276883,
+			"layers": [
+				{
+					"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+					"digest": "sha256:f1d202063cde3cee31d01db22d2ed85a79065e08a2498daa24500c48b1d34528",
+					"size": 24998200
+				},
+				{
+					"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+					"digest": "sha256:97d0fd9d06e763b425db5d95ca058331d16af84b7b12636831a357675ea63cc0",
+					"size": 224278683
+				}
+			],
+			"manifest": "eyJzY2hlbWFWZXJzaW9uIjoyLCJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmRpc3RyaWJ1dGlvbi5tYW5pZmVzdC52Mitqc29uIiwiY29uZmlnIjp7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuY29udGFpbmVyLmltYWdlLnYxK2pzb24iLCJzaXplIjoyMDAyMCwiZGlnZXN0Ijoic2hhMjU2OmU4M2E0ZGViNGNhMDc3MTQwYTc1OWU5ODBkYWJlZGJiN2ZhZmE5ZjhhZTUyNTRiZDc0OGExZGU5ODNkODI3OTEifSwibGF5ZXJzIjpbeyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwic2l6ZSI6MjY4MjQ3MDQsImRpZ2VzdCI6InNoYTI1NjpmMWQyMDIwNjNjZGUzY2VlMzFkMDFkYjIyZDJlZDg1YTc5MDY1ZTA4YTI0OThkYWEyNDUwMGM0OGIxZDM0NTI4In0seyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwic2l6ZSI6MjI0OTAzNjgwLCJkaWdlc3QiOiJzaGEyNTY6OTdkMGZkOWQwNmU3NjNiNDI1ZGI1ZDk1Y2EwNTgzMzFkMTZhZjg0YjdiMTI2MzY4MzFhMzU3Njc1ZWE2M2NjMCJ9XX0=",
+			"config": "eyJhcmNoaXRlY3R1cmUiOiJhbWQ2NCIsImNvbmZpZyI6eyJIb3N0bmFtZSI6IiIsIkRvbWFpbm5hbWUiOiIiLCJVc2VyIjoiIiwiQXR0YWNoU3RkaW4iOmZhbHNlLCJBdHRhY2hTdGRvdXQiOmZhbHNlLCJBdHRhY2hTdGRlcnIiOmZhbHNlLCJUdHkiOmZhbHNlLCJPcGVuU3RkaW4iOmZhbHNlLCJTdGRpbk9uY2UiOmZhbHNlLCJFbnYiOlsiUEFUSD0vdXNyL2xpYjY0L2p2bS9iaW46L3Vzci9zaGFyZS96b29rZWVwZXIvYmluOi91c3IvbG9jYWwvc2JpbjovdXNyL2xvY2FsL2JpbjovdXNyL3NiaW46L3Vzci9iaW46L3NiaW46L2JpbiIsIlpPT19IT01FPS91c3Ivc2hhcmUvem9va2VlcGVyIiwiWk9PX0NPTkZfRElSPS91c3Ivc2hhcmUvem9va2VlcGVyL2NvbmYiLCJaT09DRkdESVI9L3Vzci9zaGFyZS96b29rZWVwZXIvY29uZiIsIlpPT19EQVRBX0RJUj0vdXNyL3NoYXJlL3pvb2tlZXBlci9kYXRhIiwiWk9PX0RBVEFfTE9HX0RJUj0vdXNyL3NoYXJlL3pvb2tlZXBlci9kYXRhbG9nIiwiWk9PX0xPR19ESVI9L3Vzci9zaGFyZS96b29rZWVwZXIvbG9ncyIsIkpBVkFfSE9NRT0vdXNyL2xpYjY0L2p2bSJdLCJDbWQiOlsiemtTZXJ2ZXIuc2giLCJzdGFydC1mb3JlZ3JvdW5kIl0sIkltYWdlIjoic2hhMjU2OmNiMGZjZDNhNmUwNjczMTlkZTFjNjU3MTE3NDQ5ZDNhZmVhZDYwYTFhOTY1NjEyOTZjYjhjYjI4YmRlNmUwNWYiLCJWb2x1bWVzIjpudWxsLCJXb3JraW5nRGlyIjoiIiwiRW50cnlwb2ludCI6WyIvdXNyL2Jpbi9kb2NrZXItZW50cnlwb2ludC5zaCJdLCJPbkJ1aWxkIjpudWxsLCJMYWJlbHMiOnsiY29tLnN1c2UuYXBwcy5tYWluLXBhY2thZ2UiOiJhcGFjaGUtem9va2VlcGVyLTMuOSIsImNvbS5zdXNlLmJjaS5taWNyby5hdXRob3JzIjoiaHR0cHM6Ly9naXRodWIuY29tL1NVU0UvYmNpL2Rpc2N1c3Npb25zIiwiY29tLnN1c2UuYmNpLm1pY3JvLmNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjE2LjExOTUyNjM0OVoiLCJjb20uc3VzZS5iY2kubWljcm8uZGVzY3JpcHRpb24iOiJBIG1pY3JvIGVudmlyb25tZW50IGZvciBjb250YWluZXJzIGJhc2VkIG9uIHRoZSBTVVNFIExpbnV4IEVudGVycHJpc2UgQmFzZSBDb250YWluZXIgSW1hZ2UuIiwiY29tLnN1c2UuYmNpLm1pY3JvLmRpc3R1cmwiOiJvYnM6Ly9idWlsZC5zdXNlLmRlL1NVU0U6U0xFLTE1LVNQNzpVcGRhdGU6Q1IvY29udGFpbmVycy9jN2MwYjk1OWZjZTE4YWIyMTJhZTgxYjdlZGU3ZDg2Yy1taWNyby1pbWFnZSIsImNvbS5zdXNlLmJjaS5taWNyby5ldWxhIjoic2xlLWJjaSIsImNvbS5zdXNlLmJjaS5taWNyby5saWZlY3ljbGUtdXJsIjoiaHR0cHM6Ly93d3cuc3VzZS5jb20vbGlmZWN5Y2xlI3N1c2UtbGludXgtZW50ZXJwcmlzZS1zZXJ2ZXItMTUiLCJjb20uc3VzZS5iY2kubWljcm8ubmFtZSI6IjE1LjctNTYuMTUiLCJjb20uc3VzZS5iY2kubWljcm8ucmVmZXJlbmNlIjoicmVnaXN0cnkuc3VzZS5jb20vYmNpL2JjaS1taWNybzoxNS43LTU2LjE1IiwiY29tLnN1c2UuYmNpLm1pY3JvLnJlbGVhc2Utc3RhZ2UiOiJyZWxlYXNlZCIsImNvbS5zdXNlLmJjaS5taWNyby5zb3VyY2UiOiJodHRwczovL3NvdXJjZXMuc3VzZS5jb20vU1VTRTpTTEUtMTUtU1A3OlVwZGF0ZTpDUi9taWNyby1pbWFnZS9jN2MwYjk1OWZjZTE4YWIyMTJhZTgxYjdlZGU3ZDg2Yy8iLCJjb20uc3VzZS5iY2kubWljcm8uc3VwcG9ydGxldmVsIjoibDMiLCJjb20uc3VzZS5iY2kubWljcm8udGl0bGUiOiJTTEUgQkNJIDE1IFNQNyBNaWNybyIsImNvbS5zdXNlLmJjaS5taWNyby51bnRpbCI6IjIwMzEtMDctMzEiLCJjb20uc3VzZS5iY2kubWljcm8udXJsIjoiaHR0cHM6Ly93d3cuc3VzZS5jb20vcHJvZHVjdHMvYmFzZS1jb250YWluZXItaW1hZ2VzLyIsImNvbS5zdXNlLmJjaS5taWNyby52ZW5kb3IiOiJTVVNFIExMQyIsImNvbS5zdXNlLmJjaS5taWNyby52ZXJzaW9uIjoiMTUuNy01Ni4xNSIsImNvbS5zdXNlLmV1bGEiOiIiLCJjb20uc3VzZS5saWZlY3ljbGUtdXJsIjoiIiwiY29tLnN1c2UucmVsZWFzZS1zdGFnZSI6IiIsImNvbS5zdXNlLnN1cHBvcnRsZXZlbCI6IiIsImNvbS5zdXNlLnN1cHBvcnRsZXZlbC51bnRpbCI6IiIsImlvLmFydGlmYWN0aHViLnBhY2thZ2UubG9nby11cmwiOiIiLCJpby5hcnRpZmFjdGh1Yi5wYWNrYWdlLnJlYWRtZS11cmwiOiIiLCJvcmcub3BlbmJ1aWxkc2VydmljZS5kaXN0dXJsIjoib2JzOi8vYnVpbGQuc3VzZS5kZS9EZXZlbDpPcmNoaWQ6Q29udGFpbmVycy9jb250YWluZXJzLzJjZTkwYWYzMmQ4MjVjMzA3ZTU5MGNmZTE1MDk3OGM3LWFwYWNoZS16b29rZWVwZXItMy45Iiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLmF1dGhvcnMiOiIiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuYmFzZS5kaWdlc3QiOiJzaGEyNTY6MGFhYTNhZGRhZDI4NjAyMzUzMTU0NjY1YWY4MmEyMWU0NzU3Y2IwZjc0YjFlNGU4MjU2ODEzYTVhYmViOGI5YyIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5iYXNlLm5hbWUiOiJyZWdpc3RyeS5zdXNlLmNvbS9iY2kvYmNpLW1pY3JvOjE1LjctNTYuMTUiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzM6NDUuMzc5MjQ0ODY3WiIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5kZXNjcmlwdGlvbiI6IkFwYWNoZSBab29LZWVwZXIgYWxsb3dzIGRpc3RyaWJ1dGVkIHByb2Nlc3NlcyB0byBjb29yZGluYXRlIHdpdGggZWFjaCBvdGhlciB0aHJvdWdoIGEgc2hhcmVkIGhpZXJhcmNoaWNhbCBuYW1lIHNwYWNlIG9mIGRhdGEgcmVnaXN0ZXJzIChjYWxsZWQgcmVnaXN0ZXJzIHpub2RlcyksIG11Y2ggbGlrZSBhIGZpbGUgc3lzdGVtLiBVbmxpa2Ugbm9ybWFsIGZpbGUgc3lzdGVtcyBab29LZWVwZXIgcHJvdmlkZXMgaXRzIGNsaWVudHMgd2l0aCBoaWdoIHRocm91Z2hwdXQsIGxvdyBsYXRlbmN5LCBoaWdobHkgYXZhaWxhYmxlLCBzdHJpY3RseSBvcmRlcmVkIGFjY2VzcyB0byB0aGUgem5vZGVzLiIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5yZWYubmFtZSI6IjMuOS41LTMuNCIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5zb3VyY2UiOiIiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudGl0bGUiOiJBcGFjaGUgWm9vS2VlcGVyIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnVybCI6Imh0dHBzOi8vYXBwcy5yYW5jaGVyLmlvL2FwcGxpY2F0aW9ucy9hcGFjaGUtem9va2VlcGVyIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnZlbmRvciI6IlNVU0UgTExDIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnZlcnNpb24iOiIzLjkuNSIsIm9yZy5vcGVuc3VzZS5yZWZlcmVuY2UiOiJyZWdpc3RyeS5zdXNlLmNvbS9iY2kvYmNpLW1pY3JvOjE1LjctNTYuMTUifX0sImNvbnRhaW5lciI6IjcwOTc0NjcxMGQ4NTE5YWQ3YzVkMmFlZWEyYzA2NjBmODc3NzI5M2MxMDlmNDRkYjZkN2IwYzQ1ZTM4MzNlMGIiLCJjb250YWluZXJfY29uZmlnIjp7Ikhvc3RuYW1lIjoiaDAxLWNoNGEiLCJEb21haW5uYW1lIjoiIiwiVXNlciI6IiIsIkF0dGFjaFN0ZGluIjpmYWxzZSwiQXR0YWNoU3Rkb3V0IjpmYWxzZSwiQXR0YWNoU3RkZXJyIjpmYWxzZSwiVHR5IjpmYWxzZSwiT3BlblN0ZGluIjpmYWxzZSwiU3RkaW5PbmNlIjpmYWxzZSwiRW52IjpbIlBBVEg9L3Vzci9saWI2NC9qdm0vYmluOi91c3Ivc2hhcmUvem9va2VlcGVyL2JpbjovdXNyL2xvY2FsL3NiaW46L3Vzci9sb2NhbC9iaW46L3Vzci9zYmluOi91c3IvYmluOi9zYmluOi9iaW4iLCJaT09fSE9NRT0vdXNyL3NoYXJlL3pvb2tlZXBlciIsIlpPT19DT05GX0RJUj0vdXNyL3NoYXJlL3pvb2tlZXBlci9jb25mIiwiWk9PQ0ZHRElSPS91c3Ivc2hhcmUvem9va2VlcGVyL2NvbmYiLCJaT09fREFUQV9ESVI9L3Vzci9zaGFyZS96b29rZWVwZXIvZGF0YSIsIlpPT19EQVRBX0xPR19ESVI9L3Vzci9zaGFyZS96b29rZWVwZXIvZGF0YWxvZyIsIlpPT19MT0dfRElSPS91c3Ivc2hhcmUvem9va2VlcGVyL2xvZ3MiLCJKQVZBX0hPTUU9L3Vzci9saWI2NC9qdm0iXSwiQ21kIjpbIi9iaW4vc2giLCItYyIsIiMobm9wKSAiLCJMQUJFTCBvcmcub3BlbmJ1aWxkc2VydmljZS5kaXN0dXJsPW9iczovL2J1aWxkLnN1c2UuZGUvRGV2ZWw6T3JjaGlkOkNvbnRhaW5lcnMvY29udGFpbmVycy8yY2U5MGFmMzJkODI1YzMwN2U1OTBjZmUxNTA5NzhjNy1hcGFjaGUtem9va2VlcGVyLTMuOSJdLCJJbWFnZSI6InNoYTI1NjpjYjBmY2QzYTZlMDY3MzE5ZGUxYzY1NzExNzQ0OWQzYWZlYWQ2MGExYTk2NTYxMjk2Y2I4Y2IyOGJkZTZlMDVmIiwiVm9sdW1lcyI6bnVsbCwiV29ya2luZ0RpciI6IiIsIkVudHJ5cG9pbnQiOlsiL3Vzci9iaW4vZG9ja2VyLWVudHJ5cG9pbnQuc2giXSwiT25CdWlsZCI6bnVsbCwiTGFiZWxzIjp7ImNvbS5zdXNlLmFwcHMubWFpbi1wYWNrYWdlIjoiYXBhY2hlLXpvb2tlZXBlci0zLjkiLCJjb20uc3VzZS5iY2kubWljcm8uYXV0aG9ycyI6Imh0dHBzOi8vZ2l0aHViLmNvbS9TVVNFL2JjaS9kaXNjdXNzaW9ucyIsImNvbS5zdXNlLmJjaS5taWNyby5jcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoxNi4xMTk1MjYzNDlaIiwiY29tLnN1c2UuYmNpLm1pY3JvLmRlc2NyaXB0aW9uIjoiQSBtaWNybyBlbnZpcm9ubWVudCBmb3IgY29udGFpbmVycyBiYXNlZCBvbiB0aGUgU1VTRSBMaW51eCBFbnRlcnByaXNlIEJhc2UgQ29udGFpbmVyIEltYWdlLiIsImNvbS5zdXNlLmJjaS5taWNyby5kaXN0dXJsIjoib2JzOi8vYnVpbGQuc3VzZS5kZS9TVVNFOlNMRS0xNS1TUDc6VXBkYXRlOkNSL2NvbnRhaW5lcnMvYzdjMGI5NTlmY2UxOGFiMjEyYWU4MWI3ZWRlN2Q4NmMtbWljcm8taW1hZ2UiLCJjb20uc3VzZS5iY2kubWljcm8uZXVsYSI6InNsZS1iY2kiLCJjb20uc3VzZS5iY2kubWljcm8ubGlmZWN5Y2xlLXVybCI6Imh0dHBzOi8vd3d3LnN1c2UuY29tL2xpZmVjeWNsZSNzdXNlLWxpbnV4LWVudGVycHJpc2Utc2VydmVyLTE1IiwiY29tLnN1c2UuYmNpLm1pY3JvLm5hbWUiOiIxNS43LTU2LjE1IiwiY29tLnN1c2UuYmNpLm1pY3JvLnJlZmVyZW5jZSI6InJlZ2lzdHJ5LnN1c2UuY29tL2JjaS9iY2ktbWljcm86MTUuNy01Ni4xNSIsImNvbS5zdXNlLmJjaS5taWNyby5yZWxlYXNlLXN0YWdlIjoicmVsZWFzZWQiLCJjb20uc3VzZS5iY2kubWljcm8uc291cmNlIjoiaHR0cHM6Ly9zb3VyY2VzLnN1c2UuY29tL1NVU0U6U0xFLTE1LVNQNzpVcGRhdGU6Q1IvbWljcm8taW1hZ2UvYzdjMGI5NTlmY2UxOGFiMjEyYWU4MWI3ZWRlN2Q4NmMvIiwiY29tLnN1c2UuYmNpLm1pY3JvLnN1cHBvcnRsZXZlbCI6ImwzIiwiY29tLnN1c2UuYmNpLm1pY3JvLnRpdGxlIjoiU0xFIEJDSSAxNSBTUDcgTWljcm8iLCJjb20uc3VzZS5iY2kubWljcm8udW50aWwiOiIyMDMxLTA3LTMxIiwiY29tLnN1c2UuYmNpLm1pY3JvLnVybCI6Imh0dHBzOi8vd3d3LnN1c2UuY29tL3Byb2R1Y3RzL2Jhc2UtY29udGFpbmVyLWltYWdlcy8iLCJjb20uc3VzZS5iY2kubWljcm8udmVuZG9yIjoiU1VTRSBMTEMiLCJjb20uc3VzZS5iY2kubWljcm8udmVyc2lvbiI6IjE1LjctNTYuMTUiLCJjb20uc3VzZS5ldWxhIjoiIiwiY29tLnN1c2UubGlmZWN5Y2xlLXVybCI6IiIsImNvbS5zdXNlLnJlbGVhc2Utc3RhZ2UiOiIiLCJjb20uc3VzZS5zdXBwb3J0bGV2ZWwiOiIiLCJjb20uc3VzZS5zdXBwb3J0bGV2ZWwudW50aWwiOiIiLCJpby5hcnRpZmFjdGh1Yi5wYWNrYWdlLmxvZ28tdXJsIjoiIiwiaW8uYXJ0aWZhY3RodWIucGFja2FnZS5yZWFkbWUtdXJsIjoiIiwib3JnLm9wZW5idWlsZHNlcnZpY2UuZGlzdHVybCI6Im9iczovL2J1aWxkLnN1c2UuZGUvRGV2ZWw6T3JjaGlkOkNvbnRhaW5lcnMvY29udGFpbmVycy8yY2U5MGFmMzJkODI1YzMwN2U1OTBjZmUxNTA5NzhjNy1hcGFjaGUtem9va2VlcGVyLTMuOSIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5hdXRob3JzIjoiIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLmJhc2UuZGlnZXN0Ijoic2hhMjU2OjBhYWEzYWRkYWQyODYwMjM1MzE1NDY2NWFmODJhMjFlNDc1N2NiMGY3NGIxZTRlODI1NjgxM2E1YWJlYjhiOWMiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuYmFzZS5uYW1lIjoicmVnaXN0cnkuc3VzZS5jb20vYmNpL2JjaS1taWNybzoxNS43LTU2LjE1Iiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLmNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjMzOjQ1LjM3OTI0NDg2N1oiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuZGVzY3JpcHRpb24iOiJBcGFjaGUgWm9vS2VlcGVyIGFsbG93cyBkaXN0cmlidXRlZCBwcm9jZXNzZXMgdG8gY29vcmRpbmF0ZSB3aXRoIGVhY2ggb3RoZXIgdGhyb3VnaCBhIHNoYXJlZCBoaWVyYXJjaGljYWwgbmFtZSBzcGFjZSBvZiBkYXRhIHJlZ2lzdGVycyAoY2FsbGVkIHJlZ2lzdGVycyB6bm9kZXMpLCBtdWNoIGxpa2UgYSBmaWxlIHN5c3RlbS4gVW5saWtlIG5vcm1hbCBmaWxlIHN5c3RlbXMgWm9vS2VlcGVyIHByb3ZpZGVzIGl0cyBjbGllbnRzIHdpdGggaGlnaCB0aHJvdWdocHV0LCBsb3cgbGF0ZW5jeSwgaGlnaGx5IGF2YWlsYWJsZSwgc3RyaWN0bHkgb3JkZXJlZCBhY2Nlc3MgdG8gdGhlIHpub2Rlcy4iLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UucmVmLm5hbWUiOiIzLjkuNS0zLjQiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2Uuc291cmNlIjoiIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnRpdGxlIjoiQXBhY2hlIFpvb0tlZXBlciIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS51cmwiOiJodHRwczovL2FwcHMucmFuY2hlci5pby9hcHBsaWNhdGlvbnMvYXBhY2hlLXpvb2tlZXBlciIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS52ZW5kb3IiOiJTVVNFIExMQyIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS52ZXJzaW9uIjoiMy45LjUiLCJvcmcub3BlbnN1c2UucmVmZXJlbmNlIjoicmVnaXN0cnkuc3VzZS5jb20vYmNpL2JjaS1taWNybzoxNS43LTU2LjE1In19LCJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNi4zNDQzMzMyNTVaIiwiZG9ja2VyX3ZlcnNpb24iOiIyOC41LjEtY2UiLCJoaXN0b3J5IjpbeyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC4yOTA2MzAyMDJaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApIENPUFkgZGlyOjY0MzA1ZGQ1ZjhmNWY1NDRjODkyYjQ5YzU2MmVkMTMzODUyZDFhODA4MTI2ZjQxZDc5MWVlNGFmZmEyMTczYTcgaW4gLyAiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC4zODYzMDEzNjVaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8uYXV0aG9ycz1odHRwczovL2dpdGh1Yi5jb20vU1VTRS9iY2kvZGlzY3Vzc2lvbnMiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC4zOTg2OTEyNDFaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuYXV0aG9ycz1odHRwczovL2dpdGh1Yi5jb20vU1VTRS9iY2kvZGlzY3Vzc2lvbnMiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC40MTIxMzk3MjdaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8udGl0bGU9U0xFIEJDSSAxNSBTUDcgTWljcm8iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC40MjQ5NzMwNDNaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudGl0bGU9U0xFIEJDSSAxNSBTUDcgTWljcm8iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC40MzczNjg1NTlaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8uZGVzY3JpcHRpb249QSBtaWNybyBlbnZpcm9ubWVudCBmb3IgY29udGFpbmVycyBiYXNlZCBvbiB0aGUgU1VTRSBMaW51eCBFbnRlcnByaXNlIEJhc2UgQ29udGFpbmVyIEltYWdlLiIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0LjQ1MjU3NzU2NVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5kZXNjcmlwdGlvbj1BIG1pY3JvIGVudmlyb25tZW50IGZvciBjb250YWluZXJzIGJhc2VkIG9uIHRoZSBTVVNFIExpbnV4IEVudGVycHJpc2UgQmFzZSBDb250YWluZXIgSW1hZ2UuIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDQtMjFUMDc6NDg6MjQuNDY0NTU2NDIxWiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgY29tLnN1c2UuYmNpLm1pY3JvLnZlcnNpb249MTUuNy01Ni4xNSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0LjQ3NzUwMzc1N1oiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS52ZXJzaW9uPTE1LjctNTYuMTUiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC40OTAwMzc2MDJaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8udXJsPWh0dHBzOi8vd3d3LnN1c2UuY29tL3Byb2R1Y3RzL2Jhc2UtY29udGFpbmVyLWltYWdlcy8iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC41MDI2OTUyMThaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudXJsPWh0dHBzOi8vd3d3LnN1c2UuY29tL3Byb2R1Y3RzL2Jhc2UtY29udGFpbmVyLWltYWdlcy8iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC41MTU3MzQ2NzRaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8uY3JlYXRlZD0yMDI2LTA0LTIxVDA3OjQ4OjE2LjExOTUyNjM0OVoiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC41Mjg0ODM2NFoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5jcmVhdGVkPTIwMjYtMDQtMjFUMDc6NDg6MTYuMTE5NTI2MzQ5WiIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0LjU0MjA5NjIxNloiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIGNvbS5zdXNlLmJjaS5taWNyby52ZW5kb3I9U1VTRSBMTEMiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC41NTQ3MTc4NTJaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudmVuZG9yPVNVU0UgTExDIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDQtMjFUMDc6NDg6MjQuNTY3MjkyOTM4WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgY29tLnN1c2UuYmNpLm1pY3JvLnNvdXJjZT1odHRwczovL3NvdXJjZXMuc3VzZS5jb20vU1VTRTpTTEUtMTUtU1A3OlVwZGF0ZTpDUi9taWNyby1pbWFnZS9jN2MwYjk1OWZjZTE4YWIyMTJhZTgxYjdlZGU3ZDg2Yy8iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC41Nzk2NTkxNzNaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2Uuc291cmNlPWh0dHBzOi8vc291cmNlcy5zdXNlLmNvbS9TVVNFOlNMRS0xNS1TUDc6VXBkYXRlOkNSL21pY3JvLWltYWdlL2M3YzBiOTU5ZmNlMThhYjIxMmFlODFiN2VkZTdkODZjLyIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0LjU5MjIzOTQ3OVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIGNvbS5zdXNlLmJjaS5taWNyby5uYW1lPTE1LjctNTYuMTUiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC42MDU1Njg2NjVaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UucmVmLm5hbWU9MTUuNy01Ni4xNSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0LjYxODQzNzczMVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIGNvbS5zdXNlLmJjaS5taWNyby5yZWZlcmVuY2U9cmVnaXN0cnkuc3VzZS5jb20vYmNpL2JjaS1taWNybzoxNS43LTU2LjE1IiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDQtMjFUMDc6NDg6MjQuNjMxMjQwMjU3WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgb3JnLm9wZW5zdXNlLnJlZmVyZW5jZT1yZWdpc3RyeS5zdXNlLmNvbS9iY2kvYmNpLW1pY3JvOjE1LjctNTYuMTUiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC42NDQ5MDUwNDNaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8uZGlzdHVybD1vYnM6Ly9idWlsZC5zdXNlLmRlL1NVU0U6U0xFLTE1LVNQNzpVcGRhdGU6Q1IvY29udGFpbmVycy9jN2MwYjk1OWZjZTE4YWIyMTJhZTgxYjdlZGU3ZDg2Yy1taWNyby1pbWFnZSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0LjY1Nzc4NTYyOVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuYnVpbGRzZXJ2aWNlLmRpc3R1cmw9b2JzOi8vYnVpbGQuc3VzZS5kZS9TVVNFOlNMRS0xNS1TUDc6VXBkYXRlOkNSL2NvbnRhaW5lcnMvYzdjMGI5NTlmY2UxOGFiMjEyYWU4MWI3ZWRlN2Q4NmMtbWljcm8taW1hZ2UiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC42NzA1NDE2NTRaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8uc3VwcG9ydGxldmVsPWwzIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDQtMjFUMDc6NDg6MjQuNjg0NjkwNDkxWiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgY29tLnN1c2Uuc3VwcG9ydGxldmVsPWwzIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDQtMjFUMDc6NDg6MjQuNjk3NzI4NjQ3WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgY29tLnN1c2UuYmNpLm1pY3JvLnVudGlsPTIwMzEtMDctMzEiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC43MTE1MzkyMDNaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5zdXBwb3J0bGV2ZWwudW50aWw9MjAzMS0wNy0zMSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0LjcyNTQ2MDY1OVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIGNvbS5zdXNlLmJjaS5taWNyby5ldWxhPXNsZS1iY2kiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC43MzkzNTMxMzZaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5ldWxhPXNsZS1iY2kiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC43NTIwOTA4MzJaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8ubGlmZWN5Y2xlLXVybD1odHRwczovL3d3dy5zdXNlLmNvbS9saWZlY3ljbGUjc3VzZS1saW51eC1lbnRlcnByaXNlLXNlcnZlci0xNSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0Ljc2ODUxMDU0OVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIGNvbS5zdXNlLmxpZmVjeWNsZS11cmw9aHR0cHM6Ly93d3cuc3VzZS5jb20vbGlmZWN5Y2xlI3N1c2UtbGludXgtZW50ZXJwcmlzZS1zZXJ2ZXItMTUiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC43ODE5MzU0MjVaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5iY2kubWljcm8ucmVsZWFzZS1zdGFnZT1yZWxlYXNlZCIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI0Ljc5NTg1NzU5MVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIGNvbS5zdXNlLnJlbGVhc2Utc3RhZ2U9cmVsZWFzZWQiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC44MTIwNjA4MzlaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBpby5hcnRpZmFjdGh1Yi5wYWNrYWdlLnJlYWRtZS11cmw9aHR0cHM6Ly9zb3VyY2VzLnN1c2UuY29tL1NVU0U6U0xFLTE1LVNQNzpVcGRhdGU6Q1IvbWljcm8taW1hZ2UvYzdjMGI5NTlmY2UxOGFiMjEyYWU4MWI3ZWRlN2Q4NmMvUkVBRE1FLm1kIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDQtMjFUMDc6NDg6MjQuODI3MjM2MDU2WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgaW8uYXJ0aWZhY3RodWIucGFja2FnZS5sb2dvLXVybD1odHRwczovL29wZW5zb3VyY2Uuc3VzZS5jb20vYmNpL1NMRV9CQ0lfbG9nb21hcmtfZ3JlZW4uc3ZnIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDQtMjFUMDc6NDg6MjQuODQwODA0MzMyWiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgQ01EIFtcIi9iaW4vc2hcIl0iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNC45ODEwMDQ1MzZaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgc2V0IC1ldW8gcGlwZWZhaWw7IHJtIC12ZiAvdmFyL2xpYi96eXBwL0F1dG9JbnN0YWxsZWQiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNS4wOTY3MzgwMjhaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgc2V0IC1ldW8gcGlwZWZhaWw7IHJtIC12ZiAvdmFyL2NhY2hlL2xkY29uZmlnL2F1eC1jYWNoZSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA0LTIxVDA3OjQ4OjI1LjEwOTUwNzA0NFoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuYnVpbGRzZXJ2aWNlLmRpc3R1cmw9b2JzOi8vYnVpbGQuc3VzZS5kZS9TVVNFOlNMRS0xNS1TUDc6VXBkYXRlOkNSL2NvbnRhaW5lcnMvYzdjMGI5NTlmY2UxOGFiMjEyYWU4MWI3ZWRlN2Q4NmMtbWljcm8taW1hZ2UiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNC0yMVQwNzo0ODoyNS43MTk3NzE2NTFaIiwiY29tbWVudCI6ImNyZWF0ZSBuZXcgZnJvbSBzaGEyNTY6NmUzZmJiYmE0M2ZjMjYzNDkxOGUzOTIxNzkyYzNjNDBhMmQ5NDRjNjQ0YmNjNDUwMDZmNmIzMDkzY2QyMDc0NyJ9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDAuNjM1NzA4MzA1WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSBDT1BZIGZpbGU6MWMwZjMwNTE0OGEyY2QyYTJiYmQ2N2E1MGI1YzUzODZhMmI0MjA0NmEwNzFjZGQ1ZjRkYjE0YTA4MTZmYjVlYSBpbiAvdXNyL2xvY2FsL3NiaW4vb2JzLWRvY2tlci1zdXBwb3J0ICIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjAwLjc5Mjk3NzcwOFoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyBvYnMtZG9ja2VyLXN1cHBvcnQgLS11cGxvYWQtcGFja2FnZXMgLS1pbnN0YWxsIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuMTQ5MzA4ODg5WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSBDT1BZIGRpcjphMTEyZGYyM2RmZGE4MmNkNTJiZWFlNDQ2ZTg5ZWYwNWUwY2Y1NmEwZDI5NzVhNjk0YTUxOTA1ZTIzYmQ2OGZlIGluIC8gIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuNTk5ODM2ODc5WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgb3JnLm9wZW5jb250YWluZXJzLmltYWdlLnRpdGxlPUFwYWNoZSBab29LZWVwZXIiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC42MTc2OTEzNzVaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudXJsPWh0dHBzOi8vYXBwcy5yYW5jaGVyLmlvL2FwcGxpY2F0aW9ucy9hcGFjaGUtem9va2VlcGVyIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuNjM0NjMxMTIxWiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgb3JnLm9wZW5jb250YWluZXJzLmltYWdlLmRlc2NyaXB0aW9uPUFwYWNoZSBab29LZWVwZXIgYWxsb3dzIGRpc3RyaWJ1dGVkIHByb2Nlc3NlcyB0byBjb29yZGluYXRlIHdpdGggZWFjaCBvdGhlciB0aHJvdWdoIGEgc2hhcmVkIGhpZXJhcmNoaWNhbCBuYW1lIHNwYWNlIG9mIGRhdGEgcmVnaXN0ZXJzIChjYWxsZWQgcmVnaXN0ZXJzIHpub2RlcyksIG11Y2ggbGlrZSBhIGZpbGUgc3lzdGVtLiBVbmxpa2Ugbm9ybWFsIGZpbGUgc3lzdGVtcyBab29LZWVwZXIgcHJvdmlkZXMgaXRzIGNsaWVudHMgd2l0aCBoaWdoIHRocm91Z2hwdXQsIGxvdyBsYXRlbmN5LCBoaWdobHkgYXZhaWxhYmxlLCBzdHJpY3RseSBvcmRlcmVkIGFjY2VzcyB0byB0aGUgem5vZGVzLiIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA0LjY1MjI5MzkzN1oiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5jcmVhdGVkPTIwMjYtMDUtMDRUMTA6MzM6NDUuMzc5MjQ0ODY3WiIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA0LjY2NzQ2OTEyWiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgb3JnLm9wZW5jb250YWluZXJzLmltYWdlLnZlcnNpb249My45LjUiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC42ODQ2MzE2NTZaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudmVuZG9yPVNVU0UgTExDIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuNzAxNDg1MTgxWiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgb3JnLm9wZW5jb250YWluZXJzLmltYWdlLnJlZi5uYW1lPTMuOS41LTMuNCIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA0LjcxNzk1NDExNloiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5iYXNlLmRpZ2VzdD1zaGEyNTY6MGFhYTNhZGRhZDI4NjAyMzUzMTU0NjY1YWY4MmEyMWU0NzU3Y2IwZjc0YjFlNGU4MjU2ODEzYTVhYmViOGI5YyIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA0LjczNDY2NDc1MloiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5iYXNlLm5hbWU9cmVnaXN0cnkuc3VzZS5jb20vYmNpL2JjaS1taWNybzoxNS43LTU2LjE1IiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuNzUxMTkyNzc3WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgY29tLnN1c2UuYXBwcy5tYWluLXBhY2thZ2U9YXBhY2hlLXpvb2tlZXBlci0zLjkiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC43NjY5MDM1ODFaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBFTlYgWk9PX0hPTUU9L3Vzci9zaGFyZS96b29rZWVwZXIiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC43ODM2NzQ1MDZaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBFTlYgWk9PX0NPTkZfRElSPS91c3Ivc2hhcmUvem9va2VlcGVyL2NvbmYiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC44MDExNDMzNDJaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBFTlYgWk9PQ0ZHRElSPS91c3Ivc2hhcmUvem9va2VlcGVyL2NvbmYiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC44MTcyMjU1NjdaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBFTlYgWk9PX0RBVEFfRElSPS91c3Ivc2hhcmUvem9va2VlcGVyL2RhdGEiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC44MzUzMDI1OTNaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBFTlYgWk9PX0RBVEFfTE9HX0RJUj0vdXNyL3NoYXJlL3pvb2tlZXBlci9kYXRhbG9nIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuODUxMzA4MDA4WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgRU5WIFpPT19MT0dfRElSPS91c3Ivc2hhcmUvem9va2VlcGVyL2xvZ3MiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC44NzA4MTUwNTVaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBFTlYgSkFWQV9IT01FPS91c3IvbGliNjQvanZtIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuODg1MzQ0Njg4WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgRU5WIFBBVEg9L3Vzci9saWI2NC9qdm0vYmluOi91c3Ivc2hhcmUvem9va2VlcGVyL2JpbjovdXNyL2xvY2FsL3NiaW46L3Vzci9sb2NhbC9iaW46L3Vzci9zYmluOi91c3IvYmluOi9zYmluOi9iaW4iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC45MDIxMzU5MDRaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBFTlRSWVBPSU5UIFtcIi91c3IvYmluL2RvY2tlci1lbnRyeXBvaW50LnNoXCJdIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuOTE4NDk3NzY5WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgQ01EIFtcInprU2VydmVyLnNoXCIgXCJzdGFydC1mb3JlZ3JvdW5kXCJdIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDQuOTM2MTc1Njk1WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgY29tLnN1c2UuZXVsYT0iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC45NTMzNTUyWiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgY29tLnN1c2UubGlmZWN5Y2xlLXVybD0iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNC45NjkzOTM3NzVaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBjb20uc3VzZS5yZWxlYXNlLXN0YWdlPSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA0Ljk4NjE3ODM3WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jICMobm9wKSAgTEFCRUwgY29tLnN1c2Uuc3VwcG9ydGxldmVsPSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA1LjAwMjg1MDczNVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIGNvbS5zdXNlLnN1cHBvcnRsZXZlbC51bnRpbD0iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNS4wMTgzMDY4MDlaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBpby5hcnRpZmFjdGh1Yi5wYWNrYWdlLmxvZ28tdXJsPSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA1LjAzNDUxNTc0NFoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIGlvLmFydGlmYWN0aHViLnBhY2thZ2UucmVhZG1lLXVybD0iLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0wNFQxMDozNDowNS4wNTA2MDA5NTlaIiwiY3JlYXRlZF9ieSI6Ii9iaW4vc2ggLWMgIyhub3ApICBMQUJFTCBvcmcub3BlbmJ1aWxkc2VydmljZS5kaXN0dXJsPSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA1LjA2NzYxODQxNFoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5hdXRob3JzPSIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA1LjA4NDQ2MjAwOVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5zb3VyY2U9IiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDUuMjM2NjEzNzg4WiIsImNyZWF0ZWRfYnkiOiIvYmluL3NoIC1jIG9icy1kb2NrZXItc3VwcG9ydCAtLXVwbG9hZC1wYWNrYWdlcyAtLXVuaW5zdGFsbCIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTA0VDEwOjM0OjA1LjI1MTU0MjgwMVoiLCJjcmVhdGVkX2J5IjoiL2Jpbi9zaCAtYyAjKG5vcCkgIExBQkVMIG9yZy5vcGVuYnVpbGRzZXJ2aWNlLmRpc3R1cmw9b2JzOi8vYnVpbGQuc3VzZS5kZS9EZXZlbDpPcmNoaWQ6Q29udGFpbmVycy9jb250YWluZXJzLzJjZTkwYWYzMmQ4MjVjMzA3ZTU5MGNmZTE1MDk3OGM3LWFwYWNoZS16b29rZWVwZXItMy45IiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMDRUMTA6MzQ6MDYuMzQ0MzMzMjU1WiIsImNvbW1lbnQiOiJtZXJnZSBzaGEyNTY6ZTM4YWQ3NTM0ZDI5ZmRmNTBiNjZjMWY2NmJkNDBiZDc0NjZlODRlYzk1ZDFkM2E1NjkwYWU3YWFhMjEyYWJiNCB0byBzaGEyNTY6N2RmODcwMmU4MGI2MWExNjI1OTc1MzNjY2I4YTljZTlkYjAxNzE5OWI1ZDZlYTNlZGFhMjcyMjY5N2JmZjM2OCJ9XSwib3MiOiJsaW51eCIsInBhcmVudCI6InNoYTI1NjpjYjBmY2QzYTZlMDY3MzE5ZGUxYzY1NzExNzQ0OWQzYWZlYWQ2MGExYTk2NTYxMjk2Y2I4Y2IyOGJkZTZlMDVmIiwicm9vdGZzIjp7InR5cGUiOiJsYXllcnMiLCJkaWZmX2lkcyI6WyJzaGEyNTY6ZjFkMjAyMDYzY2RlM2NlZTMxZDAxZGIyMmQyZWQ4NWE3OTA2NWUwOGEyNDk4ZGFhMjQ1MDBjNDhiMWQzNDUyOCIsInNoYTI1Njo5N2QwZmQ5ZDA2ZTc2M2I0MjVkYjVkOTVjYTA1ODMzMWQxNmFmODRiN2IxMjYzNjgzMWEzNTc2NzVlYTYzY2MwIl19fQ==",
+			"repoDigests": [
+				"quay.io/stackstate/zookeeper@sha256:755dc6d5df52cc6bc9774267a3adb335dd2d8b1045fbf8004ec75ff55f0b7382"
+			],
+			"architecture": "amd64",
+			"os": "linux",
+			"labels": {
+				"com.suse.apps.main-package": "apache-zookeeper-3.9",
+				"com.suse.bci.micro.authors": "https://github.com/SUSE/bci/discussions",
+				"com.suse.bci.micro.created": "2026-04-21T07:48:16.119526349Z",
+				"com.suse.bci.micro.description": "A micro environment for containers based on the SUSE Linux Enterprise Base Container Image.",
+				"com.suse.bci.micro.disturl": "obs://build.suse.de/SUSE:SLE-15-SP7:Update:CR/containers/c7c0b959fce18ab212ae81b7ede7d86c-micro-image",
+				"com.suse.bci.micro.eula": "sle-bci",
+				"com.suse.bci.micro.lifecycle-url": "https://www.suse.com/lifecycle#suse-linux-enterprise-server-15",
+				"com.suse.bci.micro.name": "15.7-56.15",
+				"com.suse.bci.micro.reference": "registry.suse.com/bci/bci-micro:15.7-56.15",
+				"com.suse.bci.micro.release-stage": "released",
+				"com.suse.bci.micro.source": "https://sources.suse.com/SUSE:SLE-15-SP7:Update:CR/micro-image/c7c0b959fce18ab212ae81b7ede7d86c/",
+				"com.suse.bci.micro.supportlevel": "l3",
+				"com.suse.bci.micro.title": "SLE BCI 15 SP7 Micro",
+				"com.suse.bci.micro.until": "2031-07-31",
+				"com.suse.bci.micro.url": "https://www.suse.com/products/base-container-images/",
+				"com.suse.bci.micro.vendor": "SUSE LLC",
+				"com.suse.bci.micro.version": "15.7-56.15",
+				"com.suse.eula": "",
+				"com.suse.lifecycle-url": "",
+				"com.suse.release-stage": "",
+				"com.suse.supportlevel": "",
+				"com.suse.supportlevel.until": "",
+				"io.artifacthub.package.logo-url": "",
+				"io.artifacthub.package.readme-url": "",
+				"org.openbuildservice.disturl": "obs://build.suse.de/Devel:Orchid:Containers/containers/2ce90af32d825c307e590cfe150978c7-apache-zookeeper-3.9",
+				"org.opencontainers.image.authors": "",
+				"org.opencontainers.image.base.digest": "sha256:0aaa3addad28602353154665af82a21e4757cb0f74b1e4e8256813a5abeb8b9c",
+				"org.opencontainers.image.base.name": "registry.suse.com/bci/bci-micro:15.7-56.15",
+				"org.opencontainers.image.created": "2026-05-04T10:33:45.379244867Z",
+				"org.opencontainers.image.description": "Apache ZooKeeper allows distributed processes to coordinate with each other through a shared hierarchical name space of data registers (called registers znodes), much like a file system. Unlike normal file systems ZooKeeper provides its clients with high throughput, low latency, highly available, strictly ordered access to the znodes.",
+				"org.opencontainers.image.ref.name": "3.9.5-3.4",
+				"org.opencontainers.image.source": "",
+				"org.opencontainers.image.title": "Apache ZooKeeper",
+				"org.opencontainers.image.url": "https://apps.rancher.io/applications/apache-zookeeper",
+				"org.opencontainers.image.vendor": "SUSE LLC",
+				"org.opencontainers.image.version": "3.9.5",
+				"org.opensuse.reference": "registry.suse.com/bci/bci-micro:15.7-56.15"
+			}
+		}
+	},
+	"distro": {
+		"name": "sles",
+		"version": "15.7",
+		"idLike": [
+			"suse"
+		]
+	},
+	"descriptor": {
+		"name": "grype",
+		"version": "0.112.0",
+		"configuration": {
+			"output": [
+				"table",
+				"json"
+			],
+			"file": "",
+			"pretty": false,
+			"distro": "",
+			"add-cpes-if-none": false,
+			"output-template-file": "",
+			"check-for-app-update": true,
+			"only-fixed": false,
+			"only-notfixed": false,
+			"ignore-wontfix": "",
+			"platform": "",
+			"search": {
+				"scope": "squashed",
+				"unindexed-archives": false,
+				"indexed-archives": true
+			},
+			"ignore": [
+				{
+					"vulnerability": "",
+					"include-aliases": false,
+					"reason": "",
+					"namespace": "",
+					"fix-state": "",
+					"package": {
+						"name": "kernel-headers",
+						"version": "",
+						"language": "",
+						"type": "rpm",
+						"location": "",
+						"upstream-name": "kernel"
+					},
+					"vex-status": "",
+					"vex-justification": "",
+					"match-type": "exact-indirect-match"
+				},
+				{
+					"vulnerability": "",
+					"include-aliases": false,
+					"reason": "",
+					"namespace": "",
+					"fix-state": "",
+					"package": {
+						"name": "linux(-.*)?-headers-.*",
+						"version": "",
+						"language": "",
+						"type": "deb",
+						"location": "",
+						"upstream-name": "linux.*"
+					},
+					"vex-status": "",
+					"vex-justification": "",
+					"match-type": "exact-indirect-match"
+				},
+				{
+					"vulnerability": "",
+					"include-aliases": false,
+					"reason": "",
+					"namespace": "",
+					"fix-state": "",
+					"package": {
+						"name": "linux-libc-dev",
+						"version": "",
+						"language": "",
+						"type": "deb",
+						"location": "",
+						"upstream-name": "linux"
+					},
+					"vex-status": "",
+					"vex-justification": "",
+					"match-type": "exact-indirect-match"
+				}
+			],
+			"exclude": [],
+			"externalSources": {
+				"enable": false,
+				"maven": {
+					"searchUpstreamBySha1": true,
+					"baseUrl": "https://search.maven.org/solrsearch/select",
+					"rateLimit": 300000000
+				}
+			},
+			"match": {
+				"java": {
+					"using-cpes": false
+				},
+				"jvm": {
+					"using-cpes": true
+				},
+				"dotnet": {
+					"using-cpes": false
+				},
+				"golang": {
+					"using-cpes": false,
+					"always-use-cpe-for-stdlib": true,
+					"allow-main-module-pseudo-version-comparison": false
+				},
+				"javascript": {
+					"using-cpes": false
+				},
+				"python": {
+					"using-cpes": false
+				},
+				"ruby": {
+					"using-cpes": false
+				},
+				"rust": {
+					"using-cpes": false
+				},
+				"hex": {
+					"using-cpes": false
+				},
+				"stock": {
+					"using-cpes": true
+				},
+				"dpkg": {
+					"using-cpes": false,
+					"missing-epoch-strategy": "zero",
+					"use-cpes-for-eol": false
+				},
+				"rpm": {
+					"using-cpes": false,
+					"missing-epoch-strategy": "auto",
+					"use-cpes-for-eol": false
+				}
+			},
+			"fail-on-severity": "",
+			"registry": {
+				"insecure-skip-tls-verify": false,
+				"insecure-use-http": false,
+				"ca-cert": ""
+			},
+			"show-suppressed": false,
+			"by-cve": true,
+			"SortBy": {
+				"sort-by": "risk"
+			},
+			"name": "",
+			"default-image-pull-source": "",
+			"from": null,
+			"vex-documents": [],
+			"vex-add": [],
+			"match-upstream-kernel-headers": false,
+			"fix-channel": {
+				"redhat-eus": {
+					"apply": "auto",
+					"versions": ">= 8.0"
+				}
+			},
+			"timestamp": true,
+			"alerts": {
+				"enable-eol-distro-warnings": true
+			},
+			"db": {
+				"cache-dir": "/.cache/grype/db",
+				"update-url": "https://grype.anchore.io/databases",
+				"ca-cert": "",
+				"auto-update": true,
+				"validate-by-hash-on-start": true,
+				"validate-age": true,
+				"max-allowed-built-age": 432000000000000,
+				"require-update-check": false,
+				"update-available-timeout": 30000000000,
+				"update-download-timeout": 300000000000,
+				"max-update-check-frequency": 7200000000000
+			},
+			"exp": {},
+			"dev": {
+				"db": {
+					"debug": false
+				}
+			}
+		},
+		"db": {
+			"status": {
+				"schemaVersion": "v6.1.4",
+				"from": "https://grype.anchore.io/databases/v6/vulnerability-db_v6.1.4_2026-05-28T00:47:44Z_1779954235.tar.zst?checksum=sha256%3A789f90f03f9c32bef199e9b04cdf766024da51e933b07fcc7f87279cd8283d81",
+				"built": "2026-05-28T07:43:55Z",
+				"path": "/.cache/grype/db/6/vulnerability.db",
+				"valid": true
+			},
+			"providers": {
+				"alma": {
+					"captured": "2026-05-28T00:47:50Z",
+					"input": "xxh64:c83831c984fc9632"
+				},
+				"alpine": {
+					"captured": "2026-05-28T00:47:52Z",
+					"input": "xxh64:c4edd9233b7dd50e"
+				},
+				"amazon": {
+					"captured": "2026-05-28T00:47:56Z",
+					"input": "xxh64:9bc8c4fc5025a1fa"
+				},
+				"arch": {
+					"captured": "2026-05-28T00:48:31Z",
+					"input": "xxh64:58c4ab45c4acc22b"
+				},
+				"bitnami": {
+					"captured": "2026-05-28T00:48:09Z",
+					"input": "xxh64:fa4962aab628efc2"
+				},
+				"chainguard": {
+					"captured": "2026-05-28T00:48:28Z",
+					"input": "xxh64:60d47353d309be65"
+				},
+				"chainguard-libraries": {
+					"captured": "2026-05-28T00:48:36Z",
+					"input": "xxh64:2292a890f83f9e5a"
+				},
+				"debian": {
+					"captured": "2026-05-28T00:47:53Z",
+					"input": "xxh64:3c1c02b018a9b3b0"
+				},
+				"echo": {
+					"captured": "2026-05-28T00:47:50Z",
+					"input": "xxh64:73e30fb9affc8800"
+				},
+				"eol": {
+					"captured": "2026-05-28T00:47:52Z",
+					"input": "xxh64:13393cf977a5dce2"
+				},
+				"epss": {
+					"captured": "2026-05-28T00:47:52Z",
+					"input": "xxh64:27d98ac3545cfc78"
+				},
+				"fedora": {
+					"captured": "2026-05-28T00:48:31Z",
+					"input": "xxh64:12cecb93db61f24f"
+				},
+				"github": {
+					"captured": "2026-05-28T00:48:37Z",
+					"input": "xxh64:dc9f84850a6c788b"
+				},
+				"hummingbird": {
+					"captured": "2026-05-28T00:49:06Z",
+					"input": "xxh64:fc12d10b291f6602"
+				},
+				"kev": {
+					"captured": "2026-05-28T00:47:44Z",
+					"input": "xxh64:f68ef3950ba42817"
+				},
+				"mariner": {
+					"captured": "2026-05-28T00:47:54Z",
+					"input": "xxh64:86c9ab714176a128"
+				},
+				"minimos": {
+					"captured": "2026-05-28T00:47:50Z",
+					"input": "xxh64:f4b0351dadfc6d99"
+				},
+				"nvd": {
+					"captured": "2026-05-28T00:48:28Z",
+					"input": "xxh64:9a49b04a4d032d90"
+				},
+				"oracle": {
+					"captured": "2026-05-28T00:48:07Z",
+					"input": "xxh64:96ce027b93032988"
+				},
+				"photon": {
+					"captured": "2026-05-28T00:47:52Z",
+					"input": "xxh64:10f131d480ecc6db"
+				},
+				"rhel": {
+					"captured": "2026-05-28T00:49:06Z",
+					"input": "xxh64:7e509f01a449eedc"
+				},
+				"secureos": {
+					"captured": "2026-05-28T00:47:51Z",
+					"input": "xxh64:42aa7dbb592cdb48"
+				},
+				"sles": {
+					"captured": "2026-05-28T00:48:07Z",
+					"input": "xxh64:b04aeb7958d90edc"
+				},
+				"ubuntu": {
+					"captured": "2026-05-28T01:31:40Z",
+					"input": "xxh64:c12a3cf3e032bde3"
+				},
+				"wolfi": {
+					"captured": "2026-05-28T00:47:47Z",
+					"input": "xxh64:5332bf4b92344e04"
+				}
+			}
+		},
+		"timestamp": "2026-05-28T15:21:53.5603471Z"
+	}
+}

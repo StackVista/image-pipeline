@@ -4,86 +4,100 @@ import (
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
-func TestDedupeFindings_MergesIdentical(t *testing.T) {
-	in := []Finding{
-		{VulnerabilityID: "CVE-1", PackageName: "foo", PackageVersion: "1.0", Severity: "HIGH", SourceScanners: []string{"trivy"}},
-		{VulnerabilityID: "CVE-1", PackageName: "foo", PackageVersion: "1.0", Severity: "HIGH", SourceScanners: []string{"grype"}},
-	}
-	out := DedupeFindings(in)
-	if len(out) != 1 {
-		t.Fatalf("expected 1 entry; got %d", len(out))
-	}
-	want := []string{"grype", "trivy"}
-	if !reflect.DeepEqual(out[0].SourceScanners, want) {
-		t.Errorf("SourceScanners = %v; want %v", out[0].SourceScanners, want)
-	}
+func TestMergeStrings(t *testing.T) {
+	require.Equal(t, []string{"grype", "snyk", "trivy"}, mergeStrings([]string{"trivy", "grype"}, []string{"grype", "snyk"}))
 }
 
-func TestDedupeFindings_KeepsDistinct(t *testing.T) {
-	in := []Finding{
-		{VulnerabilityID: "CVE-1", PackageName: "foo", PackageVersion: "1.0", SourceScanners: []string{"trivy"}},
-		{VulnerabilityID: "CVE-2", PackageName: "foo", PackageVersion: "1.0", SourceScanners: []string{"trivy"}},
-		{VulnerabilityID: "CVE-1", PackageName: "bar", PackageVersion: "1.0", SourceScanners: []string{"trivy"}},
-		{VulnerabilityID: "CVE-1", PackageName: "foo", PackageVersion: "2.0", SourceScanners: []string{"trivy"}},
-	}
-	out := DedupeFindings(in)
-	if len(out) != 4 {
-		t.Errorf("expected 4 distinct entries; got %d", len(out))
-	}
-}
-
-func TestDedupeFindings_Sorted(t *testing.T) {
-	in := []Finding{
-		{VulnerabilityID: "CVE-3", PackageName: "z", PackageVersion: "1.0", SourceScanners: []string{"trivy"}},
-		{VulnerabilityID: "CVE-1", PackageName: "a", PackageVersion: "1.0", SourceScanners: []string{"trivy"}},
-		{VulnerabilityID: "CVE-2", PackageName: "m", PackageVersion: "1.0", SourceScanners: []string{"trivy"}},
-	}
-	out := DedupeFindings(in)
-	got := []string{out[0].VulnerabilityID, out[1].VulnerabilityID, out[2].VulnerabilityID}
-	want := []string{"CVE-1", "CVE-2", "CVE-3"}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("dedup order = %v; want %v", got, want)
-	}
-}
-
-func TestMergeStrings_DedupAndSort(t *testing.T) {
-	got := mergeStrings([]string{"trivy", "grype"}, []string{"grype", "snyk"})
-	want := []string{"grype", "snyk", "trivy"}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("mergeStrings = %v; want %v", got, want)
-	}
-}
-
-// TestDedupeFindings_UnionsSlices covers the case where two scanners
-// report the same finding but disagree on auxiliary slice fields
-// (FixedVersions, Paths). The deduped Finding must carry the union
-// — losing one scanner's data would be a downgrade.
-func TestDedupeFindings_UnionsSlices(t *testing.T) {
-	in := []Finding{
+func TestDedupeFindings(t *testing.T) {
+	tests := []struct {
+		name string
+		in   []Finding
+		want []Finding
+	}{
 		{
-			VulnerabilityID: "CVE-1", PackageName: "foo", PackageVersion: "1.0",
-			SourceScanners: []string{"trivy"},
-			FixedVersions:  []string{"1.0.1"},
-			Paths:          []string{"/opt/foo/lib"},
+			name: "merges_identical_findings_from_different_scanners",
+			in: []Finding{
+				{
+					VulnerabilityID: "CVE-1",
+					PackagePURL:     "pkg:generic/foo@1.0",
+					SourceScanners:  []string{"trivy"},
+				},
+				{
+					VulnerabilityID: "CVE-1",
+					PackagePURL:     "pkg:generic/foo@1.0",
+					SourceScanners:  []string{"grype"},
+				},
+			},
+			want: []Finding{
+				{
+					VulnerabilityID: "CVE-1",
+					PackagePURL:     "pkg:generic/foo@1.0",
+					SourceScanners:  []string{"grype", "trivy"},
+				},
+			},
 		},
 		{
-			VulnerabilityID: "CVE-1", PackageName: "foo", PackageVersion: "1.0",
-			SourceScanners: []string{"grype"},
-			FixedVersions:  []string{"1.0.1", "1.1.0"},
-			Paths:          []string{"/opt/foo/lib", "/usr/lib/foo"},
+			name: "keeps_distinct_findings_separate",
+			in: []Finding{
+				{VulnerabilityID: "CVE-1", PackagePURL: "pkg:generic/foo@1.0", SourceScanners: []string{"trivy"}},
+				{VulnerabilityID: "CVE-1", PackagePURL: "pkg:different_generic/foo@1.0", SourceScanners: []string{"grype"}},
+				{VulnerabilityID: "CVE-2", PackagePURL: "pkg:generic/foo@1.0", SourceScanners: []string{"grype"}},
+			},
+			want: []Finding{
+				{VulnerabilityID: "CVE-1", PackagePURL: "pkg:different_generic/foo@1.0", SourceScanners: []string{"grype"}},
+				{VulnerabilityID: "CVE-1", PackagePURL: "pkg:generic/foo@1.0", SourceScanners: []string{"trivy"}},
+				{VulnerabilityID: "CVE-2", PackagePURL: "pkg:generic/foo@1.0", SourceScanners: []string{"grype"}},
+			},
+		},
+		{
+			name: "returns_deterministic_sort_order",
+			in: []Finding{
+				{VulnerabilityID: "CVE-3", PackagePURL: "pkg:generic/foo@2.0", SourceScanners: []string{"trivy"}},
+				{VulnerabilityID: "CVE-1", PackagePURL: "pkg:generic/foo@1.0", SourceScanners: []string{"trivy"}},
+			},
+			want: []Finding{
+				{VulnerabilityID: "CVE-1", PackagePURL: "pkg:generic/foo@1.0", SourceScanners: []string{"trivy"}},
+				{VulnerabilityID: "CVE-3", PackagePURL: "pkg:generic/foo@2.0", SourceScanners: []string{"trivy"}},
+			},
+		},
+		{
+			name: "unions_slice_fields_across_duplicates",
+			in: []Finding{
+				{
+					VulnerabilityID: "CVE-1",
+					PackagePURL:     "pkg:generic/foo@1.0",
+					SourceScanners:  []string{"trivy"},
+					FixedVersions:   []string{"1.0.1"},
+					Paths:           []string{"/opt/foo/lib"},
+				},
+				{
+					VulnerabilityID: "CVE-1",
+					PackagePURL:     "pkg:generic/foo@1.0",
+					SourceScanners:  []string{"grype"},
+					FixedVersions:   []string{"1.0.1", "1.1.0"},
+					Paths:           []string{"/opt/foo/lib", "/usr/lib/foo"},
+				},
+			},
+			want: []Finding{
+				{
+					VulnerabilityID: "CVE-1",
+					PackagePURL:     "pkg:generic/foo@1.0",
+					SourceScanners:  []string{"grype", "trivy"},
+					FixedVersions:   []string{"1.0.1", "1.1.0"},
+					Paths:           []string{"/opt/foo/lib", "/usr/lib/foo"},
+				},
+			},
 		},
 	}
-	out := DedupeFindings(in)
-	if len(out) != 1 {
-		t.Fatalf("expected 1 entry; got %d", len(out))
-	}
-	if want := []string{"1.0.1", "1.1.0"}; !reflect.DeepEqual(out[0].FixedVersions, want) {
-		t.Errorf("FixedVersions = %v; want %v (union)", out[0].FixedVersions, want)
-	}
-	if want := []string{"/opt/foo/lib", "/usr/lib/foo"}; !reflect.DeepEqual(out[0].Paths, want) {
-		t.Errorf("Paths = %v; want %v (union)", out[0].Paths, want)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			out := DedupeFindings(tt.in)
+			require.Equal(t, tt.want, out)
+		})
 	}
 }
 

@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGrypeScanner_Name(t *testing.T) {
-	if got := (GrypeScanner{}).Name(); got != "grype" {
-		t.Errorf("Name = %q; want %q", got, "grype")
-	}
+	require.Equal(t, "grype", (GrypeScanner{}).Name())
 }
 
 func TestGrypeScanner_ParseFixture(t *testing.T) {
@@ -91,5 +91,80 @@ func TestGrypeScanner_ParseInline(t *testing.T) {
 	}
 	if len(f.Paths) != 2 || f.Paths[0] != "/usr/lib/foo" || f.Paths[1] != "/opt/foo" {
 		t.Errorf("Paths = %v; want [/usr/lib/foo /opt/foo]", f.Paths)
+	}
+}
+
+func TestCVEIDResolution(t *testing.T) {
+	testCases := []struct {
+		name          string
+		report        *grypeReport
+		expectedCVEID string
+	}{
+		{
+			name: "primary_CVE_ID",
+			report: &grypeReport{
+				Matches: []grypeMatch{
+					{
+						Vulnerability: grypeVulnerability{
+							ID: "CVE-2026-42583",
+						},
+					},
+				},
+			},
+			expectedCVEID: "CVE-2026-42583",
+		},
+		{
+			name: "GHSA_only",
+			report: &grypeReport{
+				Matches: []grypeMatch{
+					{
+						Vulnerability: grypeVulnerability{
+							ID: "GHSA-mj4r-2hfc-f8p6",
+						},
+					},
+				},
+			},
+			expectedCVEID: "GHSA-mj4r-2hfc-f8p6",
+		},
+		{
+			name: "related_CVE_ID",
+			report: &grypeReport{
+				Matches: []grypeMatch{
+					{
+						Vulnerability: grypeVulnerability{
+							ID: "GHSA-mj4r-2hfc-f8p6",
+						},
+						RelatedVulnerabilities: []grypeRelatedVulnerability{
+							{ID: "CVE-2026-42583"},
+						},
+					},
+				},
+			},
+			expectedCVEID: "CVE-2026-42583",
+		},
+		{
+			name: "multiple_related_CVE_ID",
+			report: &grypeReport{
+				Matches: []grypeMatch{
+					{
+						Vulnerability: grypeVulnerability{
+							ID: "GHSA-mj4r-2hfc-f8p6",
+						},
+						RelatedVulnerabilities: []grypeRelatedVulnerability{
+							{ID: "CVE-2026-42583"},
+							{ID: "CVE-2026-42584"},
+						},
+					},
+				},
+			},
+			expectedCVEID: "CVE-2026-42583",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			findings := GrypeScanner{}.getFindingsFromReport(tc.report)
+			require.Len(t, findings, 1)
+			require.Equal(t, tc.expectedCVEID, findings[0].VulnerabilityID)
+		})
 	}
 }
