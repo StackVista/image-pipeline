@@ -86,17 +86,7 @@ func DedupeFindings(findings []Finding) []Finding {
 
 // mergeStrings returns the sorted, deduplicated union of two string slices.
 func mergeStrings(a, b []string) []string {
-	seen := map[string]bool{}
-	for _, s := range a {
-		seen[s] = true
-	}
-	for _, s := range b {
-		seen[s] = true
-	}
-	out := make([]string, 0, len(seen))
-	for s := range seen {
-		out = append(out, s)
-	}
-	sort.Strings(out)
-	return out
+	out := slices.Concat(a, b)
+	slices.Sort(out)
+	return slices.Compact(out)
 }
