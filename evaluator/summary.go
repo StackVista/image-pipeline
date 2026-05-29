@@ -69,7 +69,7 @@ func (s Summary) Format(mode string) string {
 		for _, d := range s.Decisions {
 			if d.Suppressed == nil && d.Expired == nil {
 				fmt.Fprintf(&b, "  - %s [%s] %s [%s]\n",
-					d.Finding.VulnerabilityID, d.Finding.Severity, d.Finding.PackageName,
+					d.Finding.VulnerabilityID, d.Finding.Severity, d.Finding.PackagePURL,
 					strings.Join(d.Finding.SourceScanners, ","))
 			}
 		}
@@ -80,7 +80,7 @@ func (s Summary) Format(mode string) string {
 		for _, d := range s.Decisions {
 			if d.Expired != nil {
 				fmt.Fprintf(&b, "  - %s [%s] %s — exception %s expired %s\n",
-					d.Finding.VulnerabilityID, d.Finding.Severity, d.Finding.PackageName,
+					d.Finding.VulnerabilityID, d.Finding.Severity, d.Finding.PackagePURL,
 					d.Expired.SourcePath, d.Expired.Expires)
 			}
 		}
@@ -91,7 +91,7 @@ func (s Summary) Format(mode string) string {
 		for _, d := range s.Decisions {
 			if d.Suppressed != nil {
 				fmt.Fprintf(&b, "  - %s [%s] %s — %s (%s)\n",
-					d.Finding.VulnerabilityID, d.Finding.Severity, d.Finding.PackageName,
+					d.Finding.VulnerabilityID, d.Finding.Severity, d.Finding.PackagePURL,
 					d.Suppressed.Source, d.Suppressed.Justification)
 			}
 		}
