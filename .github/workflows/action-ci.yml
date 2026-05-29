@@ -27,11 +27,12 @@ concurrency:
 
 jobs:
   action-smoke:
-    name: action-smoke (${{ matrix.case.name }})
-    runs-on: ubuntu-latest
+    name: action-smoke (${{ matrix.case.name }} / ${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
+        arch: [amd64, arm64]
         case:
           - name: local-clean
             image: image-pipeline-action-test:latest
@@ -43,6 +44,11 @@ jobs:
             image: registry.suse.com/bci/bci-base:15.3@sha256:906ade16ed715fc25a4eb72afcabc51330b9c4f549bb48d752ca64369ba1e227
             build_local: false
             expected_decision: failed
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
