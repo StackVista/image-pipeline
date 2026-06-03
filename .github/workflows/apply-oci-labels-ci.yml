@@ -1,0 +1,113 @@
+name: apply-oci-labels CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/actions/apply-oci-labels/**"
+      - ".github/workflows/apply-oci-labels-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".github/actions/apply-oci-labels/**"
+      - ".github/workflows/apply-oci-labels-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apply-oci-labels-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: smoke (${{ matrix.case.name }} / ${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
+        case:
+          # Exercises Dockerfile parsing + ARG substitution + imagetools digest
+          # resolution against a real released BCI tag. base.digest is checked
+          # by regex so the test stays green if SUSE re-pushes the tag.
+          - name: from-dockerfile
+            base-name: ""
+            base-digest: ""
+            product: ""
+            upstream-name: TestUpstream
+            expect-base-name: "registry.suse.com/bci/bci-micro:15.7-56.15"
+            expect-product: "suse-observability"
+            expect-upstream: "true"
+          # Both overrides set: action skips Dockerfile parsing AND the network
+          # call. Asserts overrides win and the absent upstream-name input
+          # suppresses the upstream.name label entirely.
+          - name: with-overrides
+            base-name: "docker.io/library/alpine:3.20"
+            base-digest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+            product: suse-observability-agent
+            upstream-name: ""
+            expect-base-name: "docker.io/library/alpine:3.20"
+            expect-product: "suse-observability-agent"
+            expect-upstream: "false"
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      # Action precondition (docker buildx imagetools inspect on the base image).
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+      - name: Apply OCI labels
+        id: apply
+        uses: ./.github/actions/apply-oci-labels
+        with:
+          image-name: smoke
+          tag: 1.2.3-so1
+          title: Smoke Test
+          description: Smoke test for apply-oci-labels.
+          component: smoke
+          product: ${{ matrix.case.product }}
+          upstream-name: ${{ matrix.case.upstream-name }}
+          dockerfile: .github/actions/apply-oci-labels/testdata/Dockerfile
+          base-name: ${{ matrix.case.base-name }}
+          base-digest: ${{ matrix.case.base-digest }}
+
+      - name: Assert canonical labels
+        env:
+          LABELS: ${{ steps.apply.outputs.labels }}
+          EXPECT_BASE_NAME: ${{ matrix.case.expect-base-name }}
+          EXPECT_PRODUCT: ${{ matrix.case.expect-product }}
+          EXPECT_UPSTREAM: ${{ matrix.case.expect-upstream }}
+        run: |
+          set -euo pipefail
+
+          # Fixed lines (identical across cases).
+          grep -Fx "org.opencontainers.image.title=Smoke Test"                                                <<<"${LABELS}"
+          grep -Fx "org.opencontainers.image.description=Smoke test for apply-oci-labels."                    <<<"${LABELS}"
+          grep -Fx "org.opencontainers.image.version=1.2.3-so1"                                               <<<"${LABELS}"
+          grep -Fx "org.opencontainers.image.ref.name=registry.rancher.com/suse-observability/smoke:1.2.3-so1" <<<"${LABELS}"
+          grep -Fx "org.opencontainers.image.vendor=SUSE LLC"                                                 <<<"${LABELS}"
+          grep -Fx "org.opencontainers.image.authors=suse-observability-ops@suse.com"                         <<<"${LABELS}"
+          grep -Fx "com.suse.observability.component=smoke"                                                   <<<"${LABELS}"
+
+          # Per-case variable lines.
+          grep -Fx "org.opencontainers.image.base.name=${EXPECT_BASE_NAME}"     <<<"${LABELS}"
+          grep -Fx "com.suse.observability.product=${EXPECT_PRODUCT}"           <<<"${LABELS}"
+
+          # base.digest must look like sha256:<64 hex>.
+          grep -Eq '^org\.opencontainers\.image\.base\.digest=sha256:[a-f0-9]{64}$' <<<"${LABELS}"
+
+          # upstream.name is emitted only when the upstream-name input is non-empty.
+          if [ "${EXPECT_UPSTREAM}" = "true" ]; then
+            grep -Fx "org.opencontainers.image.upstream.name=TestUpstream" <<<"${LABELS}"
+          elif grep -Fq "org.opencontainers.image.upstream.name" <<<"${LABELS}"; then
+            echo "::error::upstream.name label leaked even though input was empty" >&2
+            exit 1
+          fi
