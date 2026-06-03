@@ -1,0 +1,160 @@
+name: "build-push-image"
+description: "Build and push a container image"
+
+inputs:
+  image:
+    description: "Full image name, e.g. ghcr.io/myorg/app"
+    required: true
+  tag:
+    description: "Image tag to push"
+    required: true
+  arch:
+    description: "Single arch, e.g. amd64"
+    required: false
+    default: "amd64"
+  docker-context:
+    description: "Docker build context"
+    required: false
+    default: "."
+  dockerfile:
+    description: "Path to the Dockerfile"
+    required: false
+    default: "./Dockerfile"
+  # For source registries we use an array of credentials because it is possible that
+  # to build the image we need access to multiple registries.
+  # The target registry where we push should be only one so we keep it as a single entry.
+  source-registry-credentials:
+    description: |
+      Optional JSON array of registry credentials. Each entry is an object with
+      keys `registry`, `username`, `password`. The action runs `docker login`
+      for every entry before resolving base image metadata, so private-registry
+      bases can be inspected. Example:
+        [{"registry": "dp.apps.rancher.io", "username": "...", "password": "..."}]
+    required: false
+    default: "[]"
+  target-registry:
+    description: "Optional target registry to docker login"
+    required: false
+    default: ""
+  target-registry-user:
+    description: "Username for target-registry login. Required when target-registry is set"
+    required: false
+    default: ""
+  target-registry-password:
+    description: "Password/token for target-registry login. Required when target-registry is set"
+    required: false
+    default: ""
+  buildkit-secrets:
+    description: "Optional newline-delimited BuildKit secret entries"
+    required: false
+    default: ""
+  labels:
+    description: "Newline-delimited key=value labels to apply to the image, appended after docker/metadata-action's defaults (last-write-wins on duplicate keys). Pass apply-oci-labels' output here, or any other source."
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+    # This provides labels for the push phase.
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+      with:
+        images: ${{ inputs.image }}
+
+    - name: Login to source registries
+      if: ${{ inputs.source-registry-credentials != '[]' && inputs.source-registry-credentials != '' }}
+      shell: bash
+      env:
+        REGISTRY_CREDENTIALS: ${{ inputs.source-registry-credentials }}
+      run: |
+        set -euo pipefail
+        printf '%s' "${REGISTRY_CREDENTIALS}" | jq -c '.[]' | while IFS= read -r entry; do
+          registry=$(printf '%s' "${entry}" | jq -r '.registry // ""')
+          username=$(printf '%s' "${entry}" | jq -r '.username // ""')
+          password=$(printf '%s' "${entry}" | jq -r '.password // ""')
+          if [ -z "${registry}" ] || [ -z "${username}" ] || [ -z "${password}" ]; then
+            echo "::error::registry-credentials entry missing one of registry/username/password" >&2
+            exit 1
+          fi
+          printf '%s' "${password}" | docker login "${registry}" --username "${username}" --password-stdin
+        done
+
+    - name: Login to target registry
+      if: ${{ inputs.target-registry != '' }}
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      with:
+        registry: ${{ inputs.target-registry }}
+        username: ${{ inputs.target-registry-user }}
+        password: ${{ inputs.target-registry-password }}
+
+    - name: Fail if image tag already exists
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAG: ${{ inputs.tag }}
+        ARCH: ${{ inputs.arch }}
+      run: |
+        set -euo pipefail
+
+        image_ref="${IMAGE}:${TAG}-${ARCH}"
+        if docker buildx imagetools inspect "${image_ref}" >/dev/null 2>&1; then
+          echo "Image ${image_ref} already exists in target registry; refusing to overwrite." >&2
+          exit 1
+        fi
+
+        echo "Image ${image_ref} does not exist yet; push allowed."
+
+    - name: Push for ${{ inputs.arch }}
+      id: push-image
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      with:
+        context: ${{ inputs.docker-context }}
+        file: ${{ inputs.dockerfile }}
+        labels: |
+          ${{ steps.meta.outputs.labels }}
+          ${{ inputs.labels }}
+        platforms: linux/${{ inputs.arch }}
+        push: true
+        sbom: true
+        provenance: mode=max
+        secrets: ${{ inputs.buildkit-secrets }}
+        tags: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
+
+    #######################
+    # Sign the image
+    #######################
+    - name: Install cosign
+      uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+    # Some verification tools (e.g. slsactl, hauler and old cosign)
+    # are not able to properly verify the signatures using the new format v3.x.x,
+    # for this reason we also sign the image with the old format.
+    - name: Sign container image with both cosign v2/v3 signature format
+      shell: bash
+      run: |
+        # Old format
+        cosign sign --yes --new-bundle-format=false --use-signing-config=false ${INPUTS_IMAGE}@${OUTPUTS_DIGEST}
+
+        # New format
+        cosign sign --yes --new-bundle-format=true --use-signing-config=true ${INPUTS_IMAGE}@${OUTPUTS_DIGEST}
+
+        # Verify the signature right after signing to ensure it's correct and can be verified by other tools.
+        # Since this is a composite action it is dangerous to define a specific path for `certificate-identity-regexp`
+        # Instead, we use a regular expression that matches the expected format.
+        # Example: `cert_identity_regexp=^https://github.com/StackVista/image-pipeline/.*@refs/pull/88/merge`
+        cert_identity_regexp="^${SERVER}/${REPOSITORY}/.*@${REF}"
+        cosign verify \
+          --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+          --certificate-identity-regexp="${cert_identity_regexp}" \
+          ${INPUTS_IMAGE}@${OUTPUTS_DIGEST}
+      env:
+        INPUTS_IMAGE: ${{ inputs.image }}
+        OUTPUTS_DIGEST: ${{ steps.push-image.outputs.digest }}
+        REF: ${{ github.ref }}
+        REPOSITORY: ${{ github.repository }}
+        SERVER: ${{ github.server_url }}
