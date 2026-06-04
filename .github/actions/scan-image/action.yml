@@ -121,23 +121,39 @@ runs:
         fi
 
         # Some GitHub archive downloads are extracted one directory deeper than
-        # Trivy expects. Normalize that cache shape so both Trivy and the Grype
-        # bridge below can find repository indexes and OpenVEX documents.
+        # Trivy expects, e.g. <repo>/<version>/<archive-name>/index.json instead
+        # of <repo>/<version>/index.json. Normalize only that extra-nested
+        # shape. Repositories already laid out as <repo>/<version> must be left
+        # alone; flattening them would copy arbitrary report files into the VEX
+        # cache root and make Grype try to parse non-VEX data as OpenVEX.
+        find "${vex_cache}" -type f -name vex-repository.json | sort > reports/vex-repository-manifests.txt
         while IFS= read -r manifest; do
           nested_dir="$(dirname "${manifest}")"
+          relative_dir="${nested_dir#"${vex_cache}/"}"
+          case "${relative_dir}" in
+            */*/*) ;;
+            *) continue ;;
+          esac
+
           repo_dir="$(dirname "${nested_dir}")"
           if [ -f "${nested_dir}/index.json" ]; then
             echo "Normalizing nested VEX repository cache from ${nested_dir} to ${repo_dir}"
             cp -R "${nested_dir}/." "${repo_dir}/"
           fi
-        done < <(find "${vex_cache}" -type f -name vex-repository.json | sort)
+        done < reports/vex-repository-manifests.txt
 
         # Grype does not currently understand Trivy VEX repositories directly;
         # it only accepts explicit VEX document paths. This file is the bridge
         # between Trivy's downloaded VEXHub cache and the Grype --vex arguments.
+        # VEXHub report artifacts are not OpenVEX input documents, even when
+        # their filenames include "openvex", so skip those generated reports.
         # Keep this fail-closed so a broken VEXHub download cannot silently turn
         # into a stricter/different gate than the release scan.
-        find "${vex_cache}" -type f -iname '*openvex*.json' | sort > reports/grype-vex-documents.txt
+        find "${vex_cache}" \
+          -type f \
+          -iname '*openvex*.json' \
+          ! -path '*/reports/*' \
+          | sort > reports/grype-vex-documents.txt
         if [ ! -s reports/grype-vex-documents.txt ]; then
           echo "::error::VEX repositories were downloaded, but no OpenVEX documents were found for Grype"
           exit 1
