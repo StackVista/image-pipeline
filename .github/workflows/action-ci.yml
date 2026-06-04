@@ -79,3 +79,4 @@ jobs:
           test "${DECISION}" = "${EXPECTED_DECISION}"
           test "${SARIF_PATH}" = "reports/image-pipeline.sarif"
           test -f reports/image-pipeline.sarif
+          test -s reports/grype-vex-documents.txt
