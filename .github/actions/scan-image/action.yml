@@ -94,13 +94,44 @@ runs:
         curl -sSfL "https://raw.githubusercontent.com/anchore/grype/${INSTALL_SHA}/install.sh" \
           | sudo sh -s -- -b /usr/local/bin "v${GRYPE_VERSION}"
 
-    - name: Configure Trivy VEX repos
+    - name: Prepare VEX repositories
       shell: bash
       env:
         REPO_ROOT: ${{ steps.paths.outputs.repo_root }}
+        GITHUB_TOKEN: ${{ github.token }}
+        TRIVY_CACHE_DIR: ${{ runner.temp }}/trivy-cache
       run: |
+        set -euo pipefail
+        mkdir -p reports
+        trivy_cache="${TRIVY_CACHE_DIR}"
+
         mkdir -p ~/.trivy/vex
         cp "${REPO_ROOT}/vex/repository.yaml" ~/.trivy/vex/repository.yaml
+        trivy --cache-dir "${trivy_cache}" vex repo download
+
+        vex_cache="${trivy_cache}/vex/repositories"
+        if [ ! -d "${vex_cache}" ]; then
+          echo "::error::Trivy VEX repository cache was not created at ${vex_cache}"
+          exit 1
+        fi
+
+        while IFS= read -r manifest; do
+          nested_dir="$(dirname "${manifest}")"
+          repo_dir="$(dirname "${nested_dir}")"
+          if [ -f "${nested_dir}/index.json" ]; then
+            echo "Normalizing nested VEX repository cache from ${nested_dir} to ${repo_dir}"
+            cp -R "${nested_dir}/." "${repo_dir}/"
+          fi
+        done < <(find "${vex_cache}" -type f -name vex-repository.json | sort)
+
+        find "${vex_cache}" -type f -iname '*openvex*.json' | sort > reports/grype-vex-documents.txt
+        if [ ! -s reports/grype-vex-documents.txt ]; then
+          echo "::error::VEX repositories were downloaded, but no OpenVEX documents were found for Grype"
+          exit 1
+        fi
+
+        vex_doc_count="$(wc -l < reports/grype-vex-documents.txt | tr -d ' ')"
+        echo "Prepared ${vex_doc_count} OpenVEX document(s) for Grype"
 
     - name: Log in to source registry
       if: ${{ inputs.source_registry != '' }}
@@ -119,6 +150,7 @@ runs:
       shell: bash
       env:
         INPUT_IMAGE: ${{ inputs.image }}
+        TRIVY_CACHE_DIR: ${{ runner.temp }}/trivy-cache
         # Authenticate Trivy's GitHub API calls (VEX repo metadata,
         # advisory DB downloads). Unauthenticated requests share GHA
         # runner IP quotas and hit the 60/hr ceiling fast.
@@ -127,6 +159,7 @@ runs:
         mkdir -p reports
         trivy image \
           --scanners secret \
+          --cache-dir "${TRIVY_CACHE_DIR}" \
           --format json \
           --output reports/trivy-secrets.json \
           --exit-code 0 \
@@ -145,13 +178,16 @@ runs:
         INPUT_IMAGE: ${{ inputs.image }}
         INPUT_SEVERITY: ${{ inputs.severity }}
         GITHUB_TOKEN: ${{ github.token }}
+        TRIVY_CACHE_DIR: ${{ runner.temp }}/trivy-cache
       run: |
         trivy image \
           --scanners vuln \
+          --cache-dir "${TRIVY_CACHE_DIR}" \
           --format json \
           --output reports/trivy.json \
           --severity "${INPUT_SEVERITY}" \
           --vex repo \
+          --skip-vex-repo-update \
           --exit-code 0 \
           "${INPUT_IMAGE}"
         echo "::group::Trivy vuln report (table)"
@@ -164,8 +200,22 @@ runs:
       env:
         INPUT_IMAGE: ${{ inputs.image }}
       run: |
+        grype_args=(
+          "${INPUT_IMAGE}"
+          --by-cve
+        )
+        while IFS= read -r vex_doc; do
+          if [ -n "${vex_doc}" ]; then
+            grype_args+=(--vex "${vex_doc}")
+          fi
+        done < reports/grype-vex-documents.txt
+        grype_args+=(
+          -o table
+          -o "json=reports/grype.json"
+        )
+
         echo "::group::Grype vuln report (table)"
-        grype "${INPUT_IMAGE}" --by-cve -o table -o "json=reports/grype.json"
+        grype "${grype_args[@]}"
         echo "::endgroup::"
 
     - name: Evaluate
