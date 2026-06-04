@@ -1,0 +1,125 @@
+name: merge-multiarch-image
+description: merge multi-arch images based on per-arch tags
+
+inputs:
+  image:
+    description: "Full image name, e.g. ghcr.io/myorg/app"
+    required: true
+  tag:
+    description: The tag component in a fully qualified image.
+    required: true
+  arches:
+    description: Comma-separated architectures to merge, e.g. amd64,arm64
+    required: false
+    default: "amd64,arm64"
+  target-registry:
+    description: "Optional target registry to docker login"
+    required: false
+    default: ""
+  target-registry-user:
+    description: "Username for target-registry login. Required when target-registry is set"
+    required: false
+    default: ""
+  target-registry-password:
+    description: "Password/token for target-registry login. Required when target-registry is set"
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+    - name: Login to target registry
+      if: ${{ inputs.target-registry != '' }}
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      with:
+        registry: ${{ inputs.target-registry }}
+        username: ${{ inputs.target-registry-user }}
+        password: ${{ inputs.target-registry-password }}
+
+    - name: Install cosign
+      uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+    - name: Create and push multi-arch manifest for ${{ inputs.image }}
+      shell: bash
+      run: |
+        set -e
+
+        TARGETS=""
+        IFS=',' read -r -a ARCHES <<< "${INPUTS_ARCHES}"
+        for arch in "${ARCHES[@]}"; do
+          arch="${arch//[[:space:]]/}"
+          if [[ -z "${arch}" ]]; then
+            continue
+          fi
+
+          TARGETS+=" ${INPUTS_IMAGE}:${INPUTS_TAG}-${arch}"
+        done
+
+        TARGETS="${TARGETS# }"
+        if [[ -z "${TARGETS}" ]]; then
+          echo "No architectures provided in arches input" >&2
+          exit 1
+        fi
+
+        #####################################
+        # Create the manifest locally
+        #####################################
+        docker buildx imagetools create \
+          -t ${INPUTS_IMAGE}:${INPUTS_TAG} \
+          ${TARGETS} \
+          --dry-run > expected-multi-arch-manifest.json
+
+        #####################################
+        # Create the manifest and push it
+        #####################################
+        docker buildx imagetools create \
+          -t ${INPUTS_IMAGE}:${INPUTS_TAG} \
+          ${TARGETS}
+
+        # The previous command is NOT printing the digest of the multi-arch manifest, we have to obtain it by
+        # fetching it from the OCI registry and **verify** its contents
+
+        #####################################
+        # Fetch the multi arch multi-arch-manifest.json.
+        #####################################
+        docker buildx imagetools inspect ${INPUTS_IMAGE}:${INPUTS_TAG} --raw > multi-arch-manifest.json
+        multi_arch_manifest_digest="sha256:$(sha256sum multi-arch-manifest.json | awk '{print $1}')"
+
+        # Compare the contents of the manifest we previously computed and the actual one.
+        # Use jq to sort the contents and build a compact output (removing useless whitespaces),
+        # this is done to ensure the JSON documents have the same structure.
+        expected_digest="sha256:$(jq -S -c . expected-multi-arch-manifest.json | sha256sum | awk '{print $1}')"
+        actual_digest="sha256:$(jq -S -c . multi-arch-manifest.json | sha256sum | awk '{print $1}')"
+        if [ "$expected_digest" != "$actual_digest" ]; then
+          echo "Error: digests do not match!"
+          exit 1
+        fi
+
+        #####################################
+        # Sign the image
+        #####################################
+
+        # Sign using cosign v2 format
+        cosign sign --yes --new-bundle-format=false --use-signing-config=false ${INPUTS_IMAGE}@${multi_arch_manifest_digest}
+
+        # Sign using cosign v3 format
+        cosign sign --yes --new-bundle-format=true --use-signing-config=true ${INPUTS_IMAGE}@${multi_arch_manifest_digest}
+
+        # Verify the signature right after signing to ensure it's correct and can be verified by other tools.
+        # Since this is a composite action it is dangerous to define a specific path for `certificate-identity-regexp`
+        # Instead, we use a regular expression that matches the expected format.
+        # Example: `cert_identity_regexp=^https://github.com/StackVista/image-pipeline/.*@refs/pull/88/merge`
+        cert_identity_regexp="^${SERVER}/${REPOSITORY}/.*@${REF}"
+        cosign verify \
+          --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+          --certificate-identity-regexp="${cert_identity_regexp}" \
+          ${INPUTS_IMAGE}@${multi_arch_manifest_digest}
+      env:
+        INPUTS_IMAGE: ${{ inputs.image }}
+        INPUTS_TAG: ${{ inputs.tag }}
+        INPUTS_ARCHES: ${{ inputs.arches }}
+        REF: ${{ github.ref }}
+        REPOSITORY: ${{ github.repository }}
+        SERVER: ${{ github.server_url }}
