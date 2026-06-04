@@ -103,7 +103,6 @@ runs:
       run: |
         set -euo pipefail
         mkdir -p reports
-        trivy_cache="${TRIVY_CACHE_DIR}"
 
         # Trivy has native VEX repository support, so the shared
         # StackVista/Rancher VEXHub config is installed in Trivy's expected
@@ -112,9 +111,9 @@ runs:
         # halfway through scanner output.
         mkdir -p ~/.trivy/vex
         cp "${REPO_ROOT}/vex/repository.yaml" ~/.trivy/vex/repository.yaml
-        trivy --cache-dir "${trivy_cache}" vex repo download
+        trivy --cache-dir "${TRIVY_CACHE_DIR}" vex repo download
 
-        vex_cache="${trivy_cache}/vex/repositories"
+        vex_cache="${TRIVY_CACHE_DIR}/vex/repositories"
         if [ ! -d "${vex_cache}" ]; then
           echo "::error::Trivy VEX repository cache was not created at ${vex_cache}"
           exit 1
@@ -235,16 +234,14 @@ runs:
         grype_args=(
           "${INPUT_IMAGE}"
           --by-cve
+          -o table
+          -o "json=reports/grype.json"
         )
         while IFS= read -r vex_doc; do
           if [ -n "${vex_doc}" ]; then
             grype_args+=(--vex "${vex_doc}")
           fi
         done < reports/grype-vex-documents.txt
-        grype_args+=(
-          -o table
-          -o "json=reports/grype.json"
-        )
 
         echo "::group::Grype vuln report (table)"
         grype "${grype_args[@]}"
