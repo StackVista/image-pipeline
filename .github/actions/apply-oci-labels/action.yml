@@ -41,6 +41,15 @@ inputs:
     description: "Value for image.url and image.documentation."
     required: false
     default: "https://documentation.suse.com/cloudnative/suse-observability/latest/en/classic.html"
+  registry-credentials:
+    description: |
+      Optional JSON array of registry credentials. Each entry is an object with
+      keys `registry`, `username`, `password`. The action runs `docker login`
+      for every entry before resolving base image metadata, so private-registry
+      bases can be inspected. Example:
+        [{"registry": "dp.apps.rancher.io", "username": "...", "password": "..."}]
+    required: false
+    default: "[]"
 
 outputs:
   labels:
@@ -71,6 +80,28 @@ runs:
           echo "::error::apply-oci-labels: missing required inputs: ${missing[*]}" >&2
           exit 1
         fi
+
+    # `docker buildx imagetools inspect` (used to resolve base.digest below)
+    # hits the registry API directly and needs auth for non-public bases. We
+    # loop over the JSON array with --password-stdin so credentials never
+    # appear on the command line. Matches scan-image's bash login pattern.
+    - name: Login to source registries
+      if: ${{ inputs.registry-credentials != '[]' && inputs.registry-credentials != '' }}
+      shell: bash
+      env:
+        REGISTRY_CREDENTIALS: ${{ inputs.registry-credentials }}
+      run: |
+        set -euo pipefail
+        printf '%s' "${REGISTRY_CREDENTIALS}" | jq -c '.[]' | while IFS= read -r entry; do
+          registry=$(printf '%s' "${entry}" | jq -r '.registry // ""')
+          username=$(printf '%s' "${entry}" | jq -r '.username // ""')
+          password=$(printf '%s' "${entry}" | jq -r '.password // ""')
+          if [ -z "${registry}" ] || [ -z "${username}" ] || [ -z "${password}" ]; then
+            echo "::error::registry-credentials entry missing one of registry/username/password" >&2
+            exit 1
+          fi
+          printf '%s' "${password}" | docker login "${registry}" --username "${username}" --password-stdin
+        done
 
     - name: Resolve base image
       id: base
