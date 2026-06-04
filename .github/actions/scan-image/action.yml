@@ -105,6 +105,11 @@ runs:
         mkdir -p reports
         trivy_cache="${TRIVY_CACHE_DIR}"
 
+        # Trivy has native VEX repository support, so the shared
+        # StackVista/Rancher VEXHub config is installed in Trivy's expected
+        # location and downloaded once up front. Later Trivy scans reuse this
+        # cache with --skip-vex-repo-update so VEX failures happen here, not
+        # halfway through scanner output.
         mkdir -p ~/.trivy/vex
         cp "${REPO_ROOT}/vex/repository.yaml" ~/.trivy/vex/repository.yaml
         trivy --cache-dir "${trivy_cache}" vex repo download
@@ -115,6 +120,9 @@ runs:
           exit 1
         fi
 
+        # Some GitHub archive downloads are extracted one directory deeper than
+        # Trivy expects. Normalize that cache shape so both Trivy and the Grype
+        # bridge below can find repository indexes and OpenVEX documents.
         while IFS= read -r manifest; do
           nested_dir="$(dirname "${manifest}")"
           repo_dir="$(dirname "${nested_dir}")"
@@ -124,6 +132,11 @@ runs:
           fi
         done < <(find "${vex_cache}" -type f -name vex-repository.json | sort)
 
+        # Grype does not currently understand Trivy VEX repositories directly;
+        # it only accepts explicit VEX document paths. This file is the bridge
+        # between Trivy's downloaded VEXHub cache and the Grype --vex arguments.
+        # Keep this fail-closed so a broken VEXHub download cannot silently turn
+        # into a stricter/different gate than the release scan.
         find "${vex_cache}" -type f -iname '*openvex*.json' | sort > reports/grype-vex-documents.txt
         if [ ! -s reports/grype-vex-documents.txt ]; then
           echo "::error::VEX repositories were downloaded, but no OpenVEX documents were found for Grype"
@@ -200,6 +213,9 @@ runs:
       env:
         INPUT_IMAGE: ${{ inputs.image }}
       run: |
+        # Grype VEX support is document-based, not repository-based. The
+        # prepared document list lets Grype apply the same VEXHub state that
+        # Trivy used for the vulnerability scan above.
         grype_args=(
           "${INPUT_IMAGE}"
           --by-cve
