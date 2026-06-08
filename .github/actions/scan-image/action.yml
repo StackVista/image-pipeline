@@ -82,7 +82,7 @@ runs:
     - name: Set up Trivy
       uses: aquasecurity/setup-trivy@3fb12ec12f41e471780db15c232d5dd185dcb514 # v0.2.6
       with:
-        version: v0.70.0
+        version: v0.71.0
 
     - name: Set up Grype
       if: ${{ inputs.with-grype == 'true' }}
