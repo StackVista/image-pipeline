@@ -26,15 +26,15 @@ inputs:
     required: false
     default: ""
   dockerfile:
-    description: "Path to the Dockerfile. The last FROM line drives base.name / base.digest resolution unless base-name/base-digest overrides are set."
+    description: "Deprecated no-op. Base image labels are intentionally not emitted by this action."
     required: false
     default: "./Dockerfile"
   base-name:
-    description: "Override for org.opencontainers.image.base.name. Set this for build systems where the Dockerfile is not parseable (Family B-E)."
+    description: "Deprecated no-op. Base image labels are intentionally not emitted by this action."
     required: false
     default: ""
   base-digest:
-    description: "Override for org.opencontainers.image.base.digest."
+    description: "Deprecated no-op. Base image labels are intentionally not emitted by this action."
     required: false
     default: ""
   documentation-url:
@@ -42,12 +42,7 @@ inputs:
     required: false
     default: "https://documentation.suse.com/cloudnative/suse-observability/latest/en/classic.html"
   registry-credentials:
-    description: |
-      Optional JSON array of registry credentials. Each entry is an object with
-      keys `registry`, `username`, `password`. The action runs `docker login`
-      for every entry before resolving base image metadata, so private-registry
-      bases can be inspected. Example:
-        [{"registry": "dp.apps.rancher.io", "username": "...", "password": "..."}]
+    description: "Deprecated no-op. Kept for caller compatibility."
     required: false
     default: "[]"
 
@@ -59,11 +54,6 @@ outputs:
 runs:
   using: composite
   steps:
-    # Precondition: docker buildx must be set up by the caller. push-single-arch
-    # already does this via docker/setup-buildx-action. The action relies on
-    # `docker buildx imagetools inspect` to resolve the base image digest without
-    # pulling the image.
-
     - name: Validate required inputs
       shell: bash
       env:
@@ -81,74 +71,6 @@ runs:
           exit 1
         fi
 
-    # `docker buildx imagetools inspect` (used to resolve base.digest below)
-    # hits the registry API directly and needs auth for non-public bases. We
-    # loop over the JSON array with --password-stdin so credentials never
-    # appear on the command line. Matches scan-image's bash login pattern.
-    - name: Login to source registries
-      if: ${{ inputs.registry-credentials != '[]' && inputs.registry-credentials != '' }}
-      shell: bash
-      env:
-        REGISTRY_CREDENTIALS: ${{ inputs.registry-credentials }}
-      run: |
-        set -euo pipefail
-        printf '%s' "${REGISTRY_CREDENTIALS}" | jq -c '.[]' | while IFS= read -r entry; do
-          registry=$(printf '%s' "${entry}" | jq -r '.registry // ""')
-          username=$(printf '%s' "${entry}" | jq -r '.username // ""')
-          password=$(printf '%s' "${entry}" | jq -r '.password // ""')
-          if [ -z "${registry}" ] || [ -z "${username}" ] || [ -z "${password}" ]; then
-            echo "::error::registry-credentials entry missing one of registry/username/password" >&2
-            exit 1
-          fi
-          printf '%s' "${password}" | docker login "${registry}" --username "${username}" --password-stdin
-        done
-
-    - name: Resolve base image
-      id: base
-      shell: bash
-      env:
-        DOCKERFILE: ${{ inputs.dockerfile }}
-        BASE_NAME_IN: ${{ inputs.base-name }}
-        BASE_DIGEST_IN: ${{ inputs.base-digest }}
-      run: |
-        set -euo pipefail
-
-        if [ -n "${BASE_NAME_IN}" ]; then
-          base_name="${BASE_NAME_IN}"
-        else
-          if [ ! -f "${DOCKERFILE}" ]; then
-            echo "::error::dockerfile not found and no base-name override given: ${DOCKERFILE}" >&2
-            exit 1
-          fi
-
-          # Export ARG defaults from the Dockerfile so envsubst can expand ${...} in FROM.
-          # Only ARGs with a default value (ARG NAME=VALUE) are considered.
-          while IFS= read -r line; do
-            if [[ "${line}" =~ ^[[:space:]]*ARG[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)=([^[:space:]]+) ]]; then
-              export "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
-            fi
-          done < "${DOCKERFILE}"
-
-          # Last FROM wins. Strip an optional --platform=... flag and a trailing `AS <stage>`.
-          raw=$(grep -E '^[[:space:]]*FROM[[:space:]]' "${DOCKERFILE}" | tail -n1 \
-                | sed -E 's/^[[:space:]]*FROM[[:space:]]+(--platform=[^[:space:]]+[[:space:]]+)?([^[:space:]]+).*/\2/')
-          base_name=$(envsubst <<< "${raw}")
-
-          if [ -z "${base_name}" ]; then
-            echo "::error::failed to resolve base image from ${DOCKERFILE}" >&2
-            exit 1
-          fi
-        fi
-
-        if [ -n "${BASE_DIGEST_IN}" ]; then
-          base_digest="${BASE_DIGEST_IN}"
-        else
-          base_digest=$(docker buildx imagetools inspect "${base_name}" --format '{{json .Manifest}}' | jq -er '.digest')
-        fi
-
-        echo "name=${base_name}"     >> "$GITHUB_OUTPUT"
-        echo "digest=${base_digest}" >> "$GITHUB_OUTPUT"
-
     - name: Compose label set
       id: compose
       shell: bash
@@ -160,8 +82,6 @@ runs:
         COMPONENT:   ${{ inputs.component }}
         PRODUCT:     ${{ inputs.product }}
         UPSTREAM:    ${{ inputs.upstream-name }}
-        BASE_NAME:   ${{ steps.base.outputs.name }}
-        BASE_DIGEST: ${{ steps.base.outputs.digest }}
         DOC_URL:     ${{ inputs.documentation-url }}
         SERVER_URL:  ${{ github.server_url }}
         REPO:        ${{ github.repository }}
@@ -182,9 +102,9 @@ runs:
         run_url="${source_url}/actions/runs/${RUN_ID}"
         created=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-        # Canonical SUSE Observability OCI label set (docker-image-oci-labels.md §4).
-        # Rows 15-18 (opensuse.reference, artifacthub.{logo,readme}-url,
-        # openbuildservice.disturl) are deferred per §8.6 and NOT emitted here.
+        # Canonical SUSE Observability label set. Base image labels are omitted
+        # deliberately: resolving them requires Dockerfile parsing and registry
+        # lookups that are brittle enough to block image publication.
         {
           echo 'labels<<__LABELS_EOF__'
           echo "org.opencontainers.image.title=${TITLE}"
@@ -194,8 +114,6 @@ runs:
           echo "org.opencontainers.image.source=${source_url}"
           echo "org.opencontainers.image.revision=${SHA}"
           echo "org.opencontainers.image.created=${created}"
-          echo "org.opencontainers.image.base.name=${BASE_NAME}"
-          echo "org.opencontainers.image.base.digest=${BASE_DIGEST}"
           echo "org.opencontainers.image.vendor=SUSE LLC"
           echo "org.opencontainers.image.authors=suse-observability-ops@suse.com"
           echo "org.opencontainers.image.url=${DOC_URL}"
