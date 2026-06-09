@@ -92,22 +92,24 @@ runs:
         username: ${{ inputs.target-registry-user }}
         password: ${{ inputs.target-registry-password }}
 
-    - name: Fail if image tag already exists
+    - name: Fail if final tag already exists
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
         TAG: ${{ inputs.tag }}
-        ARCH: ${{ inputs.arch }}
       run: |
         set -euo pipefail
 
-        image_ref="${IMAGE}:${TAG}-${ARCH}"
-        if docker buildx imagetools inspect "${image_ref}" >/dev/null 2>&1; then
-          echo "Image ${image_ref} already exists in target registry; refusing to overwrite." >&2
+        # Here we check if the final tag without the architecture suffix exists.
+        # If not yet we can overwrite the single-arch image, otherwise we refuse to 
+        # push to avoid overwriting an existing tag.
+        release_ref="${IMAGE}:${TAG}"
+        if docker buildx imagetools inspect "${release_ref}" >/dev/null 2>&1; then
+          echo "Image ${release_ref} already exists in target registry; refusing to overwrite single tag architecture." >&2
           exit 1
         fi
 
-        echo "Image ${image_ref} does not exist yet; push allowed."
+        echo "Image ${release_ref} does not exist yet; push allowed."
 
     - name: Push for ${{ inputs.arch }}
       id: push-image
