@@ -26,11 +26,11 @@ inputs:
     required: false
     default: ""
   dockerfile:
-    description: "Path to the Dockerfile. The last FROM line drives base.name / base.digest resolution unless base-name/base-digest overrides are set."
+    description: "Path to the Dockerfile. The first `ARG BASE_IMAGE=<registry/name>:<tag>` line drives base.name / base.digest resolution unless base-name/base-digest overrides are set."
     required: false
     default: "./Dockerfile"
   base-name:
-    description: "Override for org.opencontainers.image.base.name. Set this for build systems where the Dockerfile is not parseable (Family B-E)."
+    description: "Override for org.opencontainers.image.base.name. Set this for build systems where the Dockerfile declares no ARG BASE_IMAGE (Family B-E)."
     required: false
     default: ""
   base-digest:
@@ -121,21 +121,16 @@ runs:
             exit 1
           fi
 
-          # Export ARG defaults from the Dockerfile so envsubst can expand ${...} in FROM.
-          # Only ARGs with a default value (ARG NAME=VALUE) are considered.
-          while IFS= read -r line; do
-            if [[ "${line}" =~ ^[[:space:]]*ARG[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)=([^[:space:]]+) ]]; then
-              export "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
-            fi
-          done < "${DOCKERFILE}"
-
-          # Last FROM wins. Strip an optional --platform=... flag and a trailing `AS <stage>`.
-          raw=$(grep -E '^[[:space:]]*FROM[[:space:]]' "${DOCKERFILE}" | tail -n1 \
-                | sed -E 's/^[[:space:]]*FROM[[:space:]]+(--platform=[^[:space:]]+[[:space:]]+)?([^[:space:]]+).*/\2/')
-          base_name=$(envsubst <<< "${raw}")
+          # First `ARG BASE_IMAGE=<registry/name>:<tag>` wins. The runtime FROM in
+          # docker-images Dockerfiles is always `FROM ${BASE_IMAGE}`, so the ARG
+          # default carries the fully-qualified base reference.
+          base_name=$(grep -E '^[[:space:]]*ARG[[:space:]]+BASE_IMAGE=' "${DOCKERFILE}" \
+                      | head -n1 \
+                      | sed -E 's/^[[:space:]]*ARG[[:space:]]+BASE_IMAGE=//' \
+                      | sed -E 's/^"(.*)"$/\1/; s/^'\''(.*)'\''$/\1/')
 
           if [ -z "${base_name}" ]; then
-            echo "::error::failed to resolve base image from ${DOCKERFILE}" >&2
+            echo "::error::no ARG BASE_IMAGE=... declaration found in ${DOCKERFILE} and no base-name override given" >&2
             exit 1
           fi
         fi

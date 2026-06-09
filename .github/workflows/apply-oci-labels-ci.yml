@@ -28,9 +28,9 @@ jobs:
       matrix:
         arch: [amd64, arm64]
         case:
-          # Exercises Dockerfile parsing + ARG substitution + imagetools digest
-          # resolution against a real released BCI tag. base.digest is checked
-          # by regex so the test stays green if SUSE re-pushes the tag.
+          # Exercises ARG BASE_IMAGE extraction + imagetools digest resolution
+          # against a real released BCI tag. base.digest is checked by regex so
+          # the test stays green if SUSE re-pushes the tag.
           - name: from-dockerfile
             base-name: ""
             base-digest: ""
