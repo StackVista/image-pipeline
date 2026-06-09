@@ -63,11 +63,18 @@ runs:
           exit 1
         fi
 
+        release_ref="${INPUTS_IMAGE}:${INPUTS_TAG}"
+        # docker manifest inspect is the target-registry check. docker buildx
+        # imagetools inspect is kept as advisory resolver state, because it can
+        # disagree during partial or stale publishes.
+        source "${GITHUB_ACTION_PATH}/../shared/registry-tag-check.sh"
+        require_release_tag_absent "${release_ref}"
+
         #####################################
         # Create the manifest locally
         #####################################
         docker buildx imagetools create \
-          -t ${INPUTS_IMAGE}:${INPUTS_TAG} \
+          -t ${release_ref} \
           ${TARGETS} \
           --dry-run > expected-multi-arch-manifest.json
 
@@ -75,7 +82,7 @@ runs:
         # Create the manifest and push it
         #####################################
         docker buildx imagetools create \
-          -t ${INPUTS_IMAGE}:${INPUTS_TAG} \
+          -t ${release_ref} \
           ${TARGETS}
 
         # The previous command is NOT printing the digest of the multi-arch manifest, we have to obtain it by
@@ -84,7 +91,7 @@ runs:
         #####################################
         # Fetch the multi arch multi-arch-manifest.json.
         #####################################
-        docker buildx imagetools inspect ${INPUTS_IMAGE}:${INPUTS_TAG} --raw > multi-arch-manifest.json
+        docker buildx imagetools inspect ${release_ref} --raw > multi-arch-manifest.json
         multi_arch_manifest_digest="sha256:$(sha256sum multi-arch-manifest.json | awk '{print $1}')"
 
         # Compare the contents of the manifest we previously computed and the actual one.

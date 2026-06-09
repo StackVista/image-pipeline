@@ -92,7 +92,7 @@ runs:
         username: ${{ inputs.target-registry-user }}
         password: ${{ inputs.target-registry-password }}
 
-    - name: Fail if image tag already exists
+    - name: Fail if final image tag already exists
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
@@ -101,13 +101,15 @@ runs:
       run: |
         set -euo pipefail
 
-        image_ref="${IMAGE}:${TAG}-${ARCH}"
-        if docker buildx imagetools inspect "${image_ref}" >/dev/null 2>&1; then
-          echo "Image ${image_ref} already exists in target registry; refusing to overwrite." >&2
-          exit 1
-        fi
+        release_ref="${IMAGE}:${TAG}"
+        arch_ref="${IMAGE}:${TAG}-${ARCH}"
 
-        echo "Image ${image_ref} does not exist yet; push allowed."
+        # docker manifest inspect is the target-registry check. docker buildx
+        # imagetools inspect is kept as advisory resolver state, because it can
+        # disagree during partial or stale publishes.
+        source "${GITHUB_ACTION_PATH}/../shared/registry-tag-check.sh"
+        require_release_tag_absent "${release_ref}"
+        warn_staging_tag_state "${arch_ref}"
 
     - name: Push for ${{ inputs.arch }}
       id: push-image
