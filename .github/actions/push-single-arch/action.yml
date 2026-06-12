@@ -44,6 +44,10 @@ inputs:
     description: "Password/token for target-registry login. Required when target-registry is set"
     required: false
     default: ""
+  build-args:
+    description: "Optional newline-delimited build args passed to docker/build-push-action (e.g. GIT_SHA=abc12345). Needed by repos that stamp version metadata into binaries at build time."
+    required: false
+    default: ""
   buildkit-secrets:
     description: "Optional newline-delimited BuildKit secret entries"
     required: false
@@ -124,6 +128,7 @@ runs:
         push: true
         sbom: true
         provenance: mode=max
+        build-args: ${{ inputs.build-args }}
         secrets: ${{ inputs.buildkit-secrets }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
 
