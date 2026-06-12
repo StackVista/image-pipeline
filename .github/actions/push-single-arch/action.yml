@@ -52,6 +52,18 @@ inputs:
     description: "Newline-delimited key=value labels to apply to the image, appended after docker/metadata-action's defaults (last-write-wins on duplicate keys). Pass apply-oci-labels' output here, or any other source."
     required: false
     default: ""
+  verify-binary-arch:
+    description: |
+      After the push, pull the image back for the requested platform and check
+      that its entrypoint (or cmd) binary is an ELF binary built for that
+      architecture. Catches Dockerfiles that hardcode GOARCH or copy a
+      foreign-arch binary, which otherwise ship images whose manifest claims
+      one platform while the binary inside targets another (runtime
+      `exec format error`). Images whose entrypoint is not an arch-specific
+      ELF binary (e.g. shell scripts) are skipped with a warning. Set to
+      "false" to skip the verification (and its image pull-back) entirely.
+    required: false
+    default: "true"
 
 runs:
   using: composite
@@ -126,6 +138,85 @@ runs:
         provenance: mode=max
         secrets: ${{ inputs.buildkit-secrets }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
+
+    # The manifest of the pushed image always claims the platform that was
+    # requested via --platform, regardless of what the Dockerfile actually
+    # compiled or copied in. Verify the claim by reading the ELF header of the
+    # entrypoint binary, so arch-mismatched images fail here instead of with
+    # `exec format error` on the target nodes — and before they get signed.
+    # `docker create` never starts the container, so no emulation is needed to
+    # inspect a foreign-arch image.
+    - name: Verify binary architecture matches linux/${{ inputs.arch }}
+      if: ${{ inputs.verify-binary-arch == 'true' }}
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        DIGEST: ${{ steps.push-image.outputs.digest }}
+        ARCH: ${{ inputs.arch }}
+      run: |
+        set -euo pipefail
+
+        # Docker architecture -> ELF e_machine (see elf.h).
+        case "${ARCH}" in
+          amd64)   expected_machine=62  ;; # EM_X86_64
+          arm64)   expected_machine=183 ;; # EM_AARCH64
+          arm)     expected_machine=40  ;; # EM_ARM
+          386)     expected_machine=3   ;; # EM_386
+          ppc64le) expected_machine=21  ;; # EM_PPC64
+          s390x)   expected_machine=22  ;; # EM_S390
+          riscv64) expected_machine=243 ;; # EM_RISCV
+          *)
+            echo "::warning::No ELF machine mapping for arch '${ARCH}'; skipping binary architecture verification."
+            exit 0
+            ;;
+        esac
+
+        ref="${IMAGE}@${DIGEST}"
+        docker pull --platform "linux/${ARCH}" "${ref}" >/dev/null
+
+        entry="$(docker image inspect --format '{{if .Config.Entrypoint}}{{index .Config.Entrypoint 0}}{{else if .Config.Cmd}}{{index .Config.Cmd 0}}{{end}}' "${ref}")"
+        if [ -z "${entry}" ]; then
+          echo "::warning::Image declares no entrypoint or cmd; skipping binary architecture verification."
+          exit 0
+        fi
+        case "${entry}" in
+          /*) ;;
+          *)
+            echo "::warning::Entrypoint '${entry}' is not an absolute path; skipping binary architecture verification."
+            exit 0
+            ;;
+        esac
+
+        container_id="$(docker create --platform "linux/${ARCH}" "${ref}")"
+        trap 'docker rm -f "${container_id}" >/dev/null 2>&1 || true' EXIT
+        workdir="$(mktemp -d)"
+        # -L dereferences symlinked entrypoints (e.g. /app -> /real-binary).
+        if ! docker cp -L "${container_id}:${entry}" "${workdir}/entrypoint" 2>/dev/null; then
+          echo "::warning::Could not extract entrypoint '${entry}' from the image; skipping binary architecture verification."
+          exit 0
+        fi
+
+        bin="${workdir}/entrypoint"
+        magic="$(dd if="${bin}" bs=1 count=4 2>/dev/null | od -An -tx1 | tr -d ' \n' || true)"
+        if [ "${magic}" != "7f454c46" ]; then
+          echo "::warning::Entrypoint '${entry}' is not an ELF binary (e.g. a script); skipping binary architecture verification."
+          exit 0
+        fi
+        # EI_DATA (byte 5): 1 = little-endian, 2 = big-endian; e_machine is the
+        # 16-bit field at offset 18 in the file's endianness.
+        ei_data="$(dd if="${bin}" bs=1 skip=5 count=1 2>/dev/null | od -An -tu1 | tr -d ' \n' || true)"
+        read -r b1 b2 <<< "$(dd if="${bin}" bs=1 skip=18 count=2 2>/dev/null | od -An -tu1 | tr -s ' ' | sed 's/^ //' || true)"
+        if [ "${ei_data}" = "2" ]; then
+          machine=$(( b1 * 256 + b2 ))
+        else
+          machine=$(( b2 * 256 + b1 ))
+        fi
+
+        if [ "${machine}" -ne "${expected_machine}" ]; then
+          echo "::error::Pushed image ${ref} claims linux/${ARCH} but its entrypoint '${entry}' is an ELF binary with e_machine ${machine} (expected ${expected_machine}). The Dockerfile likely hardcodes GOOS/GOARCH or copies a binary built for another architecture; use ARG TARGETOS TARGETARCH (or fix the copied artifact) so the build follows the requested platform."
+          exit 1
+        fi
+        echo "Entrypoint '${entry}' ELF machine ${machine} matches linux/${ARCH}."
 
     #######################
     # Sign the image
