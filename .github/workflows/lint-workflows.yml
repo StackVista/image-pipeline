@@ -7,12 +7,14 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/**"
+      - ".github/actions/**"
       - "action.yml"
       - "zizmor.yml"
   push:
     branches: [main]
     paths:
       - ".github/workflows/**"
+      - ".github/actions/**"
       - "action.yml"
       - "zizmor.yml"
 

@@ -132,6 +132,56 @@ runs:
         secrets: ${{ inputs.buildkit-secrets }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
 
+    # The pushed manifest always claims whatever --platform requested; it says
+    # nothing about what the Dockerfile actually compiled or copied in. Check
+    # the entrypoint binary's ELF architecture with file(1) so arch-mismatched
+    # images (e.g. a hardcoded GOARCH) fail here, before signing, instead of
+    # with `exec format error` on the target nodes. `docker create` never
+    # starts the container, so foreign-arch images need no emulation. Only a
+    # definitive ELF mismatch fails; non-ELF entrypoints (e.g. scripts) pass.
+    - name: Verify binary architecture matches linux/${{ inputs.arch }}
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        DIGEST: ${{ steps.push-image.outputs.digest }}
+        ARCH: ${{ inputs.arch }}
+      run: |
+        set -euo pipefail
+
+        case "${ARCH}" in
+          amd64) want="x86-64"  ;;
+          arm64) want="aarch64" ;;
+          *)
+            echo "::warning::No ELF pattern for arch '${ARCH}'; skipping binary architecture verification."
+            exit 0
+            ;;
+        esac
+
+        cid="$(docker create --platform "linux/${ARCH}" "${IMAGE}@${DIGEST}")"
+        trap 'docker rm -f "${cid}" >/dev/null' EXIT
+        entry="$(docker inspect --format '{{if .Config.Entrypoint}}{{index .Config.Entrypoint 0}}{{else if .Config.Cmd}}{{index .Config.Cmd 0}}{{end}}' "${cid}")"
+
+        bin="${RUNNER_TEMP}/entrypoint-binary"
+        # -L dereferences symlinked entrypoints (e.g. /app -> /real-binary).
+        if [ -z "${entry}" ] || ! docker cp -L "${cid}:${entry}" "${bin}" 2>/dev/null; then
+          echo "::warning::Cannot extract entrypoint '${entry:-<none>}' from the image; skipping binary architecture verification."
+          exit 0
+        fi
+
+        desc="$(file -b "${bin}")"
+        case "${desc}" in
+          *ELF*"${want}"*)
+            echo "Entrypoint '${entry}' matches linux/${ARCH}: ${desc}"
+            ;;
+          *ELF*)
+            echo "::error::Image claims linux/${ARCH} but its entrypoint '${entry}' is: ${desc}. The Dockerfile likely hardcodes GOOS/GOARCH or copies a binary built for another architecture."
+            exit 1
+            ;;
+          *)
+            echo "Entrypoint '${entry}' is not an ELF binary (${desc}); nothing to verify."
+            ;;
+        esac
+
     #######################
     # Sign the image
     #######################
