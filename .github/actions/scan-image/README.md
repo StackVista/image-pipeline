@@ -14,13 +14,14 @@ Input/output reference: [`action.yml`](./action.yml).
 1. Builds and installs the `image-pipeline-evaluate` binary from this
    repo (single-version contract — the action ref pins the evaluator
    version).
-2. Generates an SBOM with **Syft** (CycloneDX).
+2. Downloads the configured VEX repositories and prepares the OpenVEX
+   documents for both scanners.
 3. Runs **Trivy** secrets scan (no exception path — secrets fail
    closed).
-4. Runs **Trivy** vuln scan against the SBOM, with `--vex repo`
+4. Runs **Trivy** vuln scan, with `--vex repo`
    sourcing from `../../../vex/repository.yaml`.
-5. Optionally runs **Grype** against the same SBOM (multi-scanner
-   coverage).
+5. Optionally runs **Grype** with the same downloaded OpenVEX
+   documents (multi-scanner coverage).
 6. Runs the evaluator against the merged findings + the consumer's
    exception files; emits SARIF.
 7. Uploads SARIF to GHAS Code Scanning (best-effort; failure does

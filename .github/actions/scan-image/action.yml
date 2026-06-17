@@ -94,13 +94,39 @@ runs:
         curl -sSfL "https://raw.githubusercontent.com/anchore/grype/${INSTALL_SHA}/install.sh" \
           | sudo sh -s -- -b /usr/local/bin "v${GRYPE_VERSION}"
 
-    - name: Configure Trivy VEX repos
+    - name: Configure and download VEX repos
       shell: bash
       env:
         REPO_ROOT: ${{ steps.paths.outputs.repo_root }}
+        GITHUB_TOKEN: ${{ github.token }}
       run: |
-        mkdir -p ~/.trivy/vex
+        set -euo pipefail
+
+        mkdir -p ~/.trivy/vex reports
         cp "${REPO_ROOT}/vex/repository.yaml" ~/.trivy/vex/repository.yaml
+
+        trivy vex repo download
+
+        vex_cache="${TRIVY_CACHE_DIR:-${HOME}/.cache/trivy}/vex/repositories"
+        if [ ! -d "${vex_cache}" ]; then
+          echo "::error::VEX repository cache was not created at ${vex_cache}"
+          exit 1
+        fi
+
+        : > reports/grype-vex-documents.txt
+        while IFS= read -r doc; do
+          if jq -e 'type == "object" and (.statements | type == "array")' "${doc}" >/dev/null 2>&1; then
+            printf '%s\n' "${doc}" >> reports/grype-vex-documents.txt
+          else
+            echo "::notice::Skipping non-OpenVEX JSON document for Grype: ${doc}"
+          fi
+        done < <(find "${vex_cache}" -type f -iname '*openvex*.json' | sort)
+        if [ ! -s reports/grype-vex-documents.txt ]; then
+          echo "::error::VEX repositories downloaded, but no OpenVEX documents were found for Grype"
+          exit 1
+        fi
+
+        echo "Prepared $(wc -l < reports/grype-vex-documents.txt | tr -d ' ') OpenVEX document(s) for Grype"
 
     - name: Log in to source registry
       if: ${{ inputs.source_registry != '' }}
@@ -152,6 +178,7 @@ runs:
           --output reports/trivy.json \
           --severity "${INPUT_SEVERITY}" \
           --vex repo \
+          --skip-vex-repo-update \
           --exit-code 0 \
           "${INPUT_IMAGE}"
         echo "::group::Trivy vuln report (table)"
@@ -164,8 +191,22 @@ runs:
       env:
         INPUT_IMAGE: ${{ inputs.image }}
       run: |
+        set -euo pipefail
+
+        vex_args=()
+        while IFS= read -r doc; do
+          if [ -n "${doc}" ]; then
+            vex_args+=(--vex "${doc}")
+          fi
+        done < reports/grype-vex-documents.txt
+
+        if [ "${#vex_args[@]}" -eq 0 ]; then
+          echo "::error::No OpenVEX documents were prepared for Grype"
+          exit 1
+        fi
+
         echo "::group::Grype vuln report (table)"
-        grype "${INPUT_IMAGE}" --by-cve -o table -o "json=reports/grype.json"
+        grype "${INPUT_IMAGE}" "${vex_args[@]}" --by-cve -o table -o "json=reports/grype.json"
         echo "::endgroup::"
 
     - name: Evaluate
