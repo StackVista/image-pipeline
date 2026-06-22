@@ -21,6 +21,16 @@ inputs:
     description: "Also run Grype against the image"
     required: false
     default: "true"
+  skip-files:
+    description: |
+      Optional newline-separated list of absolute paths inside the image to
+      skip during vulnerability scanning. Use for upstream binaries we ship
+      but don't audit per-CVE (e.g. /usr/bin/sops, /work/.tfenv/.../terraform).
+      Passed to Trivy as --skip-files and to Grype as --exclude. The Trivy
+      secrets scan is NOT subject to this list — secret coverage stays
+      comprehensive.
+    required: false
+    default: ""
   upload-sarif:
     description: "Upload SARIF to GHAS Code Scanning"
     required: false
@@ -170,10 +180,22 @@ runs:
       env:
         INPUT_IMAGE: ${{ inputs.image }}
         INPUT_SEVERITY: ${{ inputs.severity }}
+        INPUT_SKIP_FILES: ${{ inputs.skip-files }}
         GITHUB_TOKEN: ${{ github.token }}
       run: |
+        set -euo pipefail
+
+        skip_args=()
+        while IFS= read -r path; do
+          path="${path#"${path%%[![:space:]]*}"}"
+          path="${path%"${path##*[![:space:]]}"}"
+          [ -z "${path}" ] && continue
+          skip_args+=(--skip-files "${path}")
+        done <<< "${INPUT_SKIP_FILES}"
+
         trivy image \
           --scanners vuln \
+          "${skip_args[@]}" \
           --format json \
           --output reports/trivy.json \
           --severity "${INPUT_SEVERITY}" \
@@ -190,6 +212,7 @@ runs:
       shell: bash
       env:
         INPUT_IMAGE: ${{ inputs.image }}
+        INPUT_SKIP_FILES: ${{ inputs.skip-files }}
       run: |
         set -euo pipefail
 
@@ -205,8 +228,16 @@ runs:
           exit 1
         fi
 
+        skip_args=()
+        while IFS= read -r path; do
+          path="${path#"${path%%[![:space:]]*}"}"
+          path="${path%"${path##*[![:space:]]}"}"
+          [ -z "${path}" ] && continue
+          skip_args+=(--exclude "${path}")
+        done <<< "${INPUT_SKIP_FILES}"
+
         echo "::group::Grype vuln report (table)"
-        grype "${INPUT_IMAGE}" "${vex_args[@]}" --by-cve -o table -o "json=reports/grype.json"
+        grype "${INPUT_IMAGE}" "${vex_args[@]}" "${skip_args[@]}" --by-cve -o table -o "json=reports/grype.json"
         echo "::endgroup::"
 
     - name: Evaluate

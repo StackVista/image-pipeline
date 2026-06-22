@@ -29,6 +29,15 @@ Input/output reference: [`action.yml`](./action.yml).
 8. Exits non-zero if any finding is unmanaged or has an expired
    exception.
 
+## Skipping upstream binaries
+
+Use the `skip-files` input to exclude specific in-image paths from the
+vulnerability scanners when a binary is shipped from upstream and we don't
+maintain a per-CVE audit trail for it (e.g. statically-linked Go binaries
+like `sops` or `terraform`). Paths are passed to Trivy as `--skip-files`
+and to Grype as `--exclude`. The Trivy **secrets** scan deliberately
+ignores this list — secret coverage stays comprehensive across every file.
+
 ## Exception files
 
 Consumer repos write YAML files matching
