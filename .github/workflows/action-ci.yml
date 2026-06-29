@@ -27,6 +27,9 @@ concurrency:
 
 jobs:
   action-smoke:
+    # End-to-end scan coverage for the composite action. Every PR touching the
+    # action, evaluator, VEX config, schemas, or this workflow scans both a clean
+    # local image and a digest-pinned vulnerable BCI image.
     name: action-smoke (${{ matrix.case.name }} / ${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
     strategy:

@@ -151,6 +151,36 @@ runs:
             --username "${SOURCE_REGISTRY_USER}" \
             --password-stdin
 
+    - name: Pull image for scanner reuse
+      shell: bash
+      env:
+        INPUT_IMAGE: ${{ inputs.image }}
+      run: |
+        set -euo pipefail
+
+        if docker image inspect "${INPUT_IMAGE}" >/dev/null 2>&1; then
+          echo "Image ${INPUT_IMAGE} already exists in the local Docker daemon; reusing it."
+          exit 0
+        fi
+
+        max_attempts=3
+        retry_delay=10
+
+        for ((attempt=1; attempt<=max_attempts; attempt++)); do
+          if docker pull "${INPUT_IMAGE}"; then
+            echo "Image pull succeeded on attempt ${attempt}/${max_attempts}"
+            exit 0
+          fi
+
+          if [ "${attempt}" -eq "${max_attempts}" ]; then
+            echo "::error::docker pull ${INPUT_IMAGE} failed after ${max_attempts} attempts"
+            exit 1
+          fi
+
+          echo "::warning::docker pull ${INPUT_IMAGE} failed; retrying in ${retry_delay}s (attempt ${attempt}/${max_attempts})"
+          sleep "${retry_delay}"
+        done
+
     - name: Trivy secrets scan
       shell: bash
       env:
@@ -160,8 +190,11 @@ runs:
         # runner IP quotas and hit the 60/hr ceiling fast.
         GITHUB_TOKEN: ${{ github.token }}
       run: |
+        set -euo pipefail
+
         mkdir -p reports
         trivy image \
+          --image-src docker \
           --scanners secret \
           --format json \
           --output reports/trivy-secrets.json \
@@ -194,6 +227,7 @@ runs:
         done <<< "${INPUT_SKIP_FILES}"
 
         trivy image \
+          --image-src docker \
           --scanners vuln \
           "${skip_args[@]}" \
           --format json \
@@ -237,7 +271,7 @@ runs:
         done <<< "${INPUT_SKIP_FILES}"
 
         echo "::group::Grype vuln report (table)"
-        grype "${INPUT_IMAGE}" "${vex_args[@]}" "${skip_args[@]}" --by-cve -o table -o "json=reports/grype.json"
+        grype "docker:${INPUT_IMAGE}" "${vex_args[@]}" "${skip_args[@]}" --by-cve -o table -o "json=reports/grype.json"
         echo "::endgroup::"
 
     - name: Evaluate

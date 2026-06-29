@@ -16,18 +16,32 @@ Input/output reference: [`action.yml`](./action.yml).
    version).
 2. Downloads the configured VEX repositories and prepares the OpenVEX
    documents for both scanners.
-3. Runs **Trivy** secrets scan (no exception path — secrets fail
+3. Pulls the image into the local Docker daemon with retries, so both
+   scanners reuse the same local image instead of independently
+   streaming layers from the registry.
+4. Runs **Trivy** secrets scan (no exception path — secrets fail
    closed).
-4. Runs **Trivy** vuln scan, with `--vex repo`
+5. Runs **Trivy** vuln scan, with `--vex repo`
    sourcing from `../../../vex/repository.yaml`.
-5. Optionally runs **Grype** with the same downloaded OpenVEX
+6. Optionally runs **Grype** with the same downloaded OpenVEX
    documents (multi-scanner coverage).
-6. Runs the evaluator against the merged findings + the consumer's
+7. Runs the evaluator against the merged findings + the consumer's
    exception files; emits SARIF.
-7. Uploads SARIF to GHAS Code Scanning (best-effort; failure does
+8. Uploads SARIF to GHAS Code Scanning (best-effort; failure does
    not mask the gate).
-8. Exits non-zero if any finding is unmanaged or has an expired
+9. Exits non-zero if any finding is unmanaged or has an expired
    exception.
+
+## Image Pull and Scanner Reuse
+
+The action scans through the local Docker daemon. When the image is not
+already present locally, it runs `docker pull` with three attempts and a
+short delay between attempts. Trivy then scans with `--image-src docker`
+and Grype scans `docker:<image>`.
+
+This keeps transient registry or layer-read failures at one explicit,
+retryable boundary and prevents partial scans where each scanner streams
+the same remote image independently.
 
 ## Skipping upstream binaries
 
@@ -52,3 +66,8 @@ silently passing.
 The evaluator binary (`image-pipeline-evaluate`) is the policy engine
 behind the gate. See [`../../../evaluator/README.md`](../../../evaluator/README.md)
 for its CLI, SARIF output format, and how to add new scanner adapters.
+
+The repository's `Action unit tests` workflow also runs the full composite
+action on every relevant PR. It scans a locally built clean image and a
+digest-pinned vulnerable BCI image so changes to the scan action exercise the
+real Trivy, Grype, VEX, evaluator, and SARIF path at least once before merge.
