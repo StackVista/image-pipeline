@@ -16,32 +16,29 @@ Input/output reference: [`action.yml`](./action.yml).
    version).
 2. Downloads the configured VEX repositories and prepares the OpenVEX
    documents for both scanners.
-3. Pulls the image into the local Docker daemon with retries, so both
-   scanners reuse the same local image instead of independently
-   streaming layers from the registry.
-4. Runs **Trivy** secrets scan (no exception path — secrets fail
-   closed).
-5. Runs **Trivy** vuln scan, with `--vex repo`
+3. Runs **Trivy** secrets scan with bounded retries (no exception path —
+   secrets fail closed).
+4. Runs **Trivy** vuln scan with bounded retries, with `--vex repo`
    sourcing from `../../../vex/repository.yaml`.
-6. Optionally runs **Grype** with the same downloaded OpenVEX
+5. Optionally runs **Grype** with the same downloaded OpenVEX
    documents (multi-scanner coverage).
-7. Runs the evaluator against the merged findings + the consumer's
+6. Runs the evaluator against the merged findings + the consumer's
    exception files; emits SARIF.
-8. Uploads SARIF to GHAS Code Scanning (best-effort; failure does
+7. Uploads SARIF to GHAS Code Scanning (best-effort; failure does
    not mask the gate).
-9. Exits non-zero if any finding is unmanaged or has an expired
+8. Exits non-zero if any finding is unmanaged or has an expired
    exception.
 
-## Image Pull and Scanner Reuse
+## Scanner Retries
 
-The action scans through the local Docker daemon. When the image is not
-already present locally, it runs `docker pull` with three attempts and a
-short delay between attempts. Trivy then scans with `--image-src docker`
-and Grype scans `docker:<image>`.
+The action leaves scanner image-source behavior at the scanner defaults. Trivy
+commands are retried up to three times with a short delay to absorb transient
+registry or layer-read failures such as `unexpected EOF`.
 
-This keeps transient registry or layer-read failures at one explicit,
-retryable boundary and prevents partial scans where each scanner streams
-the same remote image independently.
+This intentionally avoids forcing Trivy or Grype through Docker's local image
+source. Docker can successfully pull image formats that a scanner's local
+Docker extractor may still fail to analyze, so the retry is applied to the
+previously working scanner path instead.
 
 ## Skipping upstream binaries
 
@@ -68,6 +65,8 @@ behind the gate. See [`../../../evaluator/README.md`](../../../evaluator/README.
 for its CLI, SARIF output format, and how to add new scanner adapters.
 
 The repository's `Action unit tests` workflow also runs the full composite
-action on every relevant PR. It scans a locally built clean image and a
-digest-pinned vulnerable BCI image so changes to the scan action exercise the
-real Trivy, Grype, VEX, evaluator, and SARIF path at least once before merge.
+action on every relevant PR. It scans a locally built clean image, a
+digest-pinned vulnerable BCI image, and a digest-pinned published SUSE
+Observability image. The published-image canary runs in `inform` mode: it is
+there to catch scanner compatibility regressions against real consumer image
+formats, not to make the unit workflow depend on today's CVE surface.
