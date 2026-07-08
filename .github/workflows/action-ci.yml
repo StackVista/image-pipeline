@@ -40,13 +40,23 @@ jobs:
           - name: local-clean
             image: image-pipeline-action-test:latest
             build_local: true
+            mode: gate
             expected_decision: passed
           # SLES 15 SP3 base, digest-pinned so the CVE surface is frozen.
           # Reliably yields HIGH/CRITICAL findings (verified 2026-05-18: 36 HIGH, 3 CRITICAL).
           - name: known-vuln
             image: registry.suse.com/bci/bci-base:15.3@sha256:906ade16ed715fc25a4eb72afcabc51330b9c4f549bb48d752ca64369ba1e227
             build_local: false
+            mode: gate
             expected_decision: failed
+          # Real published SUSE Observability image. This canary keeps the
+          # shared action honest against consumer image formats, while inform
+          # mode avoids coupling the test to the image's current CVE surface.
+          - name: published-stackgraph-console
+            image: registry.rancher.com/suse-observability/stackgraph-console:2.5-8.1.2@sha256:c00103decfff25d3ac187d4d0f84ab8068b15306d8fcb613c98507e4ec867085
+            build_local: false
+            mode: inform
+            expected_decision: passed
         include:
           - arch: amd64
             runner: ubuntu-24.04
@@ -70,6 +80,7 @@ jobs:
         continue-on-error: ${{ matrix.case.expected_decision == 'failed' }}
         with:
           image: ${{ matrix.case.image }}
+          mode: ${{ matrix.case.mode }}
           with-grype: "true"
           upload-sarif: "false"
 
