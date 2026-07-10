@@ -36,7 +36,7 @@
         },
         "severity": {
           "type": "string",
-          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+          "enum": ["UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
         }
       }
     },
