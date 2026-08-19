@@ -134,6 +134,32 @@ runs:
         secrets: ${{ inputs.buildkit-secrets }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
 
+    - name: Resolve pushed digest
+      id: digest
+      shell: bash
+      env:
+        BUILD_DIGEST: ${{ steps.push-image.outputs.digest }}
+        REF: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
+      run: |
+        set -euo pipefail
+
+        digest="${BUILD_DIGEST}"
+        if [ -z "${digest}" ]; then
+          # build-push-action only passes --metadata-file to a Buildx new enough to
+          # report its own version, so an unstamped Buildx yields no digest output
+          # while still pushing the image. Ask the registry instead of signing nothing.
+          echo "::warning::build-push-action returned no digest; resolving ${REF} from the registry."
+          digest="$(docker buildx imagetools inspect "${REF}" | awk '/^Digest:/ { print $2; exit }')"
+        fi
+
+        if [ -z "${digest}" ]; then
+          echo "::error::Unable to resolve the digest for ${REF}; refusing to continue with an unsigned image."
+          exit 1
+        fi
+
+        echo "Resolved digest for ${REF}: ${digest}"
+        echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+
     # The pushed manifest always claims whatever --platform requested; it says
     # nothing about what the Dockerfile actually compiled or copied in. Check
     # the entrypoint binary's ELF architecture with file(1) so arch-mismatched
@@ -145,7 +171,7 @@ runs:
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
-        DIGEST: ${{ steps.push-image.outputs.digest }}
+        DIGEST: ${{ steps.digest.outputs.digest }}
         ARCH: ${{ inputs.arch }}
       run: |
         set -euo pipefail
@@ -213,7 +239,7 @@ runs:
           ${INPUTS_IMAGE}@${OUTPUTS_DIGEST}
       env:
         INPUTS_IMAGE: ${{ inputs.image }}
-        OUTPUTS_DIGEST: ${{ steps.push-image.outputs.digest }}
+        OUTPUTS_DIGEST: ${{ steps.digest.outputs.digest }}
         REF: ${{ github.ref }}
         REPOSITORY: ${{ github.repository }}
         SERVER: ${{ github.server_url }}
