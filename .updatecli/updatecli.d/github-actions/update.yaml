@@ -45,16 +45,6 @@ autodiscovery:
           - ".github/actions/*/action.yaml"
 
 sources:
-  syftVersion:
-    name: Latest Syft 1 release tag
-    kind: gittag
-    spec:
-      url: "https://github.com/anchore/syft.git"
-      versionfilter:
-        kind: regex/semver
-        regex: "^v(1\\.[0-9]+\\.[0-9]+)$"
-        pattern: "*"
-
   trivyVersion:
     name: Latest Trivy 0 release tag
     kind: gittag
@@ -99,16 +89,6 @@ sources:
         pattern: "*"
 
 targets:
-  scanImageSyftVersion:
-    name: "scan-image: bump Syft version"
-    kind: file
-    scmid: default
-    sourceid: syftVersion
-    spec:
-      file: ".github/actions/scan-image/action.yml"
-      content: '        syft-version: {{ source "syftVersion" }}'
-      matchpattern: '        syft-version: (.*)'
-
   scanImageTrivyVersion:
     name: "scan-image: bump Trivy version"
     kind: file
