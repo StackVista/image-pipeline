@@ -69,6 +69,10 @@ inputs:
     description: "Password/token for target-registry login."
     required: false
     default: ""
+  fail-on-existing-tags:
+    description: "Fail if any target tag already exists (immutable release behavior). Set to 'false' for branch/PR builds that repoint moving tags each commit."
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -84,9 +88,11 @@ runs:
         username: ${{ inputs.target-registry-user }}
         password: ${{ inputs.target-registry-password }}
 
-    # Refuse to overwrite any already-published release tag before doing any
-    # work, matching the immutable-tag guard in push-single-arch/merge-multiarch.
+    # Refuse to overwrite any already-published tag before doing any work,
+    # matching push-single-arch/merge-multiarch. Disable for branch/PR builds
+    # that repoint moving tags (e.g. a branch-slug tag) on every commit.
     - name: Fail if any release tag already exists
+      if: ${{ inputs.fail-on-existing-tags == 'true' }}
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
