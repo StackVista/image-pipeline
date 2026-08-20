@@ -1,0 +1,381 @@
+name: "scan-sign-push"
+description: >
+  Gate, publish, and sign a multi-arch image from per-arch local tarballs:
+  load each arch, scan it (secrets fail-closed, CVEs inform-only), push the
+  per-arch manifests, assemble the multi-arch manifest list under every
+  release tag, then cosign-sign and verify the assembled digest against the
+  GitHub Actions OIDC identity. The registry never sees bytes that have not
+  passed the secret gate first.
+
+inputs:
+  image:
+    description: "Full image name without tag, e.g. quay.io/stackstate/stackstate-server"
+    required: true
+  tags:
+    description: "Tags to publish the multi-arch image under. Accepts either a JSON array (e.g. [\"2.10.3\",\"latest\"]) or a newline-separated list. Values may be bare tags or full refs."
+    required: true
+  arches:
+    description: "Comma-separated architectures, e.g. amd64,arm64. One tarball is expected per arch."
+    required: false
+    default: "amd64,arm64"
+  source-mode:
+    description: "Where the per-arch images come from: 'tarball' (docker load a tarball per arch) or 'local' (images already loaded in the docker daemon)."
+    required: false
+    default: "tarball"
+  tarball-dir:
+    description: "Directory holding per-arch tarballs named image-<arch>.tar. Required when source-mode is 'tarball'."
+    required: false
+    default: ""
+  tarball-prefix:
+    description: "Filename prefix for per-arch tarballs; the resolved path is <tarball-dir>/<prefix><arch>.tar."
+    required: false
+    default: "image-"
+  local-image-prefix:
+    description: "Local image ref prefix for source-mode 'local'; the per-arch ref is <prefix><arch> (e.g. sts-local:amd64)."
+    required: false
+    default: "sts-local:"
+  severity:
+    description: "Comma-separated severities reported by the CVE scan (inform mode, non-blocking)."
+    required: false
+    default: HIGH,CRITICAL
+  with-grype:
+    description: "Also run Grype during the CVE scan."
+    required: false
+    default: "true"
+  exceptions-path:
+    description: "Optional path in the caller workspace containing CVE exception YAML files."
+    required: false
+    default: ""
+  skip-files:
+    description: "Optional newline-separated absolute paths inside the image to skip during the CVE scan. Secret scanning is never subject to this list."
+    required: false
+    default: ""
+  upload-sarif:
+    description: "Upload the CVE scan SARIF to GHAS Code Scanning."
+    required: false
+    default: "true"
+  sarif-category-prefix:
+    description: "SARIF category prefix; the per-arch category is <prefix>-<arch>."
+    required: false
+    default: release-gate
+  target-registry:
+    description: "Target registry to docker login before pushing, e.g. quay.io."
+    required: true
+  target-registry-user:
+    description: "Username for target-registry login. Leave empty to skip login (e.g. an unauthenticated local registry in tests)."
+    required: false
+    default: ""
+  target-registry-password:
+    description: "Password/token for target-registry login."
+    required: false
+    default: ""
+  fail-on-existing-tags:
+    description: "Fail if any target tag already exists (immutable release behavior, the safe default). Set to 'false' for branch/PR builds that repoint moving tags each commit."
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+    - name: Log in to target registry
+      if: ${{ inputs.target-registry-user != '' }}
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      with:
+        registry: ${{ inputs.target-registry }}
+        username: ${{ inputs.target-registry-user }}
+        password: ${{ inputs.target-registry-password }}
+
+    # The secret gate below is wired as one scan-image step per supported arch
+    # (a composite action cannot loop `uses:`). Any arch without a matching scan
+    # step would be pushed and signed unscanned, so refuse unknown arches up
+    # front — this keeps "the registry never sees unscanned bytes" true.
+    - name: Validate arches are scannable
+      shell: bash
+      env:
+        ARCHES: ${{ inputs.arches }}
+      run: |
+        set -euo pipefail
+        IFS=',' read -r -a arch_list <<< "$ARCHES"
+        for raw_arch in "${arch_list[@]}"; do
+          arch="${raw_arch//[[:space:]]/}"
+          [ -z "$arch" ] && continue
+          case "$arch" in
+            amd64|arm64) ;;
+            *)
+              echo "::error::Unsupported arch '${arch}'. This action only has a secret-scan gate for amd64 and arm64; add a scan step before publishing others." >&2
+              exit 1 ;;
+          esac
+        done
+
+    # Refuse to overwrite any already-published tag before doing any work,
+    # matching push-single-arch/merge-multiarch. Disable for branch/PR builds
+    # that repoint moving tags (e.g. a branch-slug tag) on every commit.
+    - name: Fail if any release tag already exists
+      if: ${{ inputs.fail-on-existing-tags == 'true' }}
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAGS: ${{ inputs.tags }}
+      run: |
+        set -euo pipefail
+        # Accept a JSON array or a newline-separated list.
+        if printf '%s' "$TAGS" | jq -e 'type == "array"' >/dev/null 2>&1; then
+          TAGS="$(printf '%s' "$TAGS" | jq -r '.[]')"
+        fi
+        while IFS= read -r tag; do
+          tag="${tag##*:}"
+          [ -z "$tag" ] && continue
+          ref="${IMAGE}:${tag}"
+          if docker buildx imagetools inspect "$ref" >/dev/null 2>&1; then
+            echo "::error::${ref} already exists in target registry; refusing to overwrite." >&2
+            exit 1
+          fi
+        done <<< "$TAGS"
+
+    # Load and tag each arch locally. Nothing is pushed here: the scan steps
+    # below run on these local images first, so a secret finding fails the job
+    # before the assemble/push step ever contacts the registry. In 'local' mode
+    # the per-arch images are already in the docker daemon (e.g. an sbt
+    # dockerMultiPlatformPublishLocal per arch), so no tarball load happens.
+    - name: Load and tag per-arch images
+      id: per-arch
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        ARCHES: ${{ inputs.arches }}
+        SOURCE_MODE: ${{ inputs.source-mode }}
+        TARBALL_DIR: ${{ inputs.tarball-dir }}
+        TARBALL_PREFIX: ${{ inputs.tarball-prefix }}
+        LOCAL_IMAGE_PREFIX: ${{ inputs.local-image-prefix }}
+      run: |
+        set -euo pipefail
+        IFS=',' read -r -a arch_list <<< "$ARCHES"
+        handle_base="${IMAGE}:sig-handle-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+        for raw_arch in "${arch_list[@]}"; do
+          arch="${raw_arch//[[:space:]]/}"
+          [ -z "$arch" ] && continue
+
+          if [ "$SOURCE_MODE" = "local" ]; then
+            loaded="${LOCAL_IMAGE_PREFIX}${arch}"
+            if ! docker image inspect "$loaded" >/dev/null 2>&1; then
+              echo "::error::Missing local per-arch image: ${loaded}" >&2
+              exit 1
+            fi
+          else
+            tarball="${TARBALL_DIR}/${TARBALL_PREFIX}${arch}.tar"
+            if [ ! -f "$tarball" ]; then
+              echo "::error::Missing per-arch tarball: ${tarball}" >&2
+              exit 1
+            fi
+            loaded=$(docker load -i "$tarball" | awk -F': ' '/Loaded image/ {print $NF}')
+          fi
+
+          # scan-target:<arch> is the fixed tag the Scan <arch> steps below scan.
+          docker tag "$loaded" "scan-target:${arch}"
+          docker tag "$loaded" "${handle_base}-${arch}"
+        done
+        echo "handle-base=${handle_base}" >> "$GITHUB_OUTPUT"
+
+    # Guard against arch mislabelling: arm64 layers built under QEMU on an amd64
+    # runner can end up tagged for the wrong platform. Confirm each per-arch
+    # image's config architecture matches the arch we are about to publish it as
+    # (equivalent to push-single-arch's binary-arch check, STAC-25033).
+    - name: Verify per-arch image architecture
+      shell: bash
+      env:
+        ARCHES: ${{ inputs.arches }}
+      run: |
+        set -euo pipefail
+        IFS=',' read -r -a arch_list <<< "$ARCHES"
+        for raw_arch in "${arch_list[@]}"; do
+          arch="${raw_arch//[[:space:]]/}"
+          [ -z "$arch" ] && continue
+          actual=$(docker image inspect "scan-target:${arch}" --format '{{.Architecture}}')
+          if [ "$actual" != "$arch" ]; then
+            echo "::error::scan-target:${arch} reports architecture '${actual}', expected '${arch}'." >&2
+            exit 1
+          fi
+        done
+
+    # The scan runs as its own action invocation per arch. scan-image performs
+    # a fail-closed secret scan regardless of mode; mode: inform keeps the CVE
+    # result non-blocking per the release contract.
+    - name: Scan amd64
+      if: ${{ contains(inputs.arches, 'amd64') }}
+      uses: StackVista/image-pipeline/.github/actions/scan-image@6284a6fc006a7cc46a7f00d02c50d5f21b117b63
+      with:
+        image: scan-target:amd64
+        mode: inform
+        severity: ${{ inputs.severity }}
+        with-grype: ${{ inputs.with-grype }}
+        exceptions-path: ${{ inputs.exceptions-path }}
+        skip-files: ${{ inputs.skip-files }}
+        upload-sarif: ${{ inputs.upload-sarif }}
+        sarif-category: ${{ inputs.sarif-category-prefix }}-amd64
+
+    - name: Scan arm64
+      if: ${{ contains(inputs.arches, 'arm64') }}
+      uses: StackVista/image-pipeline/.github/actions/scan-image@6284a6fc006a7cc46a7f00d02c50d5f21b117b63
+      with:
+        image: scan-target:arm64
+        mode: inform
+        severity: ${{ inputs.severity }}
+        with-grype: ${{ inputs.with-grype }}
+        exceptions-path: ${{ inputs.exceptions-path }}
+        skip-files: ${{ inputs.skip-files }}
+        upload-sarif: ${{ inputs.upload-sarif }}
+        sarif-category: ${{ inputs.sarif-category-prefix }}-arm64
+
+    - name: Push per-arch manifests and assemble multi-arch manifest
+      id: assemble
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        ARCHES: ${{ inputs.arches }}
+        TAGS: ${{ inputs.tags }}
+        HANDLE_BASE: ${{ steps.per-arch.outputs.handle-base }}
+      run: |
+        set -euo pipefail
+
+        IFS=',' read -r -a arch_list <<< "$ARCHES"
+        per_arch_refs=()
+        for raw_arch in "${arch_list[@]}"; do
+          arch="${raw_arch//[[:space:]]/}"
+          [ -z "$arch" ] && continue
+          handle="${HANDLE_BASE}-${arch}"
+          docker push "$handle"
+          # Resolve the pushed manifest digest via inspect rather than parsing
+          # `docker push` stdout, whose `digest:` line format has shifted
+          # across docker versions.
+          digest=$(docker buildx imagetools inspect "$handle" --format '{{.Manifest.Digest}}')
+          per_arch_refs+=("${IMAGE}@${digest}")
+        done
+
+        tag_args=()
+        # Accept a JSON array or a newline-separated list.
+        if printf '%s' "$TAGS" | jq -e 'type == "array"' >/dev/null 2>&1; then
+          TAGS="$(printf '%s' "$TAGS" | jq -r '.[]')"
+        fi
+        while IFS= read -r tag; do
+          tag="${tag##*:}"
+          [ -z "$tag" ] && continue
+          ref="${IMAGE}:${tag}"
+          tag_args+=(--tag "$ref")
+        done <<< "$TAGS"
+
+        if [ "${#tag_args[@]}" -eq 0 ]; then
+          echo "::error::No tags provided; nothing to assemble." >&2
+          exit 1
+        fi
+
+        # Assemble under a run-unique handle tag first and read the digest back
+        # from THAT immutable-per-run ref, not a moving release tag — a concurrent
+        # run repointing a shared release tag could otherwise make us sign a list
+        # we did not assemble. Then verify the assembled list references exactly
+        # the per-arch child digests we pushed (integrity check, like
+        # merge-multiarch). The release tags are NOT attached here — they are
+        # attached only after sign+verify succeeds, so a Fulcio/Rekor failure can
+        # never leave a release tag pointing at an unsigned digest.
+        list_handle="${HANDLE_BASE}-list"
+        docker buildx imagetools create --tag "$list_handle" "${per_arch_refs[@]}"
+        manifest_digest=$(docker buildx imagetools inspect "$list_handle" --format '{{.Manifest.Digest}}')
+
+        assembled_children=$(docker buildx imagetools inspect "${IMAGE}@${manifest_digest}" --raw \
+          | jq -r '.manifests[].digest' | sort)
+        expected_children=$(printf '%s\n' "${per_arch_refs[@]}" | sed 's/.*@//' | sort)
+        if [ "$assembled_children" != "$expected_children" ]; then
+          echo "::error::Assembled manifest list children do not match the per-arch images we pushed; refusing to sign." >&2
+          echo "expected:" >&2; printf '%s\n' "$expected_children" >&2
+          echo "assembled:" >&2; printf '%s\n' "$assembled_children" >&2
+          exit 1
+        fi
+
+        echo "digest=${manifest_digest}" >> "$GITHUB_OUTPUT"
+
+    - name: Install cosign
+      uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+    # Sign the assembled multi-arch digest. Some verifiers (slsactl, hauler,
+    # old cosign) cannot read the v3 bundle format, so we sign both formats.
+    # certificate-identity-regexp stays a pattern because a composite action
+    # cannot know the caller's exact ref path.
+    - name: Sign and verify the multi-arch image
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        DIGEST: ${{ steps.assemble.outputs.digest }}
+        REF: ${{ github.ref }}
+        REPOSITORY: ${{ github.repository }}
+        SERVER: ${{ github.server_url }}
+      run: |
+        set -euo pipefail
+
+        cosign sign --yes --new-bundle-format=false --use-signing-config=false "${IMAGE}@${DIGEST}"
+        cosign sign --yes --new-bundle-format=true --use-signing-config=true "${IMAGE}@${DIGEST}"
+
+        cert_identity_regexp="^${SERVER}/${REPOSITORY}/.*@${REF}"
+        cosign verify \
+          --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+          --certificate-identity-regexp="${cert_identity_regexp}" \
+          "${IMAGE}@${DIGEST}"
+
+    # Publish the release tags only now that the digest is signed and verified, so
+    # a Fulcio/Rekor failure above can never leave a release tag on an unsigned
+    # digest. cosign signs by digest, so attaching the tags afterwards does not
+    # change what was signed.
+    - name: Attach release tags to the signed digest
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAGS: ${{ inputs.tags }}
+        DIGEST: ${{ steps.assemble.outputs.digest }}
+      run: |
+        set -euo pipefail
+        tag_args=()
+        if printf '%s' "$TAGS" | jq -e 'type == "array"' >/dev/null 2>&1; then
+          TAGS="$(printf '%s' "$TAGS" | jq -r '.[]')"
+        fi
+        while IFS= read -r tag; do
+          tag="${tag##*:}"
+          [ -z "$tag" ] && continue
+          tag_args+=(--tag "${IMAGE}:${tag}")
+        done <<< "$TAGS"
+        docker buildx imagetools create "${tag_args[@]}" "${IMAGE}@${DIGEST}"
+
+    # The per-arch and list handle tags exist only so imagetools could address the
+    # children/list by digest. The release tags now point at the same manifest
+    # list and its children, so deleting the handle *tags* does not GC any
+    # referenced manifest. Best-effort, quay.io only (no portable registry delete);
+    # other registries keep the handles until their own tag GC runs.
+    - name: Delete sig-handle tags
+      if: ${{ always() && steps.per-arch.outputs.handle-base != '' && inputs.target-registry == 'quay.io' && inputs.target-registry-password != '' }}
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        ARCHES: ${{ inputs.arches }}
+        HANDLE_BASE: ${{ steps.per-arch.outputs.handle-base }}
+        QUAY_TOKEN: ${{ inputs.target-registry-password }}
+      run: |
+        set -uo pipefail
+        # IMAGE is quay.io/<org>/<repo>; strip the registry host for the API path.
+        repo_path="${IMAGE#quay.io/}"
+        handle_suffix="${HANDLE_BASE##*:}"
+        delete_tag() {
+          local tag="$1"
+          curl -sf -X DELETE \
+            -H "Authorization: Bearer ${QUAY_TOKEN}" \
+            "https://quay.io/api/v1/repository/${repo_path}/tag/${tag}" \
+            >/dev/null 2>&1 \
+            && echo "Deleted handle tag ${tag}" \
+            || echo "::warning::Could not delete handle tag ${tag} (leaving it)."
+        }
+        delete_tag "${handle_suffix}-list"
+        IFS=',' read -r -a arch_list <<< "$ARCHES"
+        for raw_arch in "${arch_list[@]}"; do
+          arch="${raw_arch//[[:space:]]/}"
+          [ -z "$arch" ] && continue
+          delete_tag "${handle_suffix}-${arch}"
+        done

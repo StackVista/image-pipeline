@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - ".github/actions/scan-image/**"
+      - ".github/actions/scan-sign-push/**"
       - "evaluator/**"
       - "vex/**"
       - "schemas/**"
@@ -13,6 +14,7 @@ on:
     branches: [main]
     paths:
       - ".github/actions/scan-image/**"
+      - ".github/actions/scan-sign-push/**"
       - "evaluator/**"
       - "vex/**"
       - "schemas/**"
@@ -93,3 +95,66 @@ jobs:
           test "${DECISION}" = "${EXPECTED_DECISION}"
           test "${SARIF_PATH}" = "reports/image-pipeline.sarif"
           test -f reports/image-pipeline.sarif
+
+  scan-sign-push-smoke:
+    # End-to-end coverage for scan-sign-push: build two per-arch tarballs, run the
+    # action against a local registry:2, and confirm it scans, assembles a
+    # multi-arch manifest under every tag, keyless-signs the assembled digest, and
+    # verifies it. Keyless signing uses public Fulcio/Rekor with the workflow's
+    # OIDC token; the signature is stored in the local registry.
+    name: scan-sign-push-smoke
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+        with:
+          driver-opts: network=host
+
+      - name: Build per-arch tarballs
+        run: |
+          set -euo pipefail
+          ctx="$(mktemp -d)"
+          printf 'FROM scratch\nCOPY hello.txt /hello.txt\n' > "$ctx/Dockerfile"
+          echo hello > "$ctx/hello.txt"
+          for arch in amd64 arm64; do
+            docker buildx build --platform "linux/${arch}" \
+              --output "type=docker,dest=image-${arch}.tar" "$ctx"
+          done
+
+      - name: scan-sign-push
+        uses: ./.github/actions/scan-sign-push
+        with:
+          image: localhost:5000/smoke/scan-sign-push
+          tags: |
+            v0
+            latest
+          arches: amd64,arm64
+          source-mode: tarball
+          tarball-dir: .
+          with-grype: "false"
+          upload-sarif: "false"
+          target-registry: localhost:5000
+
+      - name: Assert both tags resolve to one signed multi-arch digest
+        run: |
+          set -euo pipefail
+          d0=$(docker buildx imagetools inspect localhost:5000/smoke/scan-sign-push:v0 --format '{{.Manifest.Digest}}')
+          d1=$(docker buildx imagetools inspect localhost:5000/smoke/scan-sign-push:latest --format '{{.Manifest.Digest}}')
+          test "$d0" = "$d1"
+          # Two child manifests (amd64, arm64) in the list.
+          n=$(docker buildx imagetools inspect "localhost:5000/smoke/scan-sign-push@${d0}" --raw | jq '.manifests | length')
+          test "$n" -eq 2
