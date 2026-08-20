@@ -70,9 +70,9 @@ inputs:
     required: false
     default: ""
   fail-on-existing-tags:
-    description: "Fail if any target tag already exists (immutable release behavior). Set to 'false' for branch/PR builds that repoint moving tags each commit."
+    description: "Fail if any target tag already exists (immutable release behavior, the safe default). Set to 'false' for branch/PR builds that repoint moving tags each commit."
     required: false
-    default: "false"
+    default: "true"
 
 runs:
   using: composite
@@ -87,6 +87,28 @@ runs:
         registry: ${{ inputs.target-registry }}
         username: ${{ inputs.target-registry-user }}
         password: ${{ inputs.target-registry-password }}
+
+    # The secret gate below is wired as one scan-image step per supported arch
+    # (a composite action cannot loop `uses:`). Any arch without a matching scan
+    # step would be pushed and signed unscanned, so refuse unknown arches up
+    # front — this keeps "the registry never sees unscanned bytes" true.
+    - name: Validate arches are scannable
+      shell: bash
+      env:
+        ARCHES: ${{ inputs.arches }}
+      run: |
+        set -euo pipefail
+        IFS=',' read -r -a arch_list <<< "$ARCHES"
+        for raw_arch in "${arch_list[@]}"; do
+          arch="${raw_arch//[[:space:]]/}"
+          [ -z "$arch" ] && continue
+          case "$arch" in
+            amd64|arm64) ;;
+            *)
+              echo "::error::Unsupported arch '${arch}'. This action only has a secret-scan gate for amd64 and arm64; add a scan step before publishing others." >&2
+              exit 1 ;;
+          esac
+        done
 
     # Refuse to overwrite any already-published tag before doing any work,
     # matching push-single-arch/merge-multiarch. Disable for branch/PR builds
@@ -157,6 +179,27 @@ runs:
         done
         echo "handle-base=${handle_base}" >> "$GITHUB_OUTPUT"
 
+    # Guard against arch mislabelling: arm64 layers built under QEMU on an amd64
+    # runner can end up tagged for the wrong platform. Confirm each per-arch
+    # image's config architecture matches the arch we are about to publish it as
+    # (equivalent to push-single-arch's binary-arch check, STAC-25033).
+    - name: Verify per-arch image architecture
+      shell: bash
+      env:
+        ARCHES: ${{ inputs.arches }}
+      run: |
+        set -euo pipefail
+        IFS=',' read -r -a arch_list <<< "$ARCHES"
+        for raw_arch in "${arch_list[@]}"; do
+          arch="${raw_arch//[[:space:]]/}"
+          [ -z "$arch" ] && continue
+          actual=$(docker image inspect "scan-target:${arch}" --format '{{.Architecture}}')
+          if [ "$actual" != "$arch" ]; then
+            echo "::error::scan-target:${arch} reports architecture '${actual}', expected '${arch}'." >&2
+            exit 1
+          fi
+        done
+
     # The scan runs as its own action invocation per arch. scan-image performs
     # a fail-closed secret scan regardless of mode; mode: inform keeps the CVE
     # result non-blocking per the release contract.
@@ -212,7 +255,6 @@ runs:
         done
 
         tag_args=()
-        first_ref=""
         # Accept a JSON array or a newline-separated list.
         if printf '%s' "$TAGS" | jq -e 'type == "array"' >/dev/null 2>&1; then
           TAGS="$(printf '%s' "$TAGS" | jq -r '.[]')"
@@ -222,7 +264,6 @@ runs:
           [ -z "$tag" ] && continue
           ref="${IMAGE}:${tag}"
           tag_args+=(--tag "$ref")
-          [ -z "$first_ref" ] && first_ref="$ref"
         done <<< "$TAGS"
 
         if [ "${#tag_args[@]}" -eq 0 ]; then
@@ -230,12 +271,29 @@ runs:
           exit 1
         fi
 
-        docker buildx imagetools create "${tag_args[@]}" "${per_arch_refs[@]}"
+        # Assemble under a run-unique handle tag first and read the digest back
+        # from THAT immutable-per-run ref, not a moving release tag — a concurrent
+        # run repointing a shared release tag could otherwise make us sign a list
+        # we did not assemble. Then verify the assembled list references exactly
+        # the per-arch child digests we pushed (integrity check, like
+        # merge-multiarch), and only then attach the release tags to that digest.
+        list_handle="${HANDLE_BASE}-list"
+        docker buildx imagetools create --tag "$list_handle" "${per_arch_refs[@]}"
+        manifest_digest=$(docker buildx imagetools inspect "$list_handle" --format '{{.Manifest.Digest}}')
 
-        # Read the assembled manifest-list digest back from the registry (all
-        # release tags point at the same list). Signing this digest signs the
-        # manifest list itself, not a per-arch child.
-        manifest_digest=$(docker buildx imagetools inspect "$first_ref" --format '{{.Manifest.Digest}}')
+        assembled_children=$(docker buildx imagetools inspect "${IMAGE}@${manifest_digest}" --raw \
+          | jq -r '.manifests[].digest' | sort)
+        expected_children=$(printf '%s\n' "${per_arch_refs[@]}" | sed 's/.*@//' | sort)
+        if [ "$assembled_children" != "$expected_children" ]; then
+          echo "::error::Assembled manifest list children do not match the per-arch images we pushed; refusing to sign." >&2
+          echo "expected:" >&2; printf '%s\n' "$expected_children" >&2
+          echo "assembled:" >&2; printf '%s\n' "$assembled_children" >&2
+          exit 1
+        fi
+
+        # Attach every release tag to the verified digest (no rebuild of the list).
+        docker buildx imagetools create "${tag_args[@]}" "${IMAGE}@${manifest_digest}"
+
         echo "digest=${manifest_digest}" >> "$GITHUB_OUTPUT"
 
     - name: Install cosign
@@ -264,3 +322,38 @@ runs:
           --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
           --certificate-identity-regexp="${cert_identity_regexp}" \
           "${IMAGE}@${DIGEST}"
+
+    # The per-arch and list handle tags exist only so imagetools could address the
+    # children/list by digest. The release tags now point at the same manifest
+    # list and its children, so deleting the handle *tags* does not GC any
+    # referenced manifest. Best-effort, quay.io only (no portable registry delete);
+    # other registries keep the handles until their own tag GC runs.
+    - name: Delete sig-handle tags
+      if: ${{ always() && steps.per-arch.outputs.handle-base != '' && inputs.target-registry == 'quay.io' && inputs.target-registry-password != '' }}
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        ARCHES: ${{ inputs.arches }}
+        HANDLE_BASE: ${{ steps.per-arch.outputs.handle-base }}
+        QUAY_TOKEN: ${{ inputs.target-registry-password }}
+      run: |
+        set -uo pipefail
+        # IMAGE is quay.io/<org>/<repo>; strip the registry host for the API path.
+        repo_path="${IMAGE#quay.io/}"
+        handle_suffix="${HANDLE_BASE##*:}"
+        delete_tag() {
+          local tag="$1"
+          curl -sf -X DELETE \
+            -H "Authorization: Bearer ${QUAY_TOKEN}" \
+            "https://quay.io/api/v1/repository/${repo_path}/tag/${tag}" \
+            >/dev/null 2>&1 \
+            && echo "Deleted handle tag ${tag}" \
+            || echo "::warning::Could not delete handle tag ${tag} (leaving it)."
+        }
+        delete_tag "${handle_suffix}-list"
+        IFS=',' read -r -a arch_list <<< "$ARCHES"
+        for raw_arch in "${arch_list[@]}"; do
+          arch="${raw_arch//[[:space:]]/}"
+          [ -z "$arch" ] && continue
+          delete_tag "${handle_suffix}-${arch}"
+        done

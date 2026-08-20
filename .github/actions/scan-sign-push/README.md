@@ -60,7 +60,7 @@ builds, install QEMU/binfmt before this action.
 | `target-registry` | yes | – | Registry to log in to before pushing, e.g. `quay.io`. |
 | `target-registry-user` | no | `""` | Registry username. Empty skips login (e.g. local test registry). |
 | `target-registry-password` | no | `""` | Registry password/token. |
-| `fail-on-existing-tags` | no | `false` | Fail if any target tag already exists (immutable-release behavior). Keep `false` for branch/PR builds that re-point moving tags each commit. |
+| `fail-on-existing-tags` | no | `true` | Fail if any target tag already exists (immutable-release behavior, the safe default). Set `false` for branch/PR builds that re-point moving tags each commit. |
 
 ## Source modes
 
@@ -151,9 +151,19 @@ Any tag on the signed digest verifies, including tags added later by a retag
 
 ## Notes
 
+- **Only `amd64` and `arm64` are supported.** The secret gate is one scan step
+  per arch, so the action fails fast on any other arch rather than publishing it
+  unscanned.
+- Before signing, the action verifies each per-arch image's config architecture
+  matches its declared arch (guards QEMU cross-build mislabelling) and that the
+  assembled manifest list references exactly the per-arch children it pushed
+  (guards a concurrent run re-pointing a shared tag).
 - **Secret scanning always blocks**; CVE scanning is inform-only and never fails
   the job (it is uploaded as Code Scanning alerts for visibility).
-- The action leaves temporary `sig-handle-<run>-<attempt>-<arch>` tags used to
-  address the per-arch children by digest during assembly.
+- Temporary `sig-handle-<run>-<attempt>-<arch>` / `-list` tags are used to address
+  the per-arch children and the list by digest during assembly. They are deleted
+  at the end on `quay.io`; on other registries they remain until the registry's
+  own tag GC runs (deleting the tag never GCs a manifest the release tags still
+  reference).
 - Signing is keyless (Sigstore/Fulcio) — no long-lived keys. It requires
   `id-token: write` and a public Rekor/Fulcio reachable from the runner.
