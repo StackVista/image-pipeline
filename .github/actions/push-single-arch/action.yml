@@ -134,7 +134,7 @@ runs:
         secrets: ${{ inputs.buildkit-secrets }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
 
-    - name: Resolve pushed digest
+    - name: Require a signable digest
       id: digest
       shell: bash
       env:
@@ -143,22 +143,16 @@ runs:
       run: |
         set -euo pipefail
 
-        digest="${BUILD_DIGEST}"
-        if [ -z "${digest}" ]; then
-          # build-push-action only passes --metadata-file to a Buildx new enough to
-          # report its own version, so an unstamped Buildx yields no digest output
-          # while still pushing the image. Ask the registry instead of signing nothing.
-          echo "::warning::build-push-action returned no digest; resolving ${REF} from the registry."
-          digest="$(docker buildx imagetools inspect "${REF}" | awk '/^Digest:/ { print $2; exit }')"
-        fi
-
-        if [ -z "${digest}" ]; then
-          echo "::error::Unable to resolve the digest for ${REF}; refusing to continue with an unsigned image."
+        if [ -z "${BUILD_DIGEST}" ]; then
+          # Resolving the tag from the registry instead would race a concurrent run:
+          # the per-arch tag is deliberately overwritable until the final tag exists,
+          # so the digest read back need not be the image this run pushed.
+          echo "::error::Buildx returned no digest for ${REF}, so the image is published but cannot be signed. Check that 'Set up Docker Buildx' pinned a versioned release; an unstamped Buildx makes build-push-action drop --metadata-file."
           exit 1
         fi
 
-        echo "Resolved digest for ${REF}: ${digest}"
-        echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+        echo "Pushed ${REF} as ${BUILD_DIGEST}"
+        echo "digest=${BUILD_DIGEST}" >> "${GITHUB_OUTPUT}"
 
     # The pushed manifest always claims whatever --platform requested; it says
     # nothing about what the Dockerfile actually compiled or copied in. Check
