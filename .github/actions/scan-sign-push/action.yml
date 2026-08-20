@@ -276,7 +276,9 @@ runs:
         # run repointing a shared release tag could otherwise make us sign a list
         # we did not assemble. Then verify the assembled list references exactly
         # the per-arch child digests we pushed (integrity check, like
-        # merge-multiarch), and only then attach the release tags to that digest.
+        # merge-multiarch). The release tags are NOT attached here — they are
+        # attached only after sign+verify succeeds, so a Fulcio/Rekor failure can
+        # never leave a release tag pointing at an unsigned digest.
         list_handle="${HANDLE_BASE}-list"
         docker buildx imagetools create --tag "$list_handle" "${per_arch_refs[@]}"
         manifest_digest=$(docker buildx imagetools inspect "$list_handle" --format '{{.Manifest.Digest}}')
@@ -290,9 +292,6 @@ runs:
           echo "assembled:" >&2; printf '%s\n' "$assembled_children" >&2
           exit 1
         fi
-
-        # Attach every release tag to the verified digest (no rebuild of the list).
-        docker buildx imagetools create "${tag_args[@]}" "${IMAGE}@${manifest_digest}"
 
         echo "digest=${manifest_digest}" >> "$GITHUB_OUTPUT"
 
@@ -322,6 +321,29 @@ runs:
           --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
           --certificate-identity-regexp="${cert_identity_regexp}" \
           "${IMAGE}@${DIGEST}"
+
+    # Publish the release tags only now that the digest is signed and verified, so
+    # a Fulcio/Rekor failure above can never leave a release tag on an unsigned
+    # digest. cosign signs by digest, so attaching the tags afterwards does not
+    # change what was signed.
+    - name: Attach release tags to the signed digest
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAGS: ${{ inputs.tags }}
+        DIGEST: ${{ steps.assemble.outputs.digest }}
+      run: |
+        set -euo pipefail
+        tag_args=()
+        if printf '%s' "$TAGS" | jq -e 'type == "array"' >/dev/null 2>&1; then
+          TAGS="$(printf '%s' "$TAGS" | jq -r '.[]')"
+        fi
+        while IFS= read -r tag; do
+          tag="${tag##*:}"
+          [ -z "$tag" ] && continue
+          tag_args+=(--tag "${IMAGE}:${tag}")
+        done <<< "$TAGS"
+        docker buildx imagetools create "${tag_args[@]}" "${IMAGE}@${DIGEST}"
 
     # The per-arch and list handle tags exist only so imagetools could address the
     # children/list by digest. The release tags now point at the same manifest
