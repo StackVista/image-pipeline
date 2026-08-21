@@ -73,6 +73,10 @@ inputs:
     description: "Fail if any target tag already exists (immutable release behavior, the safe default). Set to 'false' for branch/PR builds that repoint moving tags each commit."
     required: false
     default: "true"
+  publish:
+    description: "When 'true' (default) the image is scanned, pushed, assembled, signed and tagged. Set 'false' to run the scan gate only (branch/PR builds) — no push, sign or tag."
+    required: false
+    default: "true"
 
 runs:
   using: composite
@@ -81,7 +85,7 @@ runs:
       uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
 
     - name: Log in to target registry
-      if: ${{ inputs.target-registry-user != '' }}
+      if: ${{ inputs.publish == 'true' && inputs.target-registry-user != '' }}
       uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
       with:
         registry: ${{ inputs.target-registry }}
@@ -114,7 +118,7 @@ runs:
     # matching push-single-arch/merge-multiarch. Disable for branch/PR builds
     # that repoint moving tags (e.g. a branch-slug tag) on every commit.
     - name: Fail if any release tag already exists
-      if: ${{ inputs.fail-on-existing-tags == 'true' }}
+      if: ${{ inputs.publish == 'true' && inputs.fail-on-existing-tags == 'true' }}
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
@@ -231,6 +235,7 @@ runs:
 
     - name: Push per-arch manifests and assemble multi-arch manifest
       id: assemble
+      if: ${{ inputs.publish == 'true' }}
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
@@ -296,6 +301,7 @@ runs:
         echo "digest=${manifest_digest}" >> "$GITHUB_OUTPUT"
 
     - name: Install cosign
+      if: ${{ inputs.publish == 'true' }}
       uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
     # Sign the assembled multi-arch digest. Some verifiers (slsactl, hauler,
@@ -303,6 +309,7 @@ runs:
     # certificate-identity-regexp stays a pattern because a composite action
     # cannot know the caller's exact ref path.
     - name: Sign and verify the multi-arch image
+      if: ${{ inputs.publish == 'true' }}
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
@@ -327,6 +334,7 @@ runs:
     # digest. cosign signs by digest, so attaching the tags afterwards does not
     # change what was signed.
     - name: Attach release tags to the signed digest
+      if: ${{ inputs.publish == 'true' }}
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
@@ -351,7 +359,7 @@ runs:
     # referenced manifest. Best-effort, quay.io only (no portable registry delete);
     # other registries keep the handles until their own tag GC runs.
     - name: Delete sig-handle tags
-      if: ${{ always() && steps.per-arch.outputs.handle-base != '' && inputs.target-registry == 'quay.io' && inputs.target-registry-password != '' }}
+      if: ${{ always() && inputs.publish == 'true' && steps.per-arch.outputs.handle-base != '' && inputs.target-registry == 'quay.io' && inputs.target-registry-password != '' }}
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
