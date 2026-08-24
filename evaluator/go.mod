@@ -1,6 +1,6 @@
 module github.com/StackVista/image-pipeline/evaluator
 
-go 1.25
+go 1.27
 
 require (
 	github.com/stretchr/testify v1.12.1
