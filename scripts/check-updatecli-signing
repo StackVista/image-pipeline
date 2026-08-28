@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "yaml"
+
+files = Dir.glob(".updatecli/updatecli.d/**/*.yaml").sort
+abort "no Updatecli pipelines found" if files.empty?
+
+failures = files.flat_map do |file|
+  document = YAML.safe_load(File.read(file), aliases: false)
+  scms = document.fetch("scms", {})
+
+  scms.each_with_object([]) do |(name, scm), errors|
+    spec = scm.fetch("spec", {})
+    unless spec["commitUsingApi"] == true && spec["force"] == false
+      errors << "#{file}: scm #{name} must set commitUsingApi: true and force: false"
+    end
+  end
+rescue Psych::Exception, KeyError => e
+  ["#{file}: #{e.message}"]
+end
+
+abort failures.join("\n") unless failures.empty?
+
+puts "#{files.length} Updatecli pipelines use GitHub-signed API commits"

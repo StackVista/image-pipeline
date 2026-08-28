@@ -10,12 +10,14 @@ on:
     branches: [main]
     paths:
       - ".updatecli/**"
+      - "scripts/check-updatecli-signing"
       - ".github/workflows/updatecli-ci.yml"
       - ".github/workflows/bump-upstream-pins.yml"
   push:
     branches: [main]
     paths:
       - ".updatecli/**"
+      - "scripts/check-updatecli-signing"
       - ".github/workflows/updatecli-ci.yml"
       - ".github/workflows/bump-upstream-pins.yml"
 
@@ -43,6 +45,9 @@ jobs:
 
       - name: Install updatecli
         uses: updatecli/updatecli-action@e71be7554f3f940bc439cf720b3e4e379823c562 # v3.2.0
+
+      - name: Verify Updatecli commit signing
+        run: scripts/check-updatecli-signing
 
       - name: updatecli pipeline diff
         env:
