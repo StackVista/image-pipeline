@@ -12,6 +12,8 @@ scms:
       owner: "{{ .scm.owner }}"
       repository: "{{ .scm.repository }}"
       branch: "{{ .scm.branch }}"
+      commitUsingApi: true
+      force: false
       username: "{{ .scm.username }}"
       token: "{{ requiredEnv .scm.tokenEnv }}"
       commitmessage:
