@@ -52,6 +52,10 @@ inputs:
     description: "Optional newline-delimited BuildKit secret entries"
     required: false
     default: ""
+  buildkit-secret-files:
+    description: "Optional newline-delimited BuildKit secret entries whose value is read from a file on the runner (id=path). Use this rather than buildkit-secrets for a credential written by an auth action, so the value never passes through a workflow expression."
+    required: false
+    default: ""
   labels:
     description: "Newline-delimited key=value labels to apply to the image, appended after docker/metadata-action's defaults (last-write-wins on duplicate keys). Pass apply-oci-labels' output here, or any other source."
     required: false
@@ -132,6 +136,7 @@ runs:
         provenance: mode=max
         build-args: ${{ inputs.build-args }}
         secrets: ${{ inputs.buildkit-secrets }}
+        secret-files: ${{ inputs.buildkit-secret-files }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
 
     - name: Require a signable digest
