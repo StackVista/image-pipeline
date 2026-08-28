@@ -92,14 +92,14 @@ runs:
     - name: Set up Trivy
       uses: aquasecurity/setup-trivy@3fb12ec12f41e471780db15c232d5dd185dcb514 # v0.2.6
       with:
-        version: v0.70.0
+        version: v0.74.0
 
     - name: Set up Grype
       if: ${{ inputs.with-grype == 'true' }}
       shell: bash
       env:
-        GRYPE_VERSION: 0.112.0
-        INSTALL_SHA: 244f2a10a5668078fcf771454bbd832b3a5b9e8a
+        GRYPE_VERSION: 0.117.0
+        INSTALL_SHA: b5fa92bbcbef655497e3be840a2f718380e2cdd3
       run: |
         curl -sSfL "https://raw.githubusercontent.com/anchore/grype/${INSTALL_SHA}/install.sh" \
           | sudo sh -s -- -b /usr/local/bin "v${GRYPE_VERSION}"
