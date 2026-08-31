@@ -109,34 +109,49 @@ runs:
       env:
         REPO_ROOT: ${{ steps.paths.outputs.repo_root }}
         GITHUB_TOKEN: ${{ github.token }}
+        INPUT_MODE: ${{ inputs.mode }}
       run: |
         set -euo pipefail
 
         mkdir -p ~/.trivy/vex reports
         cp "${REPO_ROOT}/vex/repository.yaml" ~/.trivy/vex/repository.yaml
+        : > reports/grype-vex-documents.txt
 
-        trivy vex repo download
+        # Unavailable VEX must fail a gate: without it the scanners report findings that
+        # VEX would mark not-affected, so a clear failure beats a misleading CVE list.
+        # An inform run gates on nothing, so it proceeds with whatever VEX did download --
+        # one unreachable repository should not discard the documents that others provided.
+        vex_unavailable() {
+          if [ "${INPUT_MODE}" = "inform" ]; then
+            echo "::warning::$1"
+            return 0
+          fi
+          echo "::error::$1"
+          exit 1
+        }
+
+        if ! trivy vex repo download; then
+          vex_unavailable "VEX repository download reported a failure; continuing with any repositories that did download"
+        fi
 
         vex_cache="${TRIVY_CACHE_DIR:-${HOME}/.cache/trivy}/vex/repositories"
-        if [ ! -d "${vex_cache}" ]; then
-          echo "::error::VEX repository cache was not created at ${vex_cache}"
-          exit 1
+        if [ -d "${vex_cache}" ]; then
+          while IFS= read -r doc; do
+            if jq -e 'type == "object" and (.statements | type == "array")' "${doc}" >/dev/null 2>&1; then
+              printf '%s\n' "${doc}" >> reports/grype-vex-documents.txt
+            else
+              echo "::notice::Skipping non-OpenVEX JSON document for Grype: ${doc}"
+            fi
+          done < <(find "${vex_cache}" -type f -iname '*openvex*.json' | sort)
+        else
+          vex_unavailable "VEX repository cache was not created at ${vex_cache}"
         fi
 
-        : > reports/grype-vex-documents.txt
-        while IFS= read -r doc; do
-          if jq -e 'type == "object" and (.statements | type == "array")' "${doc}" >/dev/null 2>&1; then
-            printf '%s\n' "${doc}" >> reports/grype-vex-documents.txt
-          else
-            echo "::notice::Skipping non-OpenVEX JSON document for Grype: ${doc}"
-          fi
-        done < <(find "${vex_cache}" -type f -iname '*openvex*.json' | sort)
-        if [ ! -s reports/grype-vex-documents.txt ]; then
-          echo "::error::VEX repositories downloaded, but no OpenVEX documents were found for Grype"
-          exit 1
+        if [ -s reports/grype-vex-documents.txt ]; then
+          echo "Prepared $(wc -l < reports/grype-vex-documents.txt | tr -d ' ') OpenVEX document(s) for Grype"
+        else
+          vex_unavailable "No OpenVEX documents were found for Grype"
         fi
-
-        echo "Prepared $(wc -l < reports/grype-vex-documents.txt | tr -d ' ') OpenVEX document(s) for Grype"
 
     - name: Log in to source registry
       if: ${{ inputs.source_registry != '' }}
@@ -235,6 +250,7 @@ runs:
       env:
         INPUT_IMAGE: ${{ inputs.image }}
         INPUT_SKIP_FILES: ${{ inputs.skip-files }}
+        INPUT_MODE: ${{ inputs.mode }}
       run: |
         set -euo pipefail
 
@@ -246,8 +262,11 @@ runs:
         done < reports/grype-vex-documents.txt
 
         if [ "${#vex_args[@]}" -eq 0 ]; then
-          echo "::error::No OpenVEX documents were prepared for Grype"
-          exit 1
+          if [ "${INPUT_MODE}" != "inform" ]; then
+            echo "::error::No OpenVEX documents were prepared for Grype"
+            exit 1
+          fi
+          echo "::warning::No OpenVEX documents were prepared for Grype; scanning without VEX"
         fi
 
         skip_args=()
