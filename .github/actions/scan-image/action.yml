@@ -122,11 +122,12 @@ runs:
         # An inform run gates on nothing, so it proceeds with whatever VEX did download --
         # one unreachable repository should not discard the documents that others provided.
         vex_unavailable() {
-          if [ "${INPUT_MODE}" = "gate" ]; then
-            echo "::error::$1"
-            exit 1
+          if [ "${INPUT_MODE}" = "inform" ]; then
+            echo "::warning::$1"
+            return 0
           fi
-          echo "::warning::$1"
+          echo "::error::$1"
+          exit 1
         }
 
         if ! trivy vex repo download; then
@@ -261,7 +262,7 @@ runs:
         done < reports/grype-vex-documents.txt
 
         if [ "${#vex_args[@]}" -eq 0 ]; then
-          if [ "${INPUT_MODE}" = "gate" ]; then
+          if [ "${INPUT_MODE}" != "inform" ]; then
             echo "::error::No OpenVEX documents were prepared for Grype"
             exit 1
           fi
