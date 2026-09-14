@@ -20,6 +20,14 @@ inputs:
     description: "Path to the Dockerfile"
     required: false
     default: "./Dockerfile"
+  builder:
+    description: "Existing Buildx builder to reuse; empty creates a builder"
+    required: false
+    default: ""
+  sbom-generator:
+    description: "Optional SBOM scanner image; empty uses BuildKit's default scanner"
+    required: false
+    default: ""
   # For source registries we use an array of credentials because it is possible that
   # to build the image we need access to multiple registries.
   # The target registry where we push should be only one so we keep it as a single entry.
@@ -48,6 +56,14 @@ inputs:
     description: "Optional newline-delimited build args passed to docker/build-push-action (e.g. GIT_SHA=abc12345). Needed by repos that stamp version metadata into binaries at build time."
     required: false
     default: ""
+  cache-from:
+    description: "Optional newline-delimited BuildKit cache imports"
+    required: false
+    default: ""
+  cache-to:
+    description: "Optional newline-delimited BuildKit cache exports"
+    required: false
+    default: ""
   buildkit-secrets:
     description: "Optional newline-delimited BuildKit secret entries"
     required: false
@@ -65,6 +81,7 @@ runs:
   using: composite
   steps:
     - name: Set up Docker Buildx
+      if: inputs.builder == ''
       uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
       with:
         version: v0.36.1
@@ -125,6 +142,7 @@ runs:
       id: push-image
       uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
       with:
+        builder: ${{ inputs.builder }}
         context: ${{ inputs.docker-context }}
         file: ${{ inputs.dockerfile }}
         labels: |
@@ -132,9 +150,11 @@ runs:
           ${{ inputs.labels }}
         platforms: linux/${{ inputs.arch }}
         push: true
-        sbom: true
+        sbom: ${{ inputs.sbom-generator != '' && format('generator={0}', inputs.sbom-generator) || 'true' }}
         provenance: mode=max
         build-args: ${{ inputs.build-args }}
+        cache-from: ${{ inputs.cache-from }}
+        cache-to: ${{ inputs.cache-to }}
         secrets: ${{ inputs.buildkit-secrets }}
         secret-files: ${{ inputs.buildkit-secret-files }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}-${{ inputs.arch }}
