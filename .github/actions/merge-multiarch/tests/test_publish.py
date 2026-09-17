@@ -11,10 +11,19 @@ spec = importlib.util.spec_from_file_location("publish", Path(__file__).parents[
 publish = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(publish)
 DIGEST = "sha256:" + "a" * 64
-MANIFEST = {"manifests": [{"digest": "sha256:" + char * 64, "platform": {"os": "linux", "architecture": arch}}
-                           for arch, char in (("amd64", "b"), ("arm64", "c"))]}
-ENV = {"GITHUB_REPOSITORY": "StackVista/docker-images", "GITHUB_RUN_ID": "42", "GITHUB_SHA": "abc",
-       "GITHUB_SERVER_URL": "https://github.com", "GITHUB_REF": "refs/heads/main"}
+MANIFEST = {
+    "manifests": [
+        {"digest": "sha256:" + char * 64, "platform": {"os": "linux", "architecture": arch}}
+        for arch, char in (("amd64", "b"), ("arm64", "c"))
+    ]
+}
+ENV = {
+    "GITHUB_REPOSITORY": "StackVista/docker-images",
+    "GITHUB_RUN_ID": "42",
+    "GITHUB_SHA": "abc",
+    "GITHUB_SERVER_URL": "https://github.com",
+    "GITHUB_REF": "refs/heads/main",
+}
 
 
 class PublisherTest(unittest.TestCase):
@@ -26,8 +35,19 @@ class PublisherTest(unittest.TestCase):
         self.env.start()
         self.addCleanup(self.env.stop)
         for arch, char in (("amd64", "b"), ("arm64", "c")):
-            (self.directory / f"{arch}.json").write_text(json.dumps({"image": "registry/image", "tag": "v1", "arch": arch,
-                "digest": "sha256:" + char * 64, "repository": ENV["GITHUB_REPOSITORY"], "sha": "abc", "run_id": "42"}))
+            (self.directory / f"{arch}.json").write_text(
+                json.dumps(
+                    {
+                        "image": "registry/image",
+                        "tag": "v1",
+                        "arch": arch,
+                        "digest": "sha256:" + char * 64,
+                        "repository": ENV["GITHUB_REPOSITORY"],
+                        "sha": "abc",
+                        "run_id": "42",
+                    }
+                )
+            )
         self.existing = None
         self.signatures = set()
         self.created = 0
@@ -41,7 +61,7 @@ class PublisherTest(unittest.TestCase):
         code = 0
         error = ""
         if args[0] == "docker" and "create" in args:
-            for target in args[args.index("registry/image:v1") + 1:]:
+            for target in args[args.index("registry/image:v1") + 1 :]:
                 self.assertIn("@sha256:", target)
             if "--dry-run" in args:
                 output = json.dumps(MANIFEST)
@@ -53,7 +73,17 @@ class PublisherTest(unittest.TestCase):
         elif "--format" in args:
             output = DIGEST
         elif args[:2] == ("cosign", "verify"):
-            output = json.dumps([{"critical": {"type": "https://sigstore.dev/cosign/sign/v1" if args[2].endswith('=true') else "cosign container image signature"}}])
+            output = json.dumps(
+                [
+                    {
+                        "critical": {
+                            "type": "https://sigstore.dev/cosign/sign/v1"
+                            if args[2].endswith("=true")
+                            else "cosign container image signature"
+                        }
+                    }
+                ]
+            )
             if args[-1] == "registry/image@" + DIGEST and args[2] not in self.signatures:
                 code, error = 1, "no signatures found"
         elif args[:2] == ("cosign", "sign"):
@@ -66,7 +96,10 @@ class PublisherTest(unittest.TestCase):
         return self.existing
 
     def run_publish(self):
-        with patch.object(publish, "command", self.command), patch.object(publish, "inspect", self.inspect):
+        with (
+            patch.object(publish, "command", self.command),
+            patch.object(publish, "inspect", self.inspect),
+        ):
             publish.publish("registry/image", "v1", ["amd64", "arm64"], self.directory)
 
     def test_failure_before_manifest_then_retry(self):
@@ -108,7 +141,12 @@ class PublisherTest(unittest.TestCase):
         self.assertFalse(any("v1-amd64" in str(c) or "v1-arm64" in str(c) for c in self.commands))
 
     def test_receipt_wrong_source_missing_and_duplicate(self):
-        for field, value in (("sha", "wrong"), ("run_id", "41"), ("image", "other"), ("repository", "other")):
+        for field, value in (
+            ("sha", "wrong"),
+            ("run_id", "41"),
+            ("image", "other"),
+            ("repository", "other"),
+        ):
             path = self.directory / "amd64.json"
             original = path.read_text()
             record = json.loads(original)
@@ -128,8 +166,15 @@ class PublisherTest(unittest.TestCase):
     def test_missing_platform_and_attestation(self):
         with self.assertRaises(publish.PublicationError):
             publish.validate_platforms({"manifests": MANIFEST["manifests"][:1]}, ["amd64", "arm64"])
-        with_attestation = {"manifests": MANIFEST["manifests"] + [{"platform": {"os": "unknown", "architecture": "unknown"},
-                    "annotations": {"vnd.docker.reference.type": "attestation-manifest"}}]}
+        with_attestation = {
+            "manifests": MANIFEST["manifests"]
+            + [
+                {
+                    "platform": {"os": "unknown", "architecture": "unknown"},
+                    "annotations": {"vnd.docker.reference.type": "attestation-manifest"},
+                }
+            ]
+        }
         publish.validate_platforms(with_attestation, ["amd64", "arm64"])
 
     def test_existing_without_receipts_remains_blocked(self):
@@ -138,21 +183,69 @@ class PublisherTest(unittest.TestCase):
                 publish.publish("registry/image", "v1", ["amd64", "arm64"], "")
 
     def test_registry_absence_differs_from_outage(self):
-        for message in ("401 Unauthorized", "503 Service Unavailable", "timeout", "403 denied: not found"):
-            with patch.object(publish, "command", return_value=subprocess.CompletedProcess([], 1, "", message)):
+        for message in (
+            "401 Unauthorized",
+            "503 Service Unavailable",
+            "timeout",
+            "403 denied: not found",
+            "503 upstream: not found",
+        ):
+            with patch.object(
+                publish, "command", return_value=subprocess.CompletedProcess([], 1, "", message)
+            ):
                 with self.assertRaises(publish.PublicationError):
                     publish.inspect("image:tag", missing_ok=True)
-        with patch.object(publish, "command", return_value=subprocess.CompletedProcess([], 1, "", "image:tag: not found\n")):
+        with patch.object(
+            publish,
+            "command",
+            return_value=subprocess.CompletedProcess([], 1, "", "image:tag: not found\n"),
+        ):
             self.assertIsNone(publish.inspect("image:tag", missing_ok=True))
 
     def test_legacy_fallback_is_not_a_new_format_signature(self):
         legacy = json.dumps([{"critical": {"type": "cosign container image signature"}}])
-        with patch.object(publish, "command", return_value=subprocess.CompletedProcess([], 0, legacy, "")):
-            self.assertNotEqual(publish.verify_signature("image@digest", True, "identity").returncode, 0)
+        with patch.object(
+            publish, "command", return_value=subprocess.CompletedProcess([], 0, legacy, "")
+        ):
+            self.assertNotEqual(
+                publish.verify_signature("image@digest", True, "identity").returncode, 0
+            )
+
+    def test_timeout_retries_then_returns_success(self):
+        success = subprocess.CompletedProcess([], 0, "manifest", "")
+        with (
+            patch.object(
+                publish.subprocess,
+                "run",
+                side_effect=[subprocess.TimeoutExpired("docker", 300), success],
+            ) as run,
+            patch.object(publish.time, "sleep") as sleep,
+        ):
+            self.assertEqual(publish.command("docker", "inspect").stdout, "manifest")
+            self.assertEqual(run.call_count, 2)
+            sleep.assert_called_once_with(5)
+
+    def test_timeout_retries_are_bounded(self):
+        with (
+            patch.object(
+                publish.subprocess, "run", side_effect=subprocess.TimeoutExpired("docker", 300)
+            ) as run,
+            patch.object(publish.time, "sleep"),
+        ):
+            with self.assertRaises(subprocess.TimeoutExpired):
+                publish.command("docker", "inspect")
+            self.assertEqual(run.call_count, 4)
 
     def test_bounded_retry_only_transient(self):
         for error, expected_calls in (("503 Service Unavailable", 4), ("401 Unauthorized", 1)):
-            with patch.object(publish.subprocess, "run", return_value=subprocess.CompletedProcess([], 1, "", error)) as run, patch.object(publish.time, "sleep"):
+            with (
+                patch.object(
+                    publish.subprocess,
+                    "run",
+                    return_value=subprocess.CompletedProcess([], 1, "", error),
+                ) as run,
+                patch.object(publish.time, "sleep"),
+            ):
                 with self.assertRaises(publish.PublicationError):
                     publish.command("docker", "inspect")
                 self.assertEqual(run.call_count, expected_calls)
