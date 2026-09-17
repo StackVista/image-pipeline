@@ -69,3 +69,27 @@ tagging scheme will need to be revisited.
 - Reusable build workflow (image build + SBOM attestation)
 - Cosign keyless OIDC attestation of SBOM + vuln report per platform
 - Publish workflow (registry push with provenance)
+
+### Recovering interrupted image publication
+
+`merge-multiarch` accepts an optional `receipts` directory containing one JSON file
+per architecture. Each records `image`, `tag`, `arch`, `digest`, `repository`,
+`sha` and `run_id`; source values must match the current GitHub run. Consumers
+should upload receipts only after `push-single-arch` succeeds, using its `digest`
+output, and download artifacts from the same run when merging.
+
+With receipts, merging reads immutable digests and verifies their signatures.
+An existing release can resume only when its full manifest matches those inputs;
+completed signatures are retained and missing signatures are completed. A
+conflicting release is never overwritten. Without receipts, the existing-tag
+refusal remains. Registry errors are not treated as missing tags.
+
+Rerun **failed jobs**, keeping successful architecture jobs and their artifacts.
+Expired/missing receipts require investigation, not reconstruction from mutable
+tags. The maintained Cosign installer retains its verified download and bounded
+retries; a persistent download outage remains a retryable failed job.
+
+The recovery fixture uses the same Docker Distribution registry as the existing
+publication smoke test, pinned by digest. BCI provides no ready-to-run OCI registry
+service; this test needs its registry API, not a general-purpose base image.
+Fixture images use `FROM scratch`, and publication stays in the job's local registry.

@@ -77,6 +77,10 @@ inputs:
     required: false
     default: ""
 
+outputs:
+  digest:
+    description: Published and signed architecture digest
+    value: ${{ steps.digest.outputs.digest }}
 runs:
   using: composite
   steps:
@@ -131,11 +135,18 @@ runs:
         # If not yet we can overwrite the single-arch image, otherwise we refuse to 
         # push to avoid overwriting an existing tag.
         release_ref="${IMAGE}:${TAG}"
-        if docker buildx imagetools inspect "${release_ref}" >/dev/null 2>&1; then
+        lookup_error=$(mktemp)
+        if docker buildx imagetools inspect "${release_ref}" >/dev/null 2>"${lookup_error}"; then
           echo "Image ${release_ref} already exists in target registry; refusing to overwrite single tag architecture." >&2
           exit 1
         fi
 
+        if grep -Eqi '(^|:[[:space:]]+|HTTP(/[0-9.]+)?[[:space:]]+|status( code)?[[:space:]:=]+)(401|403|429|500|502|503|504)([[:space:]:;,]|$)|unauthorized|denied|forbidden|timeout|timed out|connection reset|TLS handshake|temporary failure' "${lookup_error}" ||
+           ! grep -Eqi 'manifest unknown|manifest_unknown|: not found$' "${lookup_error}"; then
+          cat "${lookup_error}" >&2
+          exit 1
+        fi
+        rm -f "${lookup_error}"
         echo "Image ${release_ref} does not exist yet; push allowed."
 
     - name: Push for ${{ inputs.arch }}
