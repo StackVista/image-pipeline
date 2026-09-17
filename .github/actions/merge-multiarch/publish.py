@@ -13,13 +13,28 @@ class PublicationError(RuntimeError):
     pass
 
 
+def http_status(message, codes):
+    return re.search(
+        r"(?:^|:\s+|\bHTTP(?:/[0-9.]+)?\s+|\bstatus(?: code)?[\s:=]+)"
+        + rf"(?:{codes})(?=[\s:;,]|$)",
+        message,
+        re.I | re.M,
+    )
+
+
 def transient(message):
     return bool(
-        re.search(
-            r"\b(?:429|500|502|503|504)\b|timeout|timed out|connection reset|TLS handshake|temporary failure",
-            message,
-            re.I,
+        http_status(message, "429|500|502|503|504")
+        or re.search(
+            r"timeout|timed out|connection reset|TLS handshake|temporary failure", message, re.I
         )
+    )
+
+
+def unauthorized(message):
+    return bool(
+        http_status(message, "401|403")
+        or re.search(r"unauthorized|denied|forbidden", message, re.I)
     )
 
 
@@ -50,7 +65,7 @@ def inspect(reference, missing_ok=False):
     if (
         missing_ok
         and not transient(error)
-        and not re.search(r"401|403|unauthorized|denied|forbidden", error)
+        and not unauthorized(error)
         and (
             "manifest unknown" in error
             or "manifest_unknown" in error
@@ -113,9 +128,7 @@ def ensure_signatures(reference, identity):
         result = verify_signature(reference, bundle, identity)
         if result.returncode == 0:
             continue
-        if transient(result.stderr) or re.search(
-            r"401|403|unauthorized|denied|forbidden", result.stderr, re.I
-        ):
+        if transient(result.stderr) or unauthorized(result.stderr):
             raise PublicationError(f"Signature lookup unavailable: {result.stderr.strip()}")
         command(
             "cosign",

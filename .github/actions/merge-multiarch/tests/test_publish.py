@@ -130,6 +130,22 @@ class PublisherTest(unittest.TestCase):
         self.assertEqual(self.created, 0)
         self.assertEqual(len(self.signatures), 2)
 
+    def test_unsigned_digest_containing_http_digits_gets_signed(self):
+        reference = "registry/image@sha256:" + "a" * 29 + "401403" + "b" * 29
+        missing = subprocess.CompletedProcess([], 1, "", f"{reference}: no signatures found")
+        verified = subprocess.CompletedProcess([], 0, "", "")
+        with (
+            patch.object(
+                publish, "verify_signature", side_effect=[missing, verified, missing, verified]
+            ),
+            patch.object(publish, "command") as command,
+        ):
+            publish.ensure_signatures(reference, "identity")
+            self.assertEqual(command.call_count, 2)
+            self.assertTrue(
+                all(call.args[:2] == ("cosign", "sign") for call in command.call_args_list)
+            )
+
     def test_conflict_never_overwrites(self):
         self.existing = json.dumps({"manifests": []})
         with self.assertRaisesRegex(publish.PublicationError, "refusing overwrite"):
@@ -183,6 +199,39 @@ class PublisherTest(unittest.TestCase):
             with self.assertRaisesRegex(publish.PublicationError, "requires architecture receipts"):
                 publish.publish("registry/image", "v1", ["amd64", "arm64"], "")
 
+    def test_image_numbers_are_not_http_errors(self):
+        for code in (401, 403, 429, 500, 502, 503, 504):
+            for reference in (
+                f"quay.io/stackstate/image:v1.{code}.0-so1",
+                f"quay.io/stackstate/image:{code}",
+                "quay.io/stackstate/image@sha256:" + "a" * 30 + str(code) + "b" * 31,
+            ):
+                message = f"{reference}: manifest unknown"
+                with self.subTest(reference=reference):
+                    self.assertFalse(publish.transient(message))
+                    self.assertFalse(publish.unauthorized(message))
+                    with patch.object(
+                        publish,
+                        "command",
+                        return_value=subprocess.CompletedProcess([], 1, "", message),
+                    ):
+                        self.assertIsNone(publish.inspect(reference, missing_ok=True))
+
+    def test_http_status_context_still_recognizes_outages(self):
+        for prefix in (
+            "",
+            "ERROR: ",
+            "HTTP/1.1 ",
+            "HTTP status: ",
+            "status code ",
+            "unexpected status from HEAD request: ",
+        ):
+            for code in (401, 403, 429, 500, 502, 503, 504):
+                message = f"{prefix}{code}: registry failure"
+                with self.subTest(message=message):
+                    self.assertEqual(publish.transient(message), code not in (401, 403))
+                    self.assertEqual(publish.unauthorized(message), code in (401, 403))
+
     def test_registry_absence_differs_from_outage(self):
         for message in (
             "401 Unauthorized",
@@ -227,6 +276,12 @@ class PublisherTest(unittest.TestCase):
         )
         for message, allowed in (
             ("image:v1: not found", True),
+            ("image:v1.502.0-so1: manifest unknown", True),
+            ("image:503: not found", True),
+            ("image@sha256:" + "a" * 29 + "401403" + "b" * 29 + ": manifest unknown", True),
+            ("HTTP status: 503: manifest unknown", False),
+            ("status code 429: manifest unknown", False),
+            ("HTTP/1.1 403: manifest unknown", False),
             ("503 upstream: not found", False),
             ("401 denied: not found", False),
             ("unexpected EOF", False),

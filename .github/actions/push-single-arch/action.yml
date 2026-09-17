@@ -141,7 +141,7 @@ runs:
           exit 1
         fi
 
-        if grep -Eqi '\b(401|403|429|500|502|503|504)\b|unauthorized|denied|forbidden|timeout|timed out|connection reset|TLS handshake|temporary failure' "${lookup_error}" ||
+        if grep -Eqi '(^|:[[:space:]]+|HTTP(/[0-9.]+)?[[:space:]]+|status( code)?[[:space:]:=]+)(401|403|429|500|502|503|504)([[:space:]:;,]|$)|unauthorized|denied|forbidden|timeout|timed out|connection reset|TLS handshake|temporary failure' "${lookup_error}" ||
            ! grep -Eqi 'manifest unknown|manifest_unknown|: not found$' "${lookup_error}"; then
           cat "${lookup_error}" >&2
           exit 1
