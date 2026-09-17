@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+import textwrap
 import unittest
 from unittest.mock import patch
 
@@ -210,6 +211,34 @@ class PublisherTest(unittest.TestCase):
             self.assertNotEqual(
                 publish.verify_signature("image@digest", True, "identity").returncode, 0
             )
+
+    def test_single_arch_guard_does_not_authorize_push_on_registry_error(self):
+        action = Path(__file__).parents[2] / "push-single-arch" / "action.yml"
+        guard = action.read_text().split("    - name: Fail if final tag already exists", 1)[1]
+        script = textwrap.dedent(guard.split("      run: |\n", 1)[1].split("    - name:", 1)[0])
+        docker = self.directory / "docker"
+        docker.write_text('#!/bin/sh\nprintf "%s\\n" "$LOOKUP_ERROR" >&2\nexit 1\n')
+        docker.chmod(0o755)
+        env = dict(
+            os.environ,
+            PATH=str(self.directory) + os.pathsep + os.environ["PATH"],
+            IMAGE="image",
+            TAG="v1",
+        )
+        for message, allowed in (
+            ("image:v1: not found", True),
+            ("503 upstream: not found", False),
+            ("401 denied: not found", False),
+            ("unexpected EOF", False),
+        ):
+            with self.subTest(message=message):
+                result = subprocess.run(
+                    ["bash", "-c", script],
+                    env=dict(env, LOOKUP_ERROR=message),
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(result.returncode == 0, allowed)
 
     def test_timeout_retries_then_returns_success(self):
         success = subprocess.CompletedProcess([], 0, "manifest", "")
