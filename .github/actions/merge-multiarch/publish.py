@@ -64,11 +64,18 @@ def recorded_targets(directory, image, tag, arches):
 
 
 def verify_signature(reference, bundle, identity):
-    return command(
+    result = command(
         "cosign", "verify", f"--new-bundle-format={str(bundle).lower()}",
         "--certificate-oidc-issuer=https://token.actions.githubusercontent.com",
         f"--certificate-identity-regexp={identity}", reference, allow_failure=True,
     )
+    if result.returncode == 0 and bundle:
+        # Cosign falls back to legacy signatures when no new-format bundle exists.
+        verified = json.loads(result.stdout)
+        if not any(item.get("critical", {}).get("type") == "https://sigstore.dev/cosign/sign/v1" for item in verified):
+            result.returncode = 1
+            result.stderr = "No verified new-format signature; legacy fallback is insufficient"
+    return result
 
 
 def ensure_signatures(reference, identity):

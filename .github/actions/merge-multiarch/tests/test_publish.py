@@ -53,6 +53,7 @@ class PublisherTest(unittest.TestCase):
         elif "--format" in args:
             output = DIGEST
         elif args[:2] == ("cosign", "verify"):
+            output = json.dumps([{"critical": {"type": "https://sigstore.dev/cosign/sign/v1" if args[2].endswith('=true') else "cosign container image signature"}}])
             if args[-1] == "registry/image@" + DIGEST and args[2] not in self.signatures:
                 code, error = 1, "no signatures found"
         elif args[:2] == ("cosign", "sign"):
@@ -143,6 +144,11 @@ class PublisherTest(unittest.TestCase):
                     publish.inspect("image:tag", missing_ok=True)
         with patch.object(publish, "command", return_value=subprocess.CompletedProcess([], 1, "", "image:tag: not found\n")):
             self.assertIsNone(publish.inspect("image:tag", missing_ok=True))
+
+    def test_legacy_fallback_is_not_a_new_format_signature(self):
+        legacy = json.dumps([{"critical": {"type": "cosign container image signature"}}])
+        with patch.object(publish, "command", return_value=subprocess.CompletedProcess([], 0, legacy, "")):
+            self.assertNotEqual(publish.verify_signature("image@digest", True, "identity").returncode, 0)
 
     def test_bounded_retry_only_transient(self):
         for error, expected_calls in (("503 Service Unavailable", 4), ("401 Unauthorized", 1)):

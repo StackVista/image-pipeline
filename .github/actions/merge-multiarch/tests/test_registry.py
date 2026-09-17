@@ -37,14 +37,15 @@ class RegistryTest(unittest.TestCase):
                     if args[1] == 'sign':
                         signed.add(key)
                     code = int(args[1] == 'verify' and key not in signed)
-                    return subprocess.CompletedProcess(args, code, '{}', 'no signatures found' if code else '')
+                    payload = json.dumps([{'critical': {'type': 'https://sigstore.dev/cosign/sign/v1' if bundle.endswith('=true') else 'cosign container image signature'}}])
+                    return subprocess.CompletedProcess(args, code, payload, 'no signatures found' if code else '')
                 return real_command(*args, **kwargs)
             final_reference = ['']
             with patch.object(publish, 'command', command):
                 for arch in ('amd64', 'arm64'):
                     metadata = root / f'{arch}-build.json'
                     real_command('docker', 'buildx', 'build', '--platform', 'linux/' + arch,
-                                 '--provenance=false', '--sbom=false', '--push', '--metadata-file', str(metadata),
+                                 '--provenance=mode=max', '--sbom=false', '--push', '--metadata-file', str(metadata),
                                  '-t', image + ':v1-' + arch, str(root))
                     digest = json.loads(metadata.read_text())['containerimage.digest']
                     command('cosign', 'sign', '--yes', '--new-bundle-format=true', '--use-signing-config=true', image + '@' + digest)
