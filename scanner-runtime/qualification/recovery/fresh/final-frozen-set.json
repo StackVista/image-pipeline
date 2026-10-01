@@ -1,0 +1,5 @@
+{
+  "generation_cache_contents_identical": true,
+  "input_files_per_generation": 1282,
+  "grype_db_preparation": "Both copies use original-client accepted hydration v6.1.9 before freeze; Original older acceptance is required by guarded scans."
+}

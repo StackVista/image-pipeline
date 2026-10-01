@@ -1,0 +1,38 @@
+[
+  {
+    "family": "older",
+    "tool": "trivy",
+    "version": "0.70.0",
+    "archive_url": "https://github.com/aquasecurity/trivy/releases/download/v0.70.0/trivy_0.70.0_Linux-64bit.tar.gz",
+    "archive_sha256": "8b4376d5d6befe5c24d503f10ff136d9e0c49f9127a4279fd110b727929a5aa9",
+    "binary_sha256": "379d59f24a4a828c55de5f0b91b6805cc35d13580180b658820e648611256166",
+    "official_signature_verified": true
+  },
+  {
+    "family": "older",
+    "tool": "grype",
+    "version": "0.112.0",
+    "archive_url": "https://github.com/anchore/grype/releases/download/v0.112.0/grype_0.112.0_linux_amd64.tar.gz",
+    "archive_sha256": "acb14a030010fe9bdb9594b4ae108d9d14ef2f926d936aa0916dc62c89c058ea",
+    "binary_sha256": "d515f53bd5ee4930e144c6ea14a2659084763c336a1833b723db0b05080fcaf5",
+    "official_signature_verified": true
+  },
+  {
+    "family": "newer",
+    "tool": "trivy",
+    "version": "0.74.0",
+    "archive_url": "https://github.com/aquasecurity/trivy/releases/download/v0.74.0/trivy_0.74.0_Linux-64bit.tar.gz",
+    "archive_sha256": "2ae6fe3ee734b7fdf11335663e18c75ea12dccc76062f09f164a3b0f8be4371a",
+    "binary_sha256": "d89bcc6510a267f11b773398cbf1be5520ce39f9e8b6633178c4487f05b7d791",
+    "official_signature_verified": true
+  },
+  {
+    "family": "newer",
+    "tool": "grype",
+    "version": "0.118.0",
+    "archive_url": "https://github.com/anchore/grype/releases/download/v0.118.0/grype_0.118.0_linux_amd64.tar.gz",
+    "archive_sha256": "1d444c5e7360471815f7158f71935fcecc68a3c417d85c7344f770854300bba2",
+    "binary_sha256": "91705979c6ccb736b87e3250831f5e1a35f13767fd2032ffa85c55b1e6f58f90",
+    "official_signature_verified": true
+  }
+]
