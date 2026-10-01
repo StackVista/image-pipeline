@@ -1,0 +1,58 @@
+{
+  "original": {
+    "clean": {
+      "secrets": 0,
+      "gate": 0,
+      "inform": 0,
+      "malformed-gate": 2,
+      "malformed-inform": 2
+    },
+    "secret": {
+      "secrets": 1,
+      "gate": 1,
+      "inform": 1
+    },
+    "vulnerable": {
+      "secrets": 0,
+      "gate": 1,
+      "inform": 0
+    },
+    "bci": {
+      "secrets": 0,
+      "gate": 1,
+      "inform": 0
+    },
+    "tool-error-gate": 1,
+    "tool-error-inform": 1,
+    "missing-vex-gate": 1,
+    "missing-vex-inform": 0
+  },
+  "candidate": {
+    "clean": {
+      "secrets": 0,
+      "gate": 0,
+      "inform": 0,
+      "malformed-gate": 2,
+      "malformed-inform": 2
+    },
+    "secret": {
+      "secrets": 1,
+      "gate": 1,
+      "inform": 1
+    },
+    "vulnerable": {
+      "secrets": 0,
+      "gate": 1,
+      "inform": 0
+    },
+    "bci": {
+      "secrets": 0,
+      "gate": 1,
+      "inform": 0
+    },
+    "tool-error-gate": 1,
+    "tool-error-inform": 1,
+    "missing-vex-gate": 1,
+    "missing-vex-inform": 0
+  }
+}

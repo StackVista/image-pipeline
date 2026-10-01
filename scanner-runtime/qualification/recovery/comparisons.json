@@ -1,0 +1,20 @@
+{
+  "clean": {
+    "trivy": "equal except volatile report timestamp/identifier and exact harness output path",
+    "grype": "equal except volatile report timestamp/identifier and exact harness output path",
+    "gate-sarif": "equal",
+    "inform-sarif": "equal"
+  },
+  "vulnerable": {
+    "trivy": "equal except volatile report timestamp/identifier and exact harness output path",
+    "grype": "equal except volatile report timestamp/identifier and exact harness output path",
+    "gate-sarif": "equal",
+    "inform-sarif": "equal"
+  },
+  "bci": {
+    "trivy": "equal except volatile report timestamp/identifier and exact harness output path",
+    "grype": "equal except volatile report timestamp/identifier and exact harness output path",
+    "gate-sarif": "equal",
+    "inform-sarif": "equal"
+  }
+}

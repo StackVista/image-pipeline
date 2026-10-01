@@ -24,7 +24,15 @@ base_env = {**os.environ, 'HOME': str(work/'home'),
             'TRIVY_SKIP_JAVA_DB_UPDATE': 'true', 'GRYPE_DB_CACHE_DIR': str(work/'cache/grype'),
             'GRYPE_DB_AUTO_UPDATE': 'false'}
 docs = sorted((work/'cache/trivy/vex/repositories').rglob('*openvex*.json'))
-docs = [p for p in docs if isinstance(json.loads(p.read_text()).get('statements'), list)]
+usable = []
+for p in docs:
+    try:
+        document = json.loads(p.read_text())
+        if isinstance(document, dict) and isinstance(document.get('statements'), list):
+            usable.append(p)
+    except json.JSONDecodeError:
+        pass
+docs = usable
 if not docs:
     raise ValueError('usable frozen VEX unavailable')
 
@@ -102,9 +110,13 @@ for kind in ['clean','vulnerable','bci']:
         if tool=='trivy':
             for j in (a,b):j.pop('CreatedAt',None);j.pop('ReportID',None)
         else:
-            for j in (a,b):j['descriptor'].pop('timestamp',None)
+            for variant, j in [('original', a), ('candidate', b)]:
+                j['descriptor'].pop('timestamp',None)
+                expected_output = 'json=' + str(work/variant/kind/'grype.json')
+                assert j['descriptor']['configuration']['output'] == [expected_output]
+                j['descriptor']['configuration']['output'] = ['json=grype.json']
         assert a==b,(kind,tool,'unexpected JSON change')
-        comparisons[kind][tool]='equal except volatile report timestamp/identifier'
+        comparisons[kind][tool]='equal except volatile report timestamp/identifier and exact harness output path'
     for mode in ['gate','inform']:
         assert json.loads((work/'original'/kind/(mode+'.sarif')).read_text())==json.loads((work/'candidate'/kind/(mode+'.sarif')).read_text())
         comparisons[kind][mode+'-sarif']='equal'

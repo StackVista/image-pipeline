@@ -1,0 +1,54 @@
+{
+  "original": {
+    "clean": {
+      "secrets.json": "6bed99a9c4e453b007afc6bc2943f4cb9441ba2996a4bcc0eb0d443001dce1d4",
+      "trivy.json": "f62e1a2c815ba1a3bd0279447507fbc82f8aa13bb7da373b810f90200bfd7634",
+      "gate.sarif": "472e3bcccb4196d257e425c78714d52c8acc8a78bb8cd956005e2bb686e983d8",
+      "inform.sarif": "472e3bcccb4196d257e425c78714d52c8acc8a78bb8cd956005e2bb686e983d8",
+      "grype.json": "ae9e95927854a9826f36666ac3e3f63746ae5c24849f798ae9f862e0501a720b"
+    },
+    "secret": {
+      "secrets.json": "aeb86717282c6cbf553960a8d0d7fc06c36084f65f85b982390d609c8ecb49ab"
+    },
+    "vulnerable": {
+      "secrets.json": "05c02c3545dd70bb4c69ac14e0a433c522ec5caca4e67489b1d6349a76ed155a",
+      "trivy.json": "d9f2fa9a9157502f60dc03e662538b0666b93a5c04b748b24f913bea12f071e0",
+      "gate.sarif": "abdd4349735db95a9e4a1c1c158f3df96fe9e313804094e18fca3ec7d3aca917",
+      "inform.sarif": "abdd4349735db95a9e4a1c1c158f3df96fe9e313804094e18fca3ec7d3aca917",
+      "grype.json": "8c08dfc4b00d8af92aff4e37a039671f87c21b224003a1a762d799bf3618b4d8"
+    },
+    "bci": {
+      "secrets.json": "93036cdc8b0d8059fac8b6f084b45cb6628a5450b0df08c5c6525985dfb1a455",
+      "trivy.json": "6e28ed526da75a01cdfb12293dc04dd7b8d251716821d802df435bb789754a97",
+      "gate.sarif": "5129319f629c91b8c9fd6795cbae3a069cfc5b5dd65fb71795aa707aa9472ad5",
+      "inform.sarif": "5129319f629c91b8c9fd6795cbae3a069cfc5b5dd65fb71795aa707aa9472ad5",
+      "grype.json": "7d284edd55e399789c2ab395fe5162440de06ee60c9e38b579151f64a28b61a2"
+    }
+  },
+  "candidate": {
+    "clean": {
+      "secrets.json": "dedb89a2048b46f2ba477da46392a15b4632a6eea1426d457d35dc94b50ec558",
+      "trivy.json": "1442d06aa4649a98089fb04c1c91e4f46971fdcd11248bf97ce306bd29ab2ef1",
+      "gate.sarif": "472e3bcccb4196d257e425c78714d52c8acc8a78bb8cd956005e2bb686e983d8",
+      "inform.sarif": "472e3bcccb4196d257e425c78714d52c8acc8a78bb8cd956005e2bb686e983d8",
+      "grype.json": "ca71aca071e6b6486bc90102f23a9dac4feaabfe60a414e85e81c992c7824c26"
+    },
+    "secret": {
+      "secrets.json": "78b744d95e284d0bb126c436cb6fb39de42497a32792ae842da20d600d2cb802"
+    },
+    "vulnerable": {
+      "secrets.json": "88e901232d793fd9042af503c95787132873ecae804a9cb17f25219ac1fbb0d9",
+      "trivy.json": "137bac2ed0bf0e8773fcdbed58ba56b2a302c527422d8db39ce749c872241b3e",
+      "gate.sarif": "abdd4349735db95a9e4a1c1c158f3df96fe9e313804094e18fca3ec7d3aca917",
+      "inform.sarif": "abdd4349735db95a9e4a1c1c158f3df96fe9e313804094e18fca3ec7d3aca917",
+      "grype.json": "b9edb86d2ab142f0353cb8880309ebf7f277c32b2bd15c5cea23a3ffd03ae57f"
+    },
+    "bci": {
+      "secrets.json": "28180b65002885d795cd2874b108117de44029c3423633d1b560549aadb686ad",
+      "trivy.json": "7a5517ae84592274eb0f1dea5271469cf5146e7c1e820440b48036877ca03e84",
+      "gate.sarif": "5129319f629c91b8c9fd6795cbae3a069cfc5b5dd65fb71795aa707aa9472ad5",
+      "inform.sarif": "5129319f629c91b8c9fd6795cbae3a069cfc5b5dd65fb71795aa707aa9472ad5",
+      "grype.json": "3da0c752c8d59849feb7388afd72bbe549cd3d7b2f2c765c74b8510fc50e1ed8"
+    }
+  }
+}

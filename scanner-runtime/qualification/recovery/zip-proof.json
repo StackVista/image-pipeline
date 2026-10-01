@@ -1,0 +1,92 @@
+[
+  {
+    "name": "trivy-0.74.0",
+    "module": "github.com/aquasecurity/trivy",
+    "version": "v0.74.0",
+    "sum": "h1:B2/h1Aehsq/zykg0jxpWUlOX7e3UXpbxjZZs/0vNlC4=",
+    "zip_entries_verified": 3326,
+    "mismatches": [],
+    "jd_inherited_license": false
+  },
+  {
+    "name": "grype-0.118.0",
+    "module": "github.com/anchore/grype",
+    "version": "v0.118.0",
+    "sum": "h1:SvruL47YWO2tSDFOjX+DivsT3licI0iWL5lGWAqiIgE=",
+    "zip_entries_verified": 1581,
+    "mismatches": [],
+    "jd_inherited_license": false
+  },
+  {
+    "name": "syft-1.51.1",
+    "module": "github.com/anchore/syft",
+    "version": "v1.51.1",
+    "sum": "h1:H/a0/Cw5Y3Nsa8/XFupCMcrLsF/5KnMYw/gzGVPRgmM=",
+    "zip_entries_verified": 2880,
+    "mismatches": [],
+    "jd_inherited_license": false
+  },
+  {
+    "name": "go-vex-0.2.7",
+    "module": "github.com/openvex/go-vex",
+    "version": "v0.2.7",
+    "sum": "h1:/pN3bqvS4QOc6WkkL0hbKzJuAtsUD9vmvk9IZkzD3Zc=",
+    "zip_entries_verified": 56,
+    "mismatches": [],
+    "jd_inherited_license": false
+  },
+  {
+    "name": "go-vex-0.2.8",
+    "module": "github.com/openvex/go-vex",
+    "version": "v0.2.8",
+    "sum": "h1:m/iH6+0fc7QXwfx7vJ0UeT8Z1oN1zVcyHjcVK+UO11Y=",
+    "zip_entries_verified": 60,
+    "mismatches": [],
+    "jd_inherited_license": false
+  },
+  {
+    "name": "squealer-1.2.12",
+    "module": "github.com/owenrumney/squealer",
+    "version": "v1.2.12",
+    "sum": "h1:6VQxQ323q7q0eKNP5p7MX4nbTW1z8wK44YvyHLwDcx0=",
+    "zip_entries_verified": 62,
+    "mismatches": [],
+    "jd_inherited_license": false
+  },
+  {
+    "name": "trivy-checks-79d27547baf5",
+    "module": "github.com/aquasecurity/trivy-checks",
+    "version": "v1.12.2-0.20251219190323-79d27547baf5",
+    "sum": "h1:8HnXyjgCiJwVX1mTKeqdyizd7ZBmXMPL+BMQ5UZd0Nk=",
+    "zip_entries_verified": 2657,
+    "mismatches": [],
+    "jd_inherited_license": false
+  },
+  {
+    "name": "trivy-kubernetes-0.9.1",
+    "module": "github.com/aquasecurity/trivy-kubernetes",
+    "version": "v0.9.1",
+    "sum": "h1:bSErQcavKXDh7XMwbGX7Vy//jR5+xhe/bOgfn9G+9lQ=",
+    "zip_entries_verified": 107,
+    "mismatches": [],
+    "jd_inherited_license": false
+  },
+  {
+    "name": "jd-2.3.0",
+    "module": "github.com/josephburnett/jd/v2",
+    "version": "v2.3.0",
+    "sum": "h1:AyNT0zSStJ2j28zutWDO4fkc95JoICryWQRmDTRzPTQ=",
+    "zip_entries_verified": 67,
+    "mismatches": [],
+    "jd_inherited_license": true
+  },
+  {
+    "name": "testify-1.11.1",
+    "module": "github.com/stretchr/testify",
+    "version": "v1.11.1",
+    "sum": "h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=",
+    "zip_entries_verified": 63,
+    "mismatches": [],
+    "jd_inherited_license": false
+  }
+]
