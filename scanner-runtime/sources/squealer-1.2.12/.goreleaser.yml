@@ -1,0 +1,81 @@
+version: 2
+before:
+  hooks:
+    - go mod tidy
+    - go mod vendor
+builds:
+  -
+    id: squealer
+    main: ./cmd/squealer
+    binary: squealer
+    ldflags:
+    - "-X github.com/owenrumney/squealer/pkg/version.Version={{.Version}} -s -w -extldflags '-fno-PIC -static'"
+    env:
+      - CGO_ENABLED=0
+      - GOFLAGS=-mod=vendor
+    goos:
+      - linux
+      - windows
+      - darwin
+      - freebsd
+    goarch:
+      - amd64
+      - arm64
+
+
+checksum:
+  name_template: '{{ .ProjectName }}_checksums.txt'
+
+snapshot:
+  version_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+archives:
+  -
+    formats: [ binary ]
+    name_template: "{{ .Binary}}.{{ .Os }}.{{ .Arch }}"
+
+release:
+  github:
+    owner: owenrumney
+    name: squealer
+
+dockers:
+  - goos: linux
+    goarch: amd64
+    ids:
+    - squealer
+
+    dockerfile: Dockerfile
+    image_templates:
+    - "owenrumney/squealer:latest"
+    - "owenrumney/squealer:{{ .Tag }}"
+    - "owenrumney/squealer:v{{ .Major }}.{{ .Minor }}"
+  - goos: linux
+    goarch: arm64
+    ids:
+    - squealer
+
+    dockerfile: Dockerfile
+    image_templates:
+    - "owenrumney/squealer:latest-arm64"
+    - "owenrumney/squealer:{{ .Tag }}-arm64"
+    - "owenrumney/squealer:v{{ .Major }}.{{ .Minor }}-arm64"
+  - goos: linux
+    goarch: armv7
+    ids:
+    - squealer
+
+    dockerfile: Dockerfile
+    image_templates:
+    - "owenrumney/squealer:latest-armv7"
+    - "owenrumney/squealer:{{ .Tag }}-armv7"
+    - "owenrumney/squealer:v{{ .Major }}.{{ .Minor }}- armv7"
+
+  

@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Maintain dependencies for go-modules
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 3
+    ignore:
+      - dependency-name: "github.com/aquasecurity/trivy" ## `trivy` are updated manually
+    groups:
+      docker:
+        patterns:
+          - "github.com/docker/*"
+      common:
+        exclude-patterns:
+          - "github.com/aquasecurity/trivy"
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: "monthly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  

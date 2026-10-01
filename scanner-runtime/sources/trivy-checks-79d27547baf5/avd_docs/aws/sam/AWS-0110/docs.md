@@ -1,0 +1,14 @@
+
+Method cache encryption ensures that any sensitive data in the cache is not vulnerable to compromise in the event of interception
+
+
+### Impact
+<!-- Add Impact here -->
+
+<!-- DO NOT CHANGE -->
+{{ remediationActions }}
+
+### Links
+- https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-cachedataencrypted
+
+

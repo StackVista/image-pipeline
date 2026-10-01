@@ -1,0 +1,48 @@
+
+Remove public access except where explicitly required
+
+```hcl
+resource "kubernetes_network_policy" "good_example" {
+  metadata {
+    name      = "terraform-example-network-policy"
+    namespace = "default"
+  }
+
+  spec {
+    pod_selector {
+      match_expressions {
+        key      = "name"
+        operator = "In"
+        values   = ["webfront", "api"]
+      }
+    }
+
+    egress {
+      ports {
+        port     = "http"
+        protocol = "TCP"
+      }
+      ports {
+        port     = "8125"
+        protocol = "UDP"
+      }
+
+      to {
+        ip_block {
+          cidr = "10.0.0.0/16"
+          except = [
+            "10.0.0.0/24",
+            "10.0.1.0/24",
+          ]
+        }
+      }
+    }
+
+    policy_types = ["Egress"]
+  }
+}
+```
+
+#### Remediation Links
+ - https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/network_policy#spec.egress.to.ip_block.cidr
+

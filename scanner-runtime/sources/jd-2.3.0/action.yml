@@ -1,0 +1,20 @@
+name: 'jd - JSON diff and patch'
+description: 'jd is a utility for diffing and patching JSON and YAML values. It also supports JSON Merge Patch and a subset of JSON Patch'
+branding:
+  icon: at-sign
+  color: green
+inputs:
+  args:
+    description: 'jd commandline arguments'
+    required: true
+outputs:
+  output:
+    description: 'The output of the jd command'
+  exit_code:
+    description: 'The exit code of the jd command'
+runs:
+  using: 'docker'
+  image: 'docker://josephburnett/jd:v2.3.0'
+  entrypoint: '/jd-github-action'
+  args:
+    - ${{ inputs.args }}

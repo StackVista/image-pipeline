@@ -1,0 +1,990 @@
+{
+  "scanner-runtime/sources/go-vex-0.2.7/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "c7dfcd84c1d71a99cb1be3e62eb6fdd9d8649717d09802b03885e0fe7d4de540"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "a1a85d8432d15e756dca0f5f60cdea36005087e594e6e4a908ae1d49b691601c"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/go-vex-0.2.7/pkg/vex/functions_files.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "520a6968be2845cf8c051bd404f0d5c223227596914368ce3f7f171dcc1ec4b4"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "b8d2153edd145c793604399d5aafd7bcd0c405c9704bcfe85c2e73a67de3d45e"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/go-vex-0.2.8/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "8532033d28a662e8ebe4eff580d07bd3b6b688d1bedf0ede7222d3175941a7f7"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "df943f9a390084feb81f74b4197a56391ec684ef22c3643b4393f60348ac0a1d"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/go-vex-0.2.8/pkg/vex/functions_files.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "520a6968be2845cf8c051bd404f0d5c223227596914368ce3f7f171dcc1ec4b4"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "b8d2153edd145c793604399d5aafd7bcd0c405c9704bcfe85c2e73a67de3d45e"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/grype-0.118.0/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "e8d103c02d02091f2d21f3feb062dd6dbfb862609fdb5601472dc8868fc967f8"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "16ff2cca6b88d34b2270281bcf777ce837e6cb49c960754440c9f11530269ca6"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/grype-0.118.0/internal/dbtest/manifest.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "f4e269ab6b06c6f6d969f9637ba99785bf04a1b27dcb606cbdf10b8079a77a8f"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "0011b99adc909b48469fc932c13fd5ff96826edf6e9a32088488d9e7d1847366"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/grype-0.118.0/test/cli/config_test.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "fbca5a3991ef920a7c17564e76f2cecd586a45dff437d7454de1cb25575e2d6e"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "e1605941837fe62a5458bbc969a9e98a78dfbc159ccd2fb89e39a39056811dce"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/jd-2.3.0/v2/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "158120faa558a382b67a4681f88bfc3c22647b3d99ea52a6cff943db66f24b2d"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "8795939fc77205c114550ba22a3d2cf762c1a5ac5c2077495a6a9b98a921455e"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/jd-2.3.0/v2/node_read.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "f9148c4f070a58175471655f4ca8560f6ac27b8ed8e4c944b70eb07c14229187"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "9482dc8f3b8f943a098a72cc0968490244ac3de4abadbabe277b8d0aaf7a9b5f"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/jd-2.3.0/v2/node_write.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "6e3c38d78ff74662598625192cc7ce896f83fb60845441058b48350147200803"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "91b565e54f1ed50d885c2d501ab4a6e28f4770400b752c63390f4ee96e60c471"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/squealer-1.2.12/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "e8a10f3779b6f46cdb73078ac4cff2d07bda5df8fce1c50f37b733a778d22881"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "9d892a8c0fb9bb9d3fdca4321519ca8bee6732929cd4bee7d38c8a3f13802a08"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/squealer-1.2.12/pkg/config/loader.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "c8b826572ccc374250cafc6f5bbe52de3b62e933cbef21d010b2e8c843a3ad8f"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "861cb91da534fc76f5d234bf8e2f4be863b495ea7587d8712eb129f37953e471"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "092033b333b025a83410320a1bfe33e0ad5f83be3462128befb0f8c4997f928e"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "ab7a0d5a1894aed59113a3bb903ed05cbe5b0ad83d08049953d183770f63a226"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/internal/capabilities/capabilities.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "6cec88c98c83ba6126cb019307d91daa7512602b8e2cbd45241eaa8cb834fe1e"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "2ed9991940f12585d4211314c4e95e8c3d16e57aa8b1e4a913ae6044d1e45a09"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/internal/capabilities/generate/io.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "fc6e2969f8527f0f54ed800f5fd2d5660499ec71adea35d10f236792b87b4b4c"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "980531025696ed320907bc2d43841b78fc202f6fe135dcedb69e6ac66b4151f6"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/internal/capabilities/generate/io_test.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "08135809e0e0792091cdd6978d679935d26a5e3996c06bce8e19b202bf65a20b"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "a2f3dc84f017b56bce84dd4f1af07674cb041546e5861a17c327502379e29d5f"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/internal/capabilities/internal/load_capabilities.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "95aacba663a8a205089dff8880db9e71ff53171a3035435caaecad7a812b7ac0"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "56cd837cb2511482987a93b09ce360a25fa43e6bf4890974e07e2d55e2211a34"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/internal/capabilities/model_test.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "7c20f37221a9114b1426c3ffd3bf20ef669cc6549daa4b32813d5dce9de677af"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "94f9260d0aab543bb2e85f0963054d8388591d446f8ecc686d71e0e6c3889d2b"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/syft/pkg/cataloger/ai/huggingface.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "15a75829055607b8f4fd975a5cd739061ff20b30e9118429ea142994fbd4b543"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "ca08d2091a7349efee6ea3897561f793950051b230586c5fa79fef40b9b0b26c"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/syft/pkg/cataloger/snap/parse_base_dpkg.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "211aaa415a8b623e3dc934c15ba1810f8f7ac1df899fa3e9886cd5dfcb901fcf"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "4c98989116da3d156c8873113db313803924814e66cf2816add663049b836c9a"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/syft/pkg/cataloger/snap/parse_snapd_snapcraft.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "d11fe036b20835353c1ecadb5259e293c0bdff278e2abe5893eb0071f067a6e4"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "2a7b6fe98268a6946a585b39adc63d3dad74aec6e3475a0fd2ce4767a595d059"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/syft/pkg/cataloger/snap/parse_system_manifest.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "ad3b6ce5ceaa27617453cfbaee70cbf27269e1265e62819861ed42b37670b94b"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "c122e00bf2973a35a3dc500b0dbaf95245a38030b6e2ff0863b4930a96f461fd"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/testify-1.11.1/assert/yaml/yaml_default.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "2204d8dfd3babf70bd0bbc8991f731af63b0da7cdc7df42470fbe73b3898bcd7"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "9d694779761bfa0663bacc4175b71f812220745d05e748e9da550d6ae6bf86f9"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/testify-1.11.1/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "3d81dcccdaefcf984d0535ce80a0dbcf5df49f471f32d52f63f2e9ff8eed3039"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "5846af204043f29df285026109bf32db6519c3d7e1d5c3a65fefb174f9d81d33"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "ac623d66a1aba5db7dbd3a6af2827dcf2a2f5064fcea4d5a8e808a192b992230"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "85697654fc5fea7d0a0082920bed1116af5d06dbd2be0fcc0c281b68a35c8e33"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/internal/testutil/fs.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "629557304c92c2ca3327789c3bc28b22932e5e810dcf11b54fb62a18a7b67197"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "19b70d5dcd9fe4f985ccb0a31038524f6666ed47d4a3d70f4e6da0a2ed7f4c8b"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/magefiles/helm.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "1af63ed4393c90d5e6c1d3f3a82df492029fe15ad90d8905e1bc291b2c5463a1"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "eb909bd1e0ece26aaa0cb737add61934eff7302c3c49474e5405986c76724f27"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/commands/artifact/run.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "eb4661d4b3910bc36d491d242a0fbd8e442c3322a1e9ebc6cbeb160a6676c29d"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "93e91cbd567122c389153a5872ef686781462275b012cd0dcef0e29a8057202c"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/compliance/spec/compliance.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "e9b467aa1f79598931fb69f33082db06e6d52e34ca3d1fca257c3dce7fb3a42e"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "0537d6466165f5cbc2123977ca2d2ebbec9be255075859d23e13069de8f3d9c8"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/dependency/parser/conda/environment/parse.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "2de444ca3ceb5db5356a651b3497ef8834acea82990d4c59a49a8bb3d5ea97a4"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "cd02423b3a3c60e7224da6c7e671a5aac676a563c70a49f84b1dfa07812a6476"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/dependency/parser/dart/pub/parse.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "105cd51fc45816d352d950b3fbd32cfb0f3b46524f33f1a4eea8d2c106432271"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "da24cdc2b26184f4154aa4c2c7389bdf4c66fdcea57cf0e5e66d333a862a16b6"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/dependency/parser/nodejs/pnpm/parse.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "02a07c5cd0b65e1b9cefeaaf9112b4d1bdec0266419af84d4b3e0c7369e3956a"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "3bab92eb5689618f40f187006692b316de7c761fc5f054b09f59ea73e40f9747"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/dependency/parser/swift/cocoapods/parse.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "6ac4c0af8e24cbe2b82485991223c0d65e97fbef723766084b3661d4aea2883b"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "831f9952ec137185aa73a56f958133b676ed1f870420a6a33e0b8adb734de338"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/fanal/analyzer/language/dart/pub/pubspec.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "dcf6ac03a721d3df0787186d279fa5a1d674544d48b4ba3be413602ead527825"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "14f8c43afbbfde1e62b7b9290af44e363aed3af03efec778b3f1fa00d796f7c6"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/fanal/secret/scanner.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "b77ba938ce3dea2fd184442452b1a1e6d4d1d8be04bba5ff8aa10ae184682b01"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "661001860a01b61fdc8e42b93eaa9dd46219decba5ba187ddf6fbc62827a4cb7"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/detection/detect.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "03f0214f9f2862ba45d8e39b1f9138992ca39095d667280a144598b048414765"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "21c5bb5e8820d181ac8ced91e283e7bee1a1e6aab90b4754e929c0bfda32a495"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/rules/register.go": {
+    "candidate": {
+      "mode": "100755",
+      "sha256": "c53d86f07d13df6e9a89e57b4b4727cffa4f52f5a5e805848ae8bcc724be5291"
+    },
+    "original": {
+      "mode": "100755",
+      "sha256": "553e9cd0535676ddcc6469001b1d2ed0f1565211c552eacbe8b36372f14836a8"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/inventory/inventory_vars.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "f0eb6cee5bbab35d99e9d43712e0865d49ec60e0dde3e41617522ccb15f38709"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "8c556b91a4c33adce83cf284ce1ec1ea6348db8e31bb58f4a95dc2f791caa3ab"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/inventory/yaml.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "4848fc4aeb580705fc1879befa679f7e4a699a022b267d2de0aa4b75815639da"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "ac6ad9f749802c111196f452c1f33fd87d85672a48e5b6ebb550c09e3d473207"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/orderedmap/orderedmap.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "980d182d8b4e9c03acbd8ba247ad1320ad9d87400ae7f6e1f14b0309a0adad44"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "d35c7520c4f82737f16fcbc1d75e7d3a47491dafdce163d463f181988aed114d"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/orderedmap/orderedmap_test.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "f91000c4e7f4c58a184f69fa100672ca60c05b42496aeba3d5baa0dc0661bbe3"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "409637fc893ab244ddd7897a570cb2a02cd2bcbd3679e996646534e8669eba7a"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/node.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "f7d6f4f04811dbcbf82c11e4ee7b2fbcda07540c1916402b366ccd0ce75a7924"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "a41e08c2f66e9eac47a5c12419ea75e25f8f4026d9938f7ed29f5819916b986f"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/node_test.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "d5d2c3deff202f9d6b9526511ad7d6c92bc869d7836d212f65642ff257834ed0"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "55b34b5432778932d4b352542b5af67e39f3a91f41c2244beef9c6623f006b93"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/play.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "c4cbdf24db16f5b80328d89ee45d3f64f1c960c48b97f9c542f1c0a76b336b4e"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "856f4d39482bd87687c2425fbcafa61aae9518110b77dd3427395762ab835853"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/range.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "2cc7ecd7c92ef1c7d77deabf7469cd04aea6aad38a9fdf34b3b997caa08889ea"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "eac20ed17fdc0a88c104771db050493131c6a21759135de1e204a9555b66db6f"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/role.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "d47fd2eb86cd06528545d0d901824dd53373eac1e2bd60ff1fcef95364ed6a30"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "b6b73e53872aa03e5b15acc3b440e6e7cdb1248c80feac1f1f3aa5289b9f9320"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/task.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "f126bbce75ac414296e84d9d76d5efd0a69982b538eba8b36ffe4b562cdfb752"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "0de40ebea4a691e510c1e7a794b0c7e60dba93f1194af2e372868249dbf7c71e"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/task_test.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "00226238753f39af736b1f6ef0bff638d1fc6d225a9e5ca2a24cd673355e1b7f"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "f1f6fa5bdeee0d2bb19162989c94fb6b16f7fd846cc4cc38e09d7013f3eb376e"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/yaml.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "f3c7929820a6337a1e1b7ad6d9cb073faacd6be52729132c8a648404290aa6a0"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "109e1150f2bdaa5ae1df8cd3928ee0b05a222248f882bc788659678bffd40927"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/parser/yaml_test.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "c1b5fd40bd9fdbd479b1835c2b61f49fecd81ab3018d3ebbf2bf62de0c3f2bb8"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "352c9791cca85f0e609b20e2e4a0b97c94af38b6df12f6e95ad6724681eea9a3"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/ansible/scanner.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "39883298d3408ef0b6e6cb0686b925f73c840f1edfc8db82998c308c1bac6abd"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "ddf2cd7b7e4053c7a66c214b472c92e24339f42266c0fec6eedcecd47ef17650"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/cloudformation/parser/intrinsics.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "a736f58f8398c8730032a50d1a957ab7b5f070aeac9de7be573355316acd3f6b"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "5b598316899a1ad8892182795ee21bb7067b53abbd9a89dcabd491bbd8d0f1a5"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/cloudformation/parser/intrinsics_test.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "168785464fc113e6203860d51d0b7e7494590e1caf229469604dc648f771e5b3"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "510ed0b30a43e4686cfc752ea03a2cd69eb0d7b7fd58a06f001145beabd46743"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/cloudformation/parser/parameter.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "4f18c8c1dad365f6189f1c6078d6eee4c82e909ca837e15605de7ec52325ba17"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "4bfac9ea4a555558fba06904a06712ea1bf36fbf7477aed7b8da920c2ac0b58a"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/cloudformation/parser/parser.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "831b8175e5e18abf7082c3c341cd380ee688ea86db431892164daddbe8134dc1"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "195bae58ce8197f11f1fd7b5d3965edd0f483d51a56265006e94f33b305152b8"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/cloudformation/parser/property.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "eccfb97248e91c2478914bdd29588ac290cc2bd79100b54f038b91be550af4b8"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "708f18dc36c3e7de1ac5619d35253ff1db4676cf7c79082a106d2fff1301f496"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/cloudformation/parser/resource.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "1b99184f988f02cc1fa2191442eecf2c8304aa28e57469474d01c0c9519210ab"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "e8dc1a29c5808de59de3093bb9cdb13ec5443bf45d41a2805385ac171a8b73be"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/cloudformation/parser/util.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "c6fc85dc4d706200bcbbfb399481213dd84ae6cb437cb46e7336b259197ec68e"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "f543605f848e5c98003a51d60de8fb3cf9edbbfd684af51385d8aee66bc11b22"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/generic/scanner.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "1ba5fb01e2979e74eabb2f0f338776b76be43cf20514e9b2d021b0bc72383c21"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "0813dbd0b8091cb29208c01c0a7e9fbc7dd51c213a059d1e3d21e64180788a5d"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/helm/parser/parser.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "b6e3e579888f7bcd366fedc0a8e0b9d88c58fb12ce2eb3c744078a2686d336e9"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "04321a4754404e44a513213ea69b6e833b50cb53ac429c45b516debb58443218"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/helm/parser/vals.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "f0a834ea82251db9a4daf750fff47ec0131cf5793137e51d96412b9a7bcf83df"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "61317ed87ad3321d75ebe740a364a5e1fead03b6727beec564548d3ec7ae7ffb"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/kubernetes/parser/manifest.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "9817c53b1a09f030b03312776f1807b19ece6dd8efee235f1318501f75a0f225"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "3fd885b78f770dd66f033fe78ff9498e8ff9da608bfe7fac05bfbc7094dc085b"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/iac/scanners/kubernetes/parser/manifest_node.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "52317746222503e18b171c2f65d4e2c7ba78e793d2ba7c67bc544315aa8a1cbd"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "3abad30bae1725cbc93df247064c96c4065f7aa54af9a447d59767ea049fa024"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/k8s/scanner/io.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "0986433c2d2b200fb21ad6c50794080ad1359cbcefd33f5d0a685085cd4ce81d"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "62db2729ed3b68a5569d43cefc3b8d0d3407353550a508c5ab41e0e3ec2bc3b8"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/plugin/index.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "bb99aa976c17ff9c64b47ed52fbdfd31ee5fe25bd88561cb9a7d9e76b8d35f46"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "b4dff7f56bd56c9f9f0a98e09e96fb2ff59839887bf9cde68d15fbb4053192fc"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/plugin/manager.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "fc7fb02010715390db37bf2485a40ce4ef1b8a513aa432ab1ddb539d148860be"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "b812b54ea7e339edcae87a4e34d61f5cc730292c610eb91bae46a897cbd9d492"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/result/ignore.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "c8be7117e7ddff89cfe9989c28c039a2d74382609bfa564d83ac3eddda0c9721"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "7bbe3541329acf47acc1f9b30c63e95d0ee1748981d1fdc56cb1c3eaa2c718f6"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/pkg/vex/repo/manager.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "d0a115a6676e95645263f099c046ca6a309a97fc489a6eb838bb2793cd5a8db4"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "3a8a0ca7877bf0260af530171f7d58661fedf3b5f131f3f574490e2e321a1e43"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-checks-79d27547baf5/cmd/command_id/main.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "3a11641de9b16e8a00bcf9cd9f960347569df95595f0bc19e2ecdb33194b5462"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "0f2c2a51e90ef954c11253aed20349611d5866ee1515f2dd1bffd07b8deea29d"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-checks-79d27547baf5/cmd/fmt-examples/main.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "ce006d7a6c71f79532f681730c5ecbd0d81d5991b31dd70071f859ee79e93c8c"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "bfbe949b40c3860a6bdfc41076f4c57cbc6c7402f44410ece6f4e98a79924f8a"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-checks-79d27547baf5/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "8b23fb8f156fcbd9892b24ddbc211b3ca030b07fc0b12087e90e3e71e5dea28f"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "7f5afe47ea73433f0b8abd4175206862a062983785909dba59ac834160d8e63d"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/trivy-checks-79d27547baf5/internal/examples/examples.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "9bb41b6eeb138532c6b5534c1eb085d9a49337a386d8f74b9012ef44bb3b971a"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "7ebbf383d161464a9ede12bcd1d43fd058ff5a4d4fc831516dbdff63e1ffbda1"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-checks-79d27547baf5/pkg/compliance/loader.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "c9dc970d3c5edc59bf3929aee5966a1114257a82954414430fd9f5161a2140a8"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "907729138a330835001a3ee8185ecc5db5503cfd4991dcfe506b3a4dcdb7bccc"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-kubernetes-0.9.1/go.mod": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "c9e0c42587af169e5489f80c2893193d31deadc41e05b07b81239e220550b988"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "16d2ebf003f21ffa1123850512216758225eff783a785f924079d1930690905b"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/trivy-kubernetes-0.9.1/pkg/jobs/collector.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "0c0f4ece20b4238fcabfe582494e04b6e799a23a2883a9d9770675b52941afde"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "7733858163e5ce6847a2b2ff638ad3f428123d6b05995b3275d48557b09628ed"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  },
+  "scanner-runtime/sources/trivy-kubernetes-0.9.1/pkg/jobs/loader.go": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "580faaae5f99ae3e775659bbab29add530cb7f0f04bf8f1473b22bc9f02e9331"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "c90a9a151e97bae139848bcce9a97ff0f3b914f12410a63d17623198be573b18"
+    },
+    "reason": [
+      "matching v3 import; preserve YAML custom methods and identity fixtures"
+    ]
+  }
+}

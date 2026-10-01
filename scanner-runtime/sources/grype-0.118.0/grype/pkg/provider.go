@@ -1,0 +1,391 @@
+package pkg
+
+import (
+	"errors"
+	"fmt"
+	"io"
+	"sort"
+	"strings"
+
+	"github.com/bmatcuk/doublestar/v2"
+	"github.com/scylladb/go-set/strset"
+
+	"github.com/anchore/grype/grype/distro"
+	"github.com/anchore/grype/grype/version"
+	"github.com/anchore/grype/internal/log"
+	"github.com/anchore/syft/syft/file"
+	"github.com/anchore/syft/syft/sbom"
+)
+
+var errDoesNotProvide = fmt.Errorf("cannot provide packages from the given source")
+
+// Provide a set of packages and context metadata describing where they were sourced from.
+func Provide(userInput string, config ProviderConfig) ([]Package, Context, *sbom.SBOM, error) {
+	applyChannel := getDistroChannelApplier(config.Distro.FixChannels)
+	if config.Distro.Override != nil {
+		applyChannel(config.Distro.Override)
+		log.Infof("using distro: %s", config.Distro.Override.String())
+	}
+
+	packages, ctx, s, err := provide(userInput, config, applyChannel)
+	if err != nil {
+		return nil, Context{}, nil, err
+	}
+	setContextDistro(packages, &ctx)
+
+	// set the distro on each package if there is not already one set
+	if ctx.Distro != nil {
+		for i := range packages {
+			if packages[i].Distro == nil {
+				packages[i].Distro = ctx.Distro
+			}
+		}
+
+		if config.Distro.Override == nil {
+			log.Infof("using distro: %s", ctx.Distro.String())
+		}
+	}
+
+	packages = removePackagesByOverlap(packages)
+
+	out := FromPtrs(packages)
+	warnMissingGoSymbols(out)
+	return out, ctx, s, nil
+}
+
+// ProvideFromReader is like Provide but reads an SBOM directly from the given reader
+// instead of resolving a user input string to a file path.
+func ProvideFromReader(reader io.ReadSeeker, config ProviderConfig) ([]Package, Context, *sbom.SBOM, error) {
+	applyChannel := getDistroChannelApplier(config.Distro.FixChannels)
+	if config.Distro.Override != nil {
+		applyChannel(config.Distro.Override)
+		log.Infof("using distro: %s", config.Distro.Override.String())
+	}
+
+	packages, ctx, s, err := syftSBOMProviderFromReader(reader, config, applyChannel)
+	if err != nil {
+		return nil, Context{}, nil, err
+	}
+	setContextDistro(packages, &ctx)
+
+	if ctx.Distro != nil {
+		for i := range packages {
+			if packages[i].Distro == nil {
+				packages[i].Distro = ctx.Distro
+			}
+		}
+
+		if config.Distro.Override == nil {
+			log.Infof("using distro: %s", ctx.Distro.String())
+		}
+	}
+
+	packages = removePackagesByOverlap(packages)
+
+	if len(config.Exclusions) > 0 {
+		var exclusionsErr error
+		packages, exclusionsErr = filterPackageExclusions(packages, config.Exclusions)
+		if exclusionsErr != nil {
+			return nil, ctx, s, exclusionsErr
+		}
+	}
+
+	out := FromPtrs(packages)
+	warnMissingGoSymbols(out)
+	return out, ctx, s, nil
+}
+
+// warnMissingGoSymbols emits a single warning when the scan produced Go binary packages but not one
+// of them carries function symbols. See shouldWarnMissingGoSymbols for when that holds.
+func warnMissingGoSymbols(packages []Package) {
+	if shouldWarnMissingGoSymbols(packages) {
+		log.Warn("go binary packages were found but none carry function symbols; go vulnerability matching " +
+			"falls back to module granularity and may report false positives. if scanning an SBOM, regenerate " +
+			"it with symbol capture enabled for more precise results.")
+	}
+}
+
+// shouldWarnMissingGoSymbols reports whether the scan contains Go binary packages of which none carry
+// function symbols. Grype captures symbols by default on its own scans, so a complete absence across
+// every Go binary means symbols were unavailable for matching — a stripped binary, or an SBOM generated
+// without symbol capture. In that case Go matching falls back to module granularity and may report
+// false positives. Per-package absence is normal and deliberately does not warn: dependency modules
+// whose code was inlined or eliminated retain no symbols even on a fully captured binary, so warning
+// per package would fire on nearly every scan.
+func shouldWarnMissingGoSymbols(packages []Package) bool {
+	var goBinaries int
+	for i := range packages {
+		m, ok := packages[i].Metadata.(GolangBinMetadata)
+		if !ok {
+			continue
+		}
+		goBinaries++
+		if len(m.Symbols) > 0 {
+			// at least one Go binary carries symbols, so symbol capture happened
+			return false
+		}
+	}
+	return goBinaries > 0
+}
+
+// FromPtrs converts a slice of Package pointers to a slice of Package structs,
+// including re-pointing related package pointers to the corresponding struct within the slice
+func FromPtrs(packages []*Package) []Package {
+	if len(packages) == 0 {
+		return nil
+	}
+	out := make([]Package, len(packages))
+	pkgIdx := make(map[*Package]int, len(packages))
+	for i, p := range packages {
+		pkgIdx[p] = i
+		out[i] = *p
+	}
+	for i := range out {
+		for m := range out[i].RelatedPackages {
+			for relatedIdx, p := range out[i].RelatedPackages[m] {
+				if idx, ok := pkgIdx[p]; ok {
+					out[i].RelatedPackages[m][relatedIdx] = &out[idx]
+				}
+			}
+		}
+	}
+	return out
+}
+
+// buildChannelIndex creates a map of distro IDs to their applicable fix channels
+func buildChannelIndex(channels []distro.FixChannel) map[string]distro.FixChannels {
+	idx := make(map[string]distro.FixChannels, len(channels))
+	for _, c := range channels {
+		if c.Name == "" {
+			continue
+		}
+		for _, id := range c.IDs {
+			if id == "" {
+				continue
+			}
+			id = strings.ToLower(id)
+			idx[id] = append(idx[id], c)
+		}
+	}
+	return idx
+}
+
+func getDistroChannelApplier(channels []distro.FixChannel) func(d *distro.Distro) {
+	idx := buildChannelIndex(channels)
+
+	return func(d *distro.Distro) {
+		if d == nil {
+			return
+		}
+
+		id := strings.ToLower(d.ID())
+		channels, ok := idx[id]
+		if !ok {
+			// no channels are configured for this distro, so any channel it carries (e.g. from a
+			// user-supplied --distro string) cannot be honored. Leaving it in place would send an
+			// unsatisfiable channel into the search, which returns nothing and reads like a clean scan.
+			warnRejectedChannels(d, channelSet(d.Channels), nil)
+			d.Channels = nil
+			return
+		}
+
+		applyChannelsToDistro(d, channels)
+	}
+}
+
+// channelSet normalizes channel names into a set for comparison. Channel names are matched
+// case-insensitively, consistent with the matchers (see dpkg.shouldUseUbuntuESMMatching) and with
+// distro.FixChannels.Get.
+func channelSet(channels []string) *strset.Set {
+	s := strset.New()
+	for _, c := range channels {
+		if n := strings.ToLower(strings.TrimSpace(c)); n != "" {
+			s.Add(n)
+		}
+	}
+	return s
+}
+
+// warnRejectedChannels reports any fix channel that was requested but will not be applied. A request
+// grype cannot honor must never be silently ignored: the result is always fewer vulnerabilities than
+// reality, which is the one direction a scanner cannot afford to be quiet about.
+func warnRejectedChannels(d *distro.Distro, requested *strset.Set, applied []string) {
+	rejected := strset.Difference(requested, channelSet(applied))
+	if rejected.IsEmpty() {
+		return
+	}
+
+	names := rejected.List()
+	sort.Strings(names)
+
+	log.WithFields("distro", d.Type, "channels", strings.Join(names, ", ")).
+		Warn("ignoring requested fix channel(s) that are unavailable or disabled for this distro")
+}
+
+// applyChannelsToDistro applies fix channels to a distro based on channel configuration
+func applyChannelsToDistro(d *distro.Distro, channels distro.FixChannels) {
+	var result []string
+	existing := channelSet(d.Channels)
+	ver := version.New(d.Version, version.SemanticFormat)
+
+	shouldReview := func(channel distro.FixChannel) bool {
+		if channel.Versions != nil && ver != nil {
+			isApplicable, err := channel.Versions.Satisfied(ver)
+			if err != nil {
+				log.WithFields("error", err, "constraint", channel.Versions).Debugf("unable to determine if channel %q is applicable for distro %q with version %q", channel.Name, d.Type, ver)
+				return true
+			}
+			return isApplicable
+		}
+		return true
+	}
+
+	for _, channel := range channels {
+		if channel.Name == "" {
+			continue
+		}
+
+		if !shouldReview(channel) {
+			log.WithFields("channel", channel.Name, "distro", d.Type, "version", ver).Debugf("skipping channel %q for distro %q with version %q", channel.Name, d.Type, ver)
+			continue
+		}
+
+		switch channel.Apply {
+		case distro.ChannelNeverEnabled:
+			// never applied, regardless of what was requested
+		case distro.ChannelAlwaysEnabled:
+			result = append(result, channel.Name)
+		case distro.ChannelConditionallyEnabled:
+			if existing.Has(strings.ToLower(channel.Name)) {
+				// note: the configured spelling is kept, not the requested one, so that a request
+				// like "+ESM" is normalized to "esm" for the search and for display
+				result = append(result, channel.Name)
+			}
+		}
+	}
+
+	warnRejectedChannels(d, existing, result)
+
+	d.Channels = result
+}
+
+// Provide a set of packages and context metadata describing where they were sourced from.
+func provide(userInput string, config ProviderConfig, applyChannel func(d *distro.Distro)) ([]*Package, Context, *sbom.SBOM, error) {
+	packages, ctx, s, err := purlProvider(userInput, config, applyChannel)
+	if !errors.Is(err, errDoesNotProvide) {
+		log.WithFields("input", userInput).Trace("interpreting input as one or more PURLs")
+		return packages, ctx, s, err
+	}
+
+	packages, ctx, s, err = cpeProvider(userInput, config)
+	if !errors.Is(err, errDoesNotProvide) {
+		log.WithFields("input", userInput).Trace("interpreting input as a one or more CPEs")
+		return packages, ctx, s, err
+	}
+
+	packages, ctx, s, err = syftSBOMProvider(userInput, config, applyChannel)
+	if !errors.Is(err, errDoesNotProvide) {
+		if len(config.Exclusions) > 0 {
+			var exclusionsErr error
+			packages, exclusionsErr = filterPackageExclusions(packages, config.Exclusions)
+			if exclusionsErr != nil {
+				return nil, ctx, s, exclusionsErr
+			}
+		}
+		log.WithFields("input", userInput).Trace("interpreting input as an SBOM document")
+		return packages, ctx, s, err
+	}
+
+	packages, ctx, s, err = zarfProvider(userInput, config, applyChannel)
+	if !errors.Is(err, errDoesNotProvide) {
+		if len(config.Exclusions) > 0 {
+			var exclusionsErr error
+			packages, exclusionsErr = filterPackageExclusions(packages, config.Exclusions)
+			if exclusionsErr != nil {
+				return nil, ctx, s, exclusionsErr
+			}
+		}
+		log.WithFields("input", userInput).Trace("interpreting input as a Zarf package")
+		return packages, ctx, s, err
+	}
+
+	log.WithFields("input", userInput).Trace("passing input to syft for interpretation")
+	return syftProvider(userInput, config, applyChannel)
+}
+
+// This will filter the provided packages list based on a set of exclusion expressions. Globs
+// are allowed for the exclusions. A package will be *excluded* only if *all locations* match
+// one of the provided exclusions.
+func filterPackageExclusions(packages []*Package, exclusions []string) ([]*Package, error) {
+	var out []*Package
+	for _, pkg := range packages {
+		includePackage := true
+		locations := pkg.Locations.ToSlice()
+		if len(locations) > 0 {
+			includePackage = false
+			// require ALL locations to be excluded for the package to be excluded
+		location:
+			for _, location := range locations {
+				for _, exclusion := range exclusions {
+					match, err := locationMatches(location, exclusion)
+					if err != nil {
+						return nil, err
+					}
+					if match {
+						continue location
+					}
+				}
+				// if this point is reached, one location has not matched any exclusion, include the package
+				includePackage = true
+				break
+			}
+		}
+		if includePackage {
+			out = append(out, pkg)
+		}
+	}
+	return out, nil
+}
+
+// Test a location RealPath and VirtualPath for a match against the exclusion parameter.
+// The exclusion allows glob expressions such as `/usr/**` or `**/*.json`. If the exclusion
+// is an invalid pattern, an error is returned; otherwise, the resulting boolean indicates a match.
+func locationMatches(location file.Location, exclusion string) (bool, error) {
+	matchesRealPath, err := doublestar.Match(exclusion, location.RealPath)
+	if err != nil {
+		return false, err
+	}
+	matchesVirtualPath, err := doublestar.Match(exclusion, location.AccessPath)
+	if err != nil {
+		return false, err
+	}
+	return matchesRealPath || matchesVirtualPath, nil
+}
+
+func setContextDistro(packages []*Package, ctx *Context) {
+	if ctx.Distro != nil {
+		return
+	}
+	var singleDistro *distro.Distro
+	for _, p := range packages {
+		if p.Distro == nil {
+			continue
+		}
+		if singleDistro == nil {
+			singleDistro = p.Distro
+			continue
+		}
+		// if we have a distro already, ensure that the new one matches...
+		if singleDistro.Type != p.Distro.Type ||
+			singleDistro.Version != p.Distro.Version ||
+			singleDistro.Codename != p.Distro.Codename {
+			// ...if not then we bail, not setting a singular distro in the context
+			return
+		}
+	}
+
+	// if there is one distro (with one version) represented, use that
+	if singleDistro != nil {
+		ctx.Distro = singleDistro
+	}
+}

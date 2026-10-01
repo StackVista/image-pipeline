@@ -1,0 +1,78 @@
+name: "Bootstrap"
+description: "Bootstrap all tools and dependencies"
+inputs:
+  go-version:
+    description: "Go version to install (empty lets setup read from go.mod)"
+    required: false
+    default: ""
+  cache-key-prefix:
+    description: "Prefix all cache keys with this value"
+    required: false
+    default: "v1"
+  python-version:
+    description: "Python version to install (empty skips python setup)"
+    required: false
+    default: ""
+  bootstrap-apt-packages:
+    description: "Space delimited list of tools to install via apt"
+    required: false
+    default: "libxml2-utils"
+  cache-test-fixtures:
+    description: "Cache test database builds"
+    required: false
+    default: "false"
+  tools:
+    description: "Whether to pre-install binny-managed tools via make binny:install"
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: anchore/go-make/.github/actions/setup@430e2175bb166bfd138ef75466adbcc8ddab875f # v0.8.0
+      with:
+        go-version: ${{ inputs.go-version }}
+        cache-key-prefix: ${{ inputs.cache-key-prefix }}
+
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      if: inputs.python-version != ''
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install apt packages
+      if: inputs.bootstrap-apt-packages != ''
+      shell: bash
+      run: |
+        read -ra PACKAGES <<< "$BOOTSTRAP_APT_PACKAGES"
+        DEBIAN_FRONTEND=noninteractive sudo apt update && sudo -E apt install -y "${PACKAGES[@]}"
+      env:
+        BOOTSTRAP_APT_PACKAGES: ${{ inputs.bootstrap-apt-packages }}
+
+    # restore-only on non-default branches and forks to prevent untrusted runs from polluting the cache
+    - name: Restore test fixture cache
+      id: test-fixture-cache-restore
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      if: ${{ inputs.cache-test-fixtures == 'true' && (github.ref != format('refs/heads/{0}', github.event.repository.default_branch) || github.event.repository.fork == true) }}
+      with:
+        path: |
+          **/testdata/cache
+        key: ${{ inputs.cache-key-prefix }}-${{ runner.os }}-test-fixtures-${{ hashFiles('**/testdata/**', '!**/testdata/cache/**') }}
+        restore-keys: |
+          ${{ inputs.cache-key-prefix }}-${{ runner.os }}-test-fixtures-
+
+    # read+write only on the default branch of the upstream repo
+    - name: Restore and save test fixture cache
+      id: test-fixture-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      if: ${{ inputs.cache-test-fixtures == 'true' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && github.event.repository.fork == false }}
+      with:
+        path: |
+          **/testdata/cache
+        key: ${{ inputs.cache-key-prefix }}-${{ runner.os }}-test-fixtures-${{ hashFiles('**/testdata/**', '!**/testdata/cache/**') }}
+        restore-keys: |
+          ${{ inputs.cache-key-prefix }}-${{ runner.os }}-test-fixtures-
+
+    - name: Create all cache fingerprints
+      if: inputs.tools == 'true'
+      shell: bash
+      run: make fingerprints

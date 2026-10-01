@@ -1,0 +1,8 @@
+{
+  "image": "registry.suse.com/bci/golang@sha256:97e1dd2838dba67fff33d75d30ac52b048191d385f8fef4be1e147890302dd51",
+  "go_version": "go1.26.8",
+  "minimum_go_version": "1.26.3",
+  "verification_key_url": "https://ftp.suse.com/pub/projects/security/keys/container-key.pem",
+  "verification_key_sha256": "98b312e62e3e8dce75ae06d2be7277732bee4f7ad275e9de9cd1071d6fcb2329",
+  "verification_command": "cosign verify --key scanner-runtime/provenance/suse-container-key.pem IMAGE"
+}

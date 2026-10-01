@@ -1,0 +1,106 @@
+# AI
+.claude
+CLAUDE.MD
+
+# local development tailoring
+go.work
+go.work.sum
+.tool-versions
+.mise.toml
+.env
+.jj/
+mise.toml
+specs
+*.xxh64
+.context
+hack/
+
+# AI and LLM related files
+CLAUDE.md
+.claude
+
+# app configuration
+/.grype.yaml
+
+# tool and bin directories
+.tmp/
+bin/
+/bin
+/.bin
+/build
+/dist
+/snapshot
+/.tool
+/.task
+/specs
+/extractor
+/manager
+.make/.make
+
+# changelog generation
+/CHANGELOG.md
+/VERSION
+
+# IDE configuration
+.vscode/
+.idea/
+.server/
+.history/
+
+# test related
+*.fingerprint
+/test/results
+coverage.txt
+*.log
+.server
+**/testdata/cache/
+
+# grype-db related
+/metadata.json
+/listing.json
+*.db
+*.db-journal
+!**/testdata/**/*.db
+!**/testdata/**/bin/
+!**/testdata/**/*.jar
+
+# probable archives
+.images
+*.tar
+*.jar
+*.war
+*.ear
+*.jpi
+*.hpi
+*.zip
+*.iml
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# OS files
+.DS_Store
+
+*.profile
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/grype/grype
+main
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out

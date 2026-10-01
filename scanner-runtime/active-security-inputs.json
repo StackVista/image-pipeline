@@ -1,0 +1,15 @@
+[
+  ".github/actions/apply-oci-labels/action.yml",
+  ".github/actions/merge-multiarch/action.yml",
+  ".github/actions/push-single-arch/action.yml",
+  ".github/actions/scan-image/action.yml",
+  ".github/actions/scan-sign-push/action.yml",
+  ".github/workflows/action-ci.yml",
+  ".github/workflows/apply-oci-labels-ci.yml",
+  ".github/workflows/bump-upstream-pins.yml",
+  ".github/workflows/evaluator-ci.yml",
+  ".github/workflows/evaluator-release.yml",
+  ".github/workflows/lint-workflows.yml",
+  ".github/workflows/publication-tests.yml",
+  ".github/workflows/updatecli-ci.yml"
+]
