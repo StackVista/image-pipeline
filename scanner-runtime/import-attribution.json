@@ -5,11 +5,20 @@
   "scanner-runtime/sources/go-vex-0.2.8/pkg/vex/functions_files.go": [
     "matching v3 import; preserve YAML custom methods and identity fixtures"
   ],
+  "scanner-runtime/sources/grype-0.112.0/internal/dbtest/manifest.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/grype-0.112.0/test/cli/config_test.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
   "scanner-runtime/sources/grype-0.118.0/internal/dbtest/manifest.go": [
     "matching v3 import; preserve YAML custom methods and identity fixtures"
   ],
   "scanner-runtime/sources/grype-0.118.0/test/cli/config_test.go": [
     "matching v3 import; preserve YAML custom methods and identity fixtures"
+  ],
+  "scanner-runtime/sources/helm-3.20.2/pkg/action/hooks.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
   ],
   "scanner-runtime/sources/jd-2.3.0/v2/node_read.go": [
     "matching v3 import; preserve YAML custom methods and identity fixtures"
@@ -19,6 +28,30 @@
   ],
   "scanner-runtime/sources/squealer-1.2.12/pkg/config/loader.go": [
     "matching v3 import; preserve YAML custom methods and identity fixtures"
+  ],
+  "scanner-runtime/sources/syft-1.44.0/internal/capabilities/capabilities.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/syft-1.44.0/internal/capabilities/generate/io.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/syft-1.44.0/internal/capabilities/generate/io_test.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/syft-1.44.0/internal/capabilities/internal/load_capabilities.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/syft-1.44.0/internal/capabilities/model_test.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/syft-1.44.0/syft/pkg/cataloger/snap/parse_base_dpkg.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/syft-1.44.0/syft/pkg/cataloger/snap/parse_snapd_snapcraft.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/syft-1.44.0/syft/pkg/cataloger/snap/parse_system_manifest.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
   ],
   "scanner-runtime/sources/syft-1.51.1/internal/capabilities/capabilities.go": [
     "matching v3 import; preserve YAML custom methods and identity fixtures"
@@ -49,6 +82,135 @@
   ],
   "scanner-runtime/sources/testify-1.11.1/assert/yaml/yaml_default.go": [
     "matching v3 import; preserve YAML custom methods and identity fixtures"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/internal/testutil/fs.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/magefiles/helm.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/commands/artifact/run.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/compliance/spec/compliance.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/dependency/parser/conda/environment/parse.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/dependency/parser/dart/pub/parse.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/dependency/parser/nodejs/pnpm/parse.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/dependency/parser/swift/cocoapods/parse.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/fanal/analyzer/language/dart/pub/pubspec.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/fanal/secret/scanner.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/detection/detect.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/rules/register.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/inventory/inventory_vars.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/inventory/yaml.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/orderedmap/orderedmap.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/orderedmap/orderedmap_test.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/node.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/node_test.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/play.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/range.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/role.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/task.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/task_test.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/yaml.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/parser/yaml_test.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/ansible/scanner.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/cloudformation/parser/intrinsics.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/cloudformation/parser/intrinsics_test.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/cloudformation/parser/parameter.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/cloudformation/parser/parser.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/cloudformation/parser/property.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/cloudformation/parser/resource.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/cloudformation/parser/util.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/generic/scanner.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/helm/parser/parser.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/helm/parser/vals.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/kubernetes/parser/manifest.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/iac/scanners/kubernetes/parser/manifest_node.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/k8s/scanner/io.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/plugin/index.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/plugin/manager.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/result/ignore.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
+  ],
+  "scanner-runtime/sources/trivy-0.70.0/pkg/vex/repo/manager.go": [
+    "matching maintained YAML import; preserve Node/custom-method and scanned-package identity contracts"
   ],
   "scanner-runtime/sources/trivy-0.74.0/internal/testutil/fs.go": [
     "matching v3 import; preserve YAML custom methods and identity fixtures"

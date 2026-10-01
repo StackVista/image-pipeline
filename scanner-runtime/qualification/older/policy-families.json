@@ -1,0 +1,98 @@
+[
+  {
+    "family": "A",
+    "action_path": ".github/actions/scan-image",
+    "source_revision": "5dabd41a1cecfea5f865d844ea7febec4ab4f38b",
+    "action_sha256": "f9ed92b6b970a15e609ac10afd68047270cea7dea40468ebe92c0649fb863d02",
+    "tool_selection": [
+      {
+        "name": "Set up Trivy",
+        "with": {
+          "version": "v0.70.0"
+        },
+        "env": null
+      },
+      {
+        "name": "Set up Grype",
+        "with": null,
+        "env": {
+          "GRYPE_VERSION": "0.112.0",
+          "INSTALL_SHA": "244f2a10a5668078fcf771454bbd832b3a5b9e8a"
+        }
+      }
+    ],
+    "candidate_generation": "older"
+  },
+  {
+    "family": "B",
+    "action_path": ".github/actions/scan-image",
+    "source_revision": "4b3ae05b1bf9a4ba1f340ff31d0f9e3531fc92a6",
+    "action_sha256": "e4a70cd180182bdf9a81bf82f687538ba86fffb531ee4ccbf7e9cb044f5fcf81",
+    "tool_selection": [
+      {
+        "name": "Set up Trivy",
+        "with": {
+          "version": "v0.70.0"
+        },
+        "env": null
+      },
+      {
+        "name": "Set up Grype",
+        "with": null,
+        "env": {
+          "GRYPE_VERSION": "0.112.0",
+          "INSTALL_SHA": "244f2a10a5668078fcf771454bbd832b3a5b9e8a"
+        }
+      }
+    ],
+    "candidate_generation": "older"
+  },
+  {
+    "family": "C",
+    "action_path": ".github/actions/scan-image",
+    "source_revision": "81da8a23636ee0cc9fad140d562cdb1e84e98826",
+    "action_sha256": "b377d5ffa5113066962d05351917fc68854e3bde69f3d75c273f63eb2fd0fdc4",
+    "tool_selection": [
+      {
+        "name": "Set up Trivy",
+        "with": {
+          "version": "v0.74.0"
+        },
+        "env": null
+      },
+      {
+        "name": "Set up Grype",
+        "with": null,
+        "env": {
+          "GRYPE_VERSION": "0.118.0",
+          "INSTALL_SHA": "756eb9a24f7beeafb6871a24e943e8a3ae210695"
+        }
+      }
+    ],
+    "candidate_generation": "newer"
+  },
+  {
+    "family": "D",
+    "action_path": ".github/actions/scan-image",
+    "source_revision": "532526165702c68f5062933104a208d9ab6fedc4",
+    "action_sha256": "e4a70cd180182bdf9a81bf82f687538ba86fffb531ee4ccbf7e9cb044f5fcf81",
+    "tool_selection": [
+      {
+        "name": "Set up Trivy",
+        "with": {
+          "version": "v0.70.0"
+        },
+        "env": null
+      },
+      {
+        "name": "Set up Grype",
+        "with": null,
+        "env": {
+          "GRYPE_VERSION": "0.112.0",
+          "INSTALL_SHA": "244f2a10a5668078fcf771454bbd832b3a5b9e8a"
+        }
+      }
+    ],
+    "candidate_generation": "older"
+  }
+]

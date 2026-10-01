@@ -1,0 +1,74 @@
+
+name: Publish Helm chart
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+    branches:
+      - main
+    paths:
+      - 'helm/trivy/**'
+env:
+  KIND_VERSION: "v0.14.0"
+  KIND_IMAGE: "kindest/node:v1.23.6@sha256:b1fa224cc6c7ff32455e0b1fd9cbfd3d3bc87ecaa8fcb06961ed1afb3db0f9ae"
+jobs:
+  # `test-chart` job starts if a PR with Helm Chart is created, merged etc.
+  test-chart:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Helm
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+        with:
+          version: v3.14.4
+      - name: Set up python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.x'
+          check-latest: true
+      - name: Setup Chart Linting
+        id: lint
+        uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
+        with:
+          # v6.0.0 resolved the compatibility issue with Python > 3.13. may be removed after the action itself is updated
+          yamale_version: "6.0.0"
+      - name: Setup Kubernetes cluster (KIND)
+        uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
+        with:
+          version: ${{ env.KIND_VERSION }}
+          image: ${{ env.KIND_IMAGE }}
+      - name: Run chart-testing
+        run: ct lint-and-install --validate-maintainers=false --charts helm/trivy
+      - name: Run chart-testing (Ingress enabled)
+        run: |
+          sed -i -e '136s,false,'true',g' ./helm/trivy/values.yaml
+          ct lint-and-install --validate-maintainers=false --charts helm/trivy
+
+
+  # `publish-chart` job starts if a PR with a new Helm Chart is merged or manually
+  publish-chart:
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    needs:
+      - test-chart
+    runs-on: ubuntu-2404-2core
+    steps:
+      - name: Trigger publish-chart workflow in helm-charts
+        env:
+          GH_TOKEN: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_TOKEN }}
+          REF: ${{ github.sha }}
+        run: |
+          gh workflow run publish-chart.yaml \
+            --repo "$GITHUB_REPOSITORY_OWNER/helm-charts" \
+            --ref main \
+            --field "repository=$GITHUB_REPOSITORY" \
+            --field "ref=$REF" \
+            --field "chart_dir=helm/trivy"

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Archive native candidate binaries with reproducible source and build evidence."""
+import os
 import hashlib
 import json
 import subprocess
@@ -9,7 +10,10 @@ from pathlib import Path
 
 root = Path(__file__).resolve().parents[2]
 arch = sys.argv[1]
+family = os.environ.get('SCANNER_FAMILY', 'newer')
+if family not in ('newer', 'older'): raise ValueError('Unknown scanner family')
 out = root / 'scanner-runtime/out' / arch
+if family == 'older': out = root / 'scanner-runtime/out/older' / arch
 commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 if (out / 'source-commit.txt').read_text().strip() != commit:
     raise ValueError('build source differs from packaging source')
@@ -19,7 +23,7 @@ for tool in ('trivy', 'grype'):
         raise ValueError(f'{tool}: maintained parser metadata missing')
     if f'vcs.revision={commit}' not in text or 'vcs.modified=true' in text:
         raise ValueError(f'{tool}: clean candidate VCS provenance missing')
-manifest = {'source_commit': commit, 'architecture': arch,
+manifest = {'family': family, 'source_commit': commit, 'architecture': arch,
             'qualification': 'source/build candidate; consumer adoption not qualified',
             'files': {str(p.relative_to(out)): hashlib.sha256(p.read_bytes()).hexdigest()
                       for p in out.rglob('*') if p.is_file()},

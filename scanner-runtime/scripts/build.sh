@@ -6,7 +6,14 @@ if [[ "${EXPECTED_ARCH:-$arch}" != "$arch" ]]; then
   echo 'Native builder architecture mismatch' >&2
   exit 1
 fi
+family=${SCANNER_FAMILY:-newer}
+case "$family" in
+  newer) trivy_version=0.74.0; grype_version=0.118.0; grype_commit=756eb9a24f7beeafb6871a24e943e8a3ae210695; grype_date=2026-08-27T19:58:02Z ;;
+  older) trivy_version=0.70.0; grype_version=0.112.0; grype_commit=244f2a10a5668078fcf771454bbd832b3a5b9e8a; grype_date=2026-05-01T18:57:12Z ;;
+  *) echo "Unknown scanner family" >&2; exit 1 ;;
+esac
 out="$repo_root/scanner-runtime/out/$arch"
+if [[ "$family" == older ]]; then out="$repo_root/scanner-runtime/out/older/$arch"; fi
 mkdir -p "$out"
 export GOTOOLCHAIN=local CGO_ENABLED=0 GOMAXPROCS=2 GOGC=50 GOMEMLIMIT=4GiB
 export GOFLAGS='-p=2 -mod=readonly'
@@ -18,14 +25,14 @@ fi
 go version > "$out/toolchain.txt"
 for tool in trivy grype; do
   if [[ "$tool" == trivy ]]; then
-    tree=trivy-0.74.0
+    tree="trivy-$trivy_version"
     export GOEXPERIMENT=jsonv2
-    flags="-s -w -extldflags '-static' -X github.com/aquasecurity/trivy/pkg/version/app.ver=0.74.0"
-    audit_flags="-extldflags '-static' -X github.com/aquasecurity/trivy/pkg/version/app.ver=0.74.0"
+    flags="-s -w -extldflags '-static' -X github.com/aquasecurity/trivy/pkg/version/app.ver=$trivy_version"
+    audit_flags="-extldflags '-static' -X github.com/aquasecurity/trivy/pkg/version/app.ver=$trivy_version"
   else
-    tree=grype-0.118.0
+    tree="grype-$grype_version"
     unset GOEXPERIMENT
-    flags="-w -s -extldflags '-static' -X main.version=0.118.0 -X main.gitCommit=756eb9a24f7beeafb6871a24e943e8a3ae210695 -X main.buildDate=2026-08-27T19:58:02Z -X main.gitDescription=v0.118.0"
+    flags="-w -s -extldflags '-static' -X main.version=$grype_version -X main.gitCommit=$grype_commit -X main.buildDate=$grype_date -X main.gitDescription=v$grype_version"
     audit_flags="${flags/-w -s /}"
   fi
   (

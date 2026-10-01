@@ -4,7 +4,7 @@ name: Workflow Security Audit
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, scanner-runtime-yaml]
     paths:
       - ".github/workflows/**"
       - ".github/actions/**"
@@ -15,7 +15,7 @@ on:
       - "scanner-runtime/*attribution.json"
       - "scanner-runtime/active-security-inputs.json"
   push:
-    branches: [main]
+    branches: [main, scanner-runtime-yaml]
     paths:
       - ".github/workflows/**"
       - ".github/actions/**"
