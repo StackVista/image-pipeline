@@ -38,6 +38,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ARM_OUTPUT: ${{ runner.temp }}/arm-policy-${{ matrix.family }}
           ARM_FAMILY: ${{ matrix.family }}
+          ARM_SNAPSHOT_RECEIPTS: ${{ github.workspace }}/docs/scanner-runtime-arm/native/snapshot-receipts.json
         run: |
           python3 -m venv "$RUNNER_TEMP/arm-python"
           "$RUNNER_TEMP/arm-python/bin/pip" install PyYAML==6.0.3

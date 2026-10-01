@@ -12,6 +12,7 @@ def verify(path,variant,tool):
     with p.open('rb') as f:header=f.read(20)
     assert header[:4]==b'\x7fELF' and struct.unpack('<H',header[18:20])[0]==183
     meta=subprocess.check_output(['go','version','-m',str(p)],text=True)
+    assert meta==row['module_metadata'], 'source/module metadata changed'
     if variant=='candidate':
         assert 'vcs.revision='+HEAD in meta and 'vcs.modified=false' in meta
         assert 'go.yaml.in/yaml/v3\tv3.0.5' in meta and 'gopkg.in/yaml.' not in meta

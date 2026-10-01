@@ -1,0 +1,20 @@
+{
+  "newer": {
+    "artifact_id": 11188471769,
+    "artifact_digest": "sha256:659e769e863a0664d7f3100fd8bb1c0a793bc2fd970d4e5b5ea2d1b67ef46c4d",
+    "frozen_archive_sha256": "0d819753cf19e7d87b0d1703824e2e765fcf4119edc8a33eeb448034143327c3",
+    "label": "NEW-native-arm-newer-36912136907",
+    "grype_db_sha256": "02f2ce94a439267f0735d2e27c46dffbb991cb42330408d794bd75dade93eeb8",
+    "preparation_run": 36912136907,
+    "preparation_source": "365cc9ed940bd0cd7ef95d9977c554fc4eeb300c"
+  },
+  "older": {
+    "artifact_id": 11189567387,
+    "artifact_digest": "sha256:8a8c0cfe46c57662a8ee00b50f6d5ebcc699425b05e9ea4f2751a8644aa20021",
+    "frozen_archive_sha256": "3246f432c1e6d00a01b72e933b2cf73976f64e280ee2d3365dbecd809ed64305",
+    "label": "NEW-native-arm-older-36912136907",
+    "grype_db_sha256": "e4fe52f11ab5fe8b5c83d64d5127173b3982a4fd768c9e979b9a3302a11c4488",
+    "preparation_run": 36912136907,
+    "preparation_source": "365cc9ed940bd0cd7ef95d9977c554fc4eeb300c"
+  }
+}
