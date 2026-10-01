@@ -33,8 +33,22 @@ def verify(path, variant, tool):
     return {'path': str(path), 'sha256': digest, 'version': version, 'build_metadata': metadata}
 
 
+def frozen_inputs():
+    manifest=Path(os.environ['FROZEN_INPUTS_MANIFEST'])
+    rows=json.loads(manifest.read_text())
+    for filename,expected in rows.items():
+        with Path(filename).open('rb') as source:
+            digest=hashlib.file_digest(source,'sha256').hexdigest()
+        if digest != expected:
+            raise ValueError('frozen input changed: '+filename)
+    return hashlib.sha256(manifest.read_bytes()).hexdigest()
+
+
 def execute(path, variant, tool, arguments, evidence, **kwargs):
+    before=frozen_inputs()
     identity = verify(path, variant, tool)
     result = subprocess.run([identity['path'], *arguments], **kwargs)
-    evidence.append({'identity': identity, 'arguments': arguments, 'exit': result.returncode})
+    after=frozen_inputs()
+    assert before==after
+    evidence.append({'identity': identity, 'arguments': arguments, 'exit': result.returncode, 'frozen_input_manifest_sha256':before, 'frozen_inputs_unchanged_before_after':True})
     return result
