@@ -1,0 +1,108 @@
+{
+  "amd64": {
+    "syft": {
+      "pass": 126,
+      "skip": 0,
+      "fail": 0
+    },
+    "jd": {
+      "pass": 7153,
+      "skip": 0,
+      "fail": 0
+    },
+    "kubernetes": {
+      "pass": 19,
+      "skip": 0,
+      "fail": 0
+    },
+    "trivy": {
+      "pass": 384,
+      "skip": 0,
+      "fail": 0
+    },
+    "squealer": {
+      "pass": 5,
+      "skip": 0,
+      "fail": 0
+    },
+    "yaml": {
+      "pass": 3,
+      "skip": 0,
+      "fail": 0
+    },
+    "openvex-028": {
+      "pass": 26,
+      "skip": 0,
+      "fail": 0
+    },
+    "compliance": {
+      "pass": 10,
+      "skip": 0,
+      "fail": 0
+    },
+    "openvex-027": {
+      "pass": 26,
+      "skip": 0,
+      "fail": 0
+    },
+    "assertion-mock": {
+      "pass": 736,
+      "skip": 1,
+      "fail": 0
+    },
+    "archive_sha256": "6e971f2fc7901b327db037aefbe47e4bd166765cf80fefec78c1dac2c94b00d7"
+  },
+  "arm64": {
+    "syft": {
+      "pass": 126,
+      "skip": 0,
+      "fail": 0
+    },
+    "jd": {
+      "pass": 7153,
+      "skip": 0,
+      "fail": 0
+    },
+    "kubernetes": {
+      "pass": 19,
+      "skip": 0,
+      "fail": 0
+    },
+    "trivy": {
+      "pass": 384,
+      "skip": 0,
+      "fail": 0
+    },
+    "squealer": {
+      "pass": 5,
+      "skip": 0,
+      "fail": 0
+    },
+    "yaml": {
+      "pass": 3,
+      "skip": 0,
+      "fail": 0
+    },
+    "openvex-028": {
+      "pass": 26,
+      "skip": 0,
+      "fail": 0
+    },
+    "compliance": {
+      "pass": 10,
+      "skip": 0,
+      "fail": 0
+    },
+    "openvex-027": {
+      "pass": 26,
+      "skip": 0,
+      "fail": 0
+    },
+    "assertion-mock": {
+      "pass": 736,
+      "skip": 1,
+      "fail": 0
+    },
+    "archive_sha256": "96c29f5eab1caf96b59113195696d228d5bf9b4d2ec995295fd7a9aae3644786"
+  }
+}

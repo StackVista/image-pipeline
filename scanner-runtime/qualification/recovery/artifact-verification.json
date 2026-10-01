@@ -1,0 +1,22 @@
+[
+  {
+    "artifact": "scanner-runtime-5c5ac0665b8c308ac7efa05ee397ef5f9e02c255-amd64",
+    "manifest": "SHA256SUMS",
+    "result": "Verified OK\n"
+  },
+  {
+    "artifact": "scanner-runtime-5c5ac0665b8c308ac7efa05ee397ef5f9e02c255-amd64",
+    "manifest": "provenance.json",
+    "result": "Verified OK\n"
+  },
+  {
+    "artifact": "scanner-runtime-5c5ac0665b8c308ac7efa05ee397ef5f9e02c255-arm64",
+    "manifest": "SHA256SUMS",
+    "result": "Verified OK\n"
+  },
+  {
+    "artifact": "scanner-runtime-5c5ac0665b8c308ac7efa05ee397ef5f9e02c255-arm64",
+    "manifest": "provenance.json",
+    "result": "Verified OK\n"
+  }
+]
