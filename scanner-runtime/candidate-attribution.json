@@ -2,11 +2,24 @@
   "scanner-runtime/sources/go-vex-0.2.7/go.mod": {
     "candidate": {
       "mode": "100644",
-      "sha256": "c7dfcd84c1d71a99cb1be3e62eb6fdd9d8649717d09802b03885e0fe7d4de540"
+      "sha256": "af573c0ff7e6beeeb48077d57130ce807e62890b93342b1cdb88f4ddc3f2ed72"
     },
     "original": {
       "mode": "100644",
       "sha256": "a1a85d8432d15e756dca0f5f60cdea36005087e594e6e4a908ae1d49b691601c"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/go-vex-0.2.7/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "b4759e8aca36897f0a4cfc51754e876a6c33361e3d68206f74349d867a2a4e45"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "2684e5146b49b0d7056f2bfc01f092bdb34473b5b1755570cbd06229b0633534"
     },
     "reason": [
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
@@ -28,11 +41,24 @@
   "scanner-runtime/sources/go-vex-0.2.8/go.mod": {
     "candidate": {
       "mode": "100644",
-      "sha256": "8532033d28a662e8ebe4eff580d07bd3b6b688d1bedf0ede7222d3175941a7f7"
+      "sha256": "c60b294eb44ac993f9d827c6531dff29f1412f9f5f0f7b053b99b8a97aaeb3cc"
     },
     "original": {
       "mode": "100644",
       "sha256": "df943f9a390084feb81f74b4197a56391ec684ef22c3643b4393f60348ac0a1d"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/go-vex-0.2.8/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "679b1bfd5db5c391201c3ddb75c1e460dcae10a47cccc8cfb527eac73b1e0f79"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "b0255fecce78ca72583e50d2c331b7961a94f137da094f695724030b443a57a4"
     },
     "reason": [
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
@@ -54,11 +80,24 @@
   "scanner-runtime/sources/grype-0.118.0/go.mod": {
     "candidate": {
       "mode": "100644",
-      "sha256": "e8d103c02d02091f2d21f3feb062dd6dbfb862609fdb5601472dc8868fc967f8"
+      "sha256": "a8fa5ac673ca4040affbe60150bf421ec68e6520516aa2d4abf18a731a707572"
     },
     "original": {
       "mode": "100644",
       "sha256": "16ff2cca6b88d34b2270281bcf777ce837e6cb49c960754440c9f11530269ca6"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/grype-0.118.0/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "42dd1d9b614362930a87122eec208ac9b27b44431cabec29a96102b12c33bc62"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "df5968251198086395264aa60905e8f559463d8dc977e44975ad0cfe2f5bb9af"
     },
     "reason": [
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
@@ -93,11 +132,24 @@
   "scanner-runtime/sources/jd-2.3.0/v2/go.mod": {
     "candidate": {
       "mode": "100644",
-      "sha256": "158120faa558a382b67a4681f88bfc3c22647b3d99ea52a6cff943db66f24b2d"
+      "sha256": "f34c4a0016025bcb4174a8a8d346ae6edecbc0255455b81d6f44618306434417"
     },
     "original": {
       "mode": "100644",
       "sha256": "8795939fc77205c114550ba22a3d2cf762c1a5ac5c2077495a6a9b98a921455e"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/jd-2.3.0/v2/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "80303c53b64ceb56babce6b4494dba14e720abdff85af472425a15b214f7686e"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "6636f0cf3f48a09bd9a66e8c8a84adcbd98662218e3c69c4d4035ed93bdfec66"
     },
     "reason": [
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
@@ -142,6 +194,19 @@
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
     ]
   },
+  "scanner-runtime/sources/squealer-1.2.12/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "2a5f1606cc808d4a27e1497a23a33e9ed82ed6075166537a74a84357da56ec01"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "df4b5adadc1345806131ed53d88442df8d76271897673aa81b9ba593a64ae376"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
   "scanner-runtime/sources/squealer-1.2.12/pkg/config/loader.go": {
     "candidate": {
       "mode": "100644",
@@ -158,11 +223,24 @@
   "scanner-runtime/sources/syft-1.51.1/go.mod": {
     "candidate": {
       "mode": "100644",
-      "sha256": "092033b333b025a83410320a1bfe33e0ad5f83be3462128befb0f8c4997f928e"
+      "sha256": "3ccabdd4565fe9803042c906c6fe8301019ce3c6c6b7595d53d427f5783e301b"
     },
     "original": {
       "mode": "100644",
       "sha256": "ab7a0d5a1894aed59113a3bb903ed05cbe5b0ad83d08049953d183770f63a226"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/syft-1.51.1/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "0412232629f9d9455715f5a3c8aed7461a4e203b053661be7e796d9d199ea190"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "04663445a0089368eaa649b96c6b534aeafd4581e730a0d5184ff10f9a3b5080"
     },
     "reason": [
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
@@ -311,14 +389,40 @@
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
     ]
   },
+  "scanner-runtime/sources/testify-1.11.1/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "ded9ceff6c273a556d3ea79a162c50411f01755aba69ab823617c0b9eeb5723f"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "44c80bfb4bd03f14d790cf693fedf82cf3097be6f65b8e52b7131f73ca50aa28"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
   "scanner-runtime/sources/trivy-0.74.0/go.mod": {
     "candidate": {
       "mode": "100644",
-      "sha256": "ac623d66a1aba5db7dbd3a6af2827dcf2a2f5064fcea4d5a8e808a192b992230"
+      "sha256": "4b801a3d4266c910d27e4c5d71001d188cd272ff13596e494fbe81520c43c167"
     },
     "original": {
       "mode": "100644",
       "sha256": "85697654fc5fea7d0a0082920bed1116af5d06dbd2be0fcc0c281b68a35c8e33"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/trivy-0.74.0/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "88c34e74902d39db337e2e7d63b028f21251e25672269ea5228169c82d329ff9"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "b0727b3c85888f77163ac9f6164869e9e8fc11cc6b8b6bafabbed92cf3288b9a"
     },
     "reason": [
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
@@ -912,11 +1016,24 @@
   "scanner-runtime/sources/trivy-checks-79d27547baf5/go.mod": {
     "candidate": {
       "mode": "100644",
-      "sha256": "8b23fb8f156fcbd9892b24ddbc211b3ca030b07fc0b12087e90e3e71e5dea28f"
+      "sha256": "11538b7f43d1a2924141e035f66416923524dd12a9bff5902b77606cfa38c810"
     },
     "original": {
       "mode": "100644",
       "sha256": "7f5afe47ea73433f0b8abd4175206862a062983785909dba59ac834160d8e63d"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/trivy-checks-79d27547baf5/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "ce07d40f94df35599edbb3b430ba0555bce8d271f6337da8403f6525c2100d4b"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "0c7ae9f27708f353c1a014f4d57de6f911cfe7b65d2514ac710698e801758236"
     },
     "reason": [
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
@@ -951,11 +1068,24 @@
   "scanner-runtime/sources/trivy-kubernetes-0.9.1/go.mod": {
     "candidate": {
       "mode": "100644",
-      "sha256": "c9e0c42587af169e5489f80c2893193d31deadc41e05b07b81239e220550b988"
+      "sha256": "753b6339d859acaf5349b1b4f91cbcb65ba1640f7a5ef2c241c863d1d398c217"
     },
     "original": {
       "mode": "100644",
       "sha256": "16d2ebf003f21ffa1123850512216758225eff783a785f924079d1930690905b"
+    },
+    "reason": [
+      "maintained v3 selection, explicit owning-module replacements and normal Go metadata"
+    ]
+  },
+  "scanner-runtime/sources/trivy-kubernetes-0.9.1/go.sum": {
+    "candidate": {
+      "mode": "100644",
+      "sha256": "99af0ff031ab9d8b5b408e98da14f31a41e2fdb52cfcf657d548c3d14f4bb66d"
+    },
+    "original": {
+      "mode": "100644",
+      "sha256": "aa239be286ec01d45f84150497cb6309f995bc4f504e7a91a831cb979814432e"
     },
     "reason": [
       "maintained v3 selection, explicit owning-module replacements and normal Go metadata"

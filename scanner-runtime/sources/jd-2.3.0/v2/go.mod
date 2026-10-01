@@ -10,6 +10,8 @@ require (
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394
 )
 
+require gopkg.in/yaml.v3 v3.0.1 // indirect
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
