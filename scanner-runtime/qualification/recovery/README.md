@@ -52,6 +52,6 @@ recovery commits contain only harness corrections and evidence.
 
 Artifacts from run 36883982986 expire October 15, 2026. No cross-repository loader,
 consumer token readability, production artifact distribution or pin rollout is
-qualified. Existing PR39–47 remain unchanged. Older scanner family remains queued
-for separate source work. Root/Borg owns independent review under
+qualified. Existing PR39–47 remain unchanged. The older scanner family now has separate source and qualification in PR50;
+this earlier receipt is retained independently. Root/Borg owns independent review under
 https://github.com/StackVista/stackstate/issues/717 before any adoption.
