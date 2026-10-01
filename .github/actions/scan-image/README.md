@@ -29,6 +29,17 @@ Input/output reference: [`action.yml`](./action.yml).
 8. Exits non-zero if any finding is unmanaged or has an expired
    exception.
 
+In `gate` mode, missing usable VEX also fails the action. In `inform` mode,
+VEX download or availability failures warn and scanning continues with any
+documents that downloaded; vulnerability decisions are non-blocking.
+Secret findings, scanner/tool failures and evaluator errors still fail both
+modes. This VEX fallback was introduced by [PR #34](https://github.com/StackVista/image-pipeline/pull/34).
+
+Consumers moving from older action pins must also review the shared Grype VEX
+support introduced by [PR #18](https://github.com/StackVista/image-pipeline/pull/18):
+Grype now suppresses findings covered by the same VEX documents as Trivy.
+These policies predate the maintained YAML parser migration.
+
 ## Scanner Retries
 
 The action leaves scanner image-source behavior at the scanner defaults. Trivy

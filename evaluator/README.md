@@ -58,6 +58,12 @@ goreleaser release --snapshot --clean   # local snapshot build (writes ./dist/)
 goreleaser check                        # validate .goreleaser.yml
 ```
 
+The action policy tests also require Bash, Python 3 and jq. They execute the
+composite action's shell blocks with controlled scanner responses and the
+real evaluator, covering VEX availability, vulnerability and secret decisions,
+and tool or evaluator failures. They do not download scanners or publish images;
+the `Action unit tests` workflow covers real scanner and wrapper integration.
+
 Direct invocation against the bundled test fixture:
 
 ```bash
