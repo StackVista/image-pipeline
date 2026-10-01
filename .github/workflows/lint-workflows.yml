@@ -10,6 +10,10 @@ on:
       - ".github/actions/**"
       - "action.yml"
       - "zizmor.yml"
+      - "scanner-runtime/scripts/inventory.py"
+      - "scanner-runtime/*inventory.json"
+      - "scanner-runtime/*attribution.json"
+      - "scanner-runtime/active-security-inputs.json"
   push:
     branches: [main]
     paths:
@@ -17,6 +21,10 @@ on:
       - ".github/actions/**"
       - "action.yml"
       - "zizmor.yml"
+      - "scanner-runtime/scripts/inventory.py"
+      - "scanner-runtime/*inventory.json"
+      - "scanner-runtime/*attribution.json"
+      - "scanner-runtime/active-security-inputs.json"
 
 permissions: {}
 
@@ -35,7 +43,10 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Verify owned security inputs and upstream attribution
+        run: python3 scanner-runtime/scripts/inventory.py
+
       - uses: zizmorcore/zizmor-action@b572f7b1a1c2d41efaab43d504f68d215c3cd727 # v0.5.4
         with:
           advanced-security: false
-          inputs: .
+          inputs: .github

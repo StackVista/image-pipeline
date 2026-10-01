@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,9 +28,49 @@ def security_inputs():
     return sorted(str(p.relative_to(ROOT)) for p in paths)
 
 
+def verify_revision(revision, original, attributed):
+    tree = subprocess.check_output(['git', 'ls-tree', '-r', '-z', revision,
+                                    'scanner-runtime/sources'], cwd=ROOT)
+    entries = {}
+    for item in tree.split(b'\0'):
+        if not item:
+            continue
+        meta, path = item.split(b'\t', 1)
+        mode, kind, oid = meta.decode().split()
+        if kind != 'blob':
+            raise ValueError('unexpected upstream Git object')
+        entries[path.decode()] = (mode, oid)
+    oids = sorted({oid for _, oid in entries.values()})
+    process = subprocess.run(['git', 'cat-file', '--batch'], cwd=ROOT,
+                             input=('\n'.join(oids) + '\n').encode(), capture_output=True, check=True)
+    hashes = {}
+    data = process.stdout
+    offset = 0
+    for oid in oids:
+        end = data.index(b'\n', offset)
+        _, kind, size = data[offset:end].decode().split()
+        size = int(size)
+        offset = end + 1
+        hashes[oid] = hashlib.sha256(data[offset:offset + size]).hexdigest()
+        offset += size + 1
+    expected_paths = set()
+    for source in original['sources']:
+        for rel, expected in source['files'].items():
+            path = 'scanner-runtime/sources/' + source['name'] + '/' + rel
+            expected_paths.add(path)
+            expected = attributed.get(path, {}).get('candidate', expected)
+            mode, oid = entries[path]
+            checksum = expected.get('sha256') or hashlib.sha256(expected['target'].encode()).hexdigest()
+            if mode != expected['mode'] or hashes[oid] != checksum:
+                raise ValueError('committed upstream blob differs: ' + path)
+    if set(entries) != expected_paths:
+        raise ValueError('committed original tree inventory differs')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--record', action='store_true')
+    parser.add_argument('--revision', help='also verify exact committed upstream blobs')
     args = parser.parse_args()
     original = json.loads((AREA / 'original-inventory.json').read_text())
     imports = json.loads((AREA / 'import-attribution.json').read_text())
@@ -66,6 +107,8 @@ def main():
     for path in security_inputs():
         if 'scanner-runtime/sources/' in (ROOT / path).read_text():
             raise ValueError(f'active security input references inert upstream workflow/action: {path}')
+    if args.revision:
+        verify_revision(args.revision, original, attributed)
     print(f"Verified {sum(len(s['files']) for s in original['sources'])} original entries, "
           f"{len(attributed)} attributed deltas, {len(security_inputs())} active security inputs")
 
