@@ -113,7 +113,7 @@ if receipts_path:
     # The complete recorded input set is retained byte-for-byte; paths are rebased.
     manifest={}
     for name,expected in previous.items():
-        relative=name.split('/arm-policy-'+family+'/',1)[1]
+        relative=name.split('/arm-policy-'+family+'/reports/',1)[1]
         current=work/relative
         assert sha(current)==expected
         manifest[str(current.resolve())]=expected
