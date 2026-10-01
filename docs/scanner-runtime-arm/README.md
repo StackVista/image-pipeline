@@ -103,3 +103,31 @@ or explicitly select a different frozen snapshot and separately authorize a new
 matched amd64 baseline. Neither decision is assumed here. Historical B/D policy,
 consumer loader/pins, publication/access/expiry, Toolbox/Kafka and real-image ARM
 qualification remain separate boundaries.
+
+## New ARM snapshot decision and execution lane
+
+The controller subsequently authorized a separately identified native ARM snapshot
+and matched original/candidate pair. `native/run.py` and the isolated
+`scanner-arm-policy.yml` workflow implement that decision. The two generations
+hydrate once using their verified same-version original ARM Grype, freeze actual
+bytes, and retain complete frozen archives with SHA256s. They do not overwrite or
+claim equivalence to the accepted amd64 snapshot. Only missing native ARM policy
+controls run; no scanner builds or owner-contract dispatches are part of this lane.
+Existing source workflows may trigger automatically from their broad PR filters;
+those are not qualification work requested or manually restarted by this lane.
+
+Each scanner invocation verifies native host, AArch64 ELF, exact hash/mode/path,
+version, module/source metadata and associated symbol audit. Upstream stripped
+symbols are explicitly recorded rather than claimed available. Cache inputs are
+cloned per invocation and their hashes verified before/after; changed DB bytes
+fail closed. The unchanged policy blocks execute actual secrets and both VEX error
+conditions. Within-ARM raw report differences remain visible, including substantive
+older Grype metadata. Same immutable vulnerable/BCI image selections retain their
+original package architecture; native ARM scanner execution does not claim those
+images themselves became ARM or execute their contained binaries.
+
+Artifacts retain complete frozen inputs and raw reports for 14 days. Source artifact
+OIDC signatures remain mandatory; newly produced policy evidence is unsigned beyond
+normal Actions artifact digests and the signed source head. No new OIDC signing
+permission, loader or publication/trust path is introduced. Current artifact IDs,
+control outcomes and any failed stage must be read from the actual new run.

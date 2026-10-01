@@ -12,6 +12,7 @@
   ".github/workflows/lint-workflows.yml",
   ".github/workflows/older-scanner-runtime-ci.yml",
   ".github/workflows/publication-tests.yml",
+  ".github/workflows/scanner-arm-policy.yml",
   ".github/workflows/scanner-runtime-ci.yml",
   ".github/workflows/updatecli-ci.yml"
 ]
