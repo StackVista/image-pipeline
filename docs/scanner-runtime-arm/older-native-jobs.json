@@ -1,0 +1,32 @@
+[
+  {
+    "id": 110478816706,
+    "name": "Native older scanner build and owner contracts (arm64)",
+    "conclusion": "success",
+    "runner_name": "GitHub Actions 1002116339",
+    "labels": [
+      "ubuntu-24.04-arm"
+    ],
+    "html_url": "https://github.com/StackVista/image-pipeline/actions/runs/36894751503/job/110478816706"
+  },
+  {
+    "id": 110478817120,
+    "name": "Native older scanner build and owner contracts (amd64)",
+    "conclusion": "success",
+    "runner_name": "GitHub Actions 1002116032",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "html_url": "https://github.com/StackVista/image-pipeline/actions/runs/36894751503/job/110478817120"
+  },
+  {
+    "id": 110489154020,
+    "name": "Sign qualified candidate checksum and provenance manifests",
+    "conclusion": "success",
+    "runner_name": "GitHub Actions 1002116536",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "html_url": "https://github.com/StackVista/image-pipeline/actions/runs/36894751503/job/110489154020"
+  }
+]

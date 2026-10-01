@@ -1,0 +1,46 @@
+{
+  "request": "yaml-migration-scanner-native-arm-policy-controls-20261001",
+  "host_architecture": "x86_64",
+  "native_arm_policy_invocations": 0,
+  "no_amd64_policy_or_build_contract_reruns": true,
+  "expected_frozen_grype_db_sha256": "d16211e678fbd9fa8da33145c1eedbefa6ac3f3f2e0dd8c6acddb36bd29f027e",
+  "official_grype_archive_sha256": "c0d0263192d91df04b242e9a91e34cb289118fb08f1ed56eb0239eb57d7a517f",
+  "official_raw_grype_db_sha256": "7deadd06f8414f046f08911a60552f8315e8a370f3eb4713ccaeb41e65b424a9",
+  "direct_original_0118_import_db_sha256": "773bb0edfe7421923dba4b2a3c136d8acbed96703b002b8c92ef125f258545cc",
+  "original_0112_import_db_sha256": "ca1bd014d1b3eac6cb1f8ca65b5ce8a10cb20ee928735d6fec2a28f0096dcb8e",
+  "original_0112_then_0118_reader_rehydration_sha256": "abc060785c53ba10762407adc7660c776f5a2e84ce8dcfcc7cc083c88940f5c8",
+  "grype_commands": [
+    {
+      "version": "0.118.0",
+      "command": [
+        "db",
+        "import",
+        "grype.tar.zst"
+      ],
+      "exit": 0
+    },
+    {
+      "version": "0.112.0",
+      "command": [
+        "db",
+        "import",
+        "grype.tar.zst"
+      ],
+      "exit": 0
+    },
+    {
+      "version": "0.118.0",
+      "command": [
+        "db",
+        "search",
+        "vuln",
+        "CVE-0000-0000"
+      ],
+      "exit": 0
+    }
+  ],
+  "purpose": "DB reconstruction only, never a policy pass",
+  "trivy_layer_sha256": "b9e5bfdb1d0c6e3fb7e40800a4b6a6a9a76b52221402f321f9691ec6ea2db6c5",
+  "reconstructed_trivy_db_sha256": "c39ee6b7f92119e7fadd7bc626d15ca8de69a56522529eeab027f6c9c433a27a",
+  "grype_snapshot_reproduced": false
+}
