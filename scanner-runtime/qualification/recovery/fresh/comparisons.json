@@ -1,0 +1,44 @@
+{
+  "clean": {
+    "trivy": {
+      "equal_except_volatile_and_output_path": true
+    },
+    "grype": {
+      "equal_except_volatile_and_output_path": true
+    },
+    "gate-sarif": {
+      "equal": true
+    },
+    "inform-sarif": {
+      "equal": true
+    }
+  },
+  "vulnerable": {
+    "trivy": {
+      "equal_except_volatile_and_output_path": true
+    },
+    "grype": {
+      "equal_except_volatile_and_output_path": true
+    },
+    "gate-sarif": {
+      "equal": true
+    },
+    "inform-sarif": {
+      "equal": true
+    }
+  },
+  "bci": {
+    "trivy": {
+      "equal_except_volatile_and_output_path": true
+    },
+    "grype": {
+      "equal_except_volatile_and_output_path": true
+    },
+    "gate-sarif": {
+      "equal": true
+    },
+    "inform-sarif": {
+      "equal": true
+    }
+  }
+}

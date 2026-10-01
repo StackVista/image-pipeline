@@ -1,0 +1,10 @@
+{
+  "source": "5c5ac0665b8c308ac7efa05ee397ef5f9e02c255",
+  "archive_sha256": "6e971f2fc7901b327db037aefbe47e4bd166765cf80fefec78c1dac2c94b00d7",
+  "binary_sha256": {
+    "trivy": "ea464f20867193e6aeabe17e82cb614c492ceb9ca8d2a661e34b470ccef029f6",
+    "grype": "4c0ff7b02d9d7998c5beff088416ba514b916cc1047a6a261d751eed8b92c57d"
+  },
+  "architecture": "amd64",
+  "checksum_and_provenance_oidc_verified": true
+}
