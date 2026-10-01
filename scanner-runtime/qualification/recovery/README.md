@@ -28,8 +28,9 @@ Clean: zero findings and both policy modes pass. Vulnerable BCI base: identical
 passes. Unchanged BCI micro rejection control: identical seven Grype matches
 including three HIGH, gate rejects and inform passes. Trivy reports zero
 HIGH/CRITICAL findings on that micro control; this is preserved original tool
-behavior, not a waived Grype finding. Synthetic never-issued secret blocks both
-modes. Malformed exceptions return 2 in both modes; real Grype missing-database
+behavior, not a waived Grype finding. The earlier secret-case harness recorded a finding but assigned mode failures
+without executing the action failure block. That claim is superseded by the
+corrected harness and separately identified fresh evidence under fresh/. Malformed exceptions return 2 in both modes; real Grype missing-database
 errors return 1 in both modes. Missing VEX rejects gate and preserves canonical
 inform fallback. No scanner/database/rule/exception suppressions were added.
 

@@ -1,0 +1,22 @@
+[
+  {
+    "family": "older",
+    "control": "exact candidate without executable mode",
+    "rejected": true
+  },
+  {
+    "family": "older",
+    "control": "wrong executable checksum",
+    "rejected": true
+  },
+  {
+    "family": "newer",
+    "control": "exact candidate without executable mode",
+    "rejected": true
+  },
+  {
+    "family": "newer",
+    "control": "wrong executable checksum",
+    "rejected": true
+  }
+]

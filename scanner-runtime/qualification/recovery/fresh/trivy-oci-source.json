@@ -1,0 +1,16 @@
+{
+  "manifest_url": "https://mirror.gcr.io/v2/aquasec/trivy-db/manifests/2",
+  "digest": "sha256:5fc1889dd7f065881234152a7fa7f27b2c56522306aef0e43bb002d590bdd278",
+  "layers": [
+    {
+      "mediaType": "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip",
+      "digest": "sha256:b9e5bfdb1d0c6e3fb7e40800a4b6a6a9a76b52221402f321f9691ec6ea2db6c5",
+      "size": 125272888,
+      "annotations": {
+        "org.opencontainers.image.title": "db.tar.gz"
+      }
+    }
+  ],
+  "layer_digest_verified": true,
+  "extracted_db_sha256": "c39ee6b7f92119e7fadd7bc626d15ca8de69a56522529eeab027f6c9c433a27a"
+}

@@ -1,0 +1,31 @@
+{
+  "source_commit": "0a1619a8a8ac1235fdbbc3f224bf329cb80903cf",
+  "binary_sha256": "177d1ad60db1ab0fa91aadb8c937b75a8b67e489ca3d70590d93040c6ad929e0",
+  "build_metadata": "/tmp/evaluate: go1.27.0\n\tpath\tgithub.com/StackVista/image-pipeline/evaluator\n\tmod\tgithub.com/StackVista/image-pipeline/evaluator\t(devel)\t\n\tdep\tgo.yaml.in/yaml/v3\tv3.0.5\th1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\tCGO_ENABLED=1\n\tbuild\tCGO_CFLAGS=\n\tbuild\tCGO_CPPFLAGS=\n\tbuild\tCGO_CXXFLAGS=\n\tbuild\tCGO_LDFLAGS=\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=linux\n\tbuild\tGOAMD64=v1\n",
+  "source_file_sha256": {
+    "evaluator/finding_test.go": "b8d7e894bf60c20abbb935f67153d6ad634d7379d505b36c7e25b13f6651fe98",
+    "evaluator/trivy.go": "4e4ae9e8cbd3a5c1368788d5e53208a435bf5ff511e74e20942c84f2f318e187",
+    "evaluator/schema_test.go": "7b4c420be9565cd481804db8c2b0746411efdd4fa3a3bccb5a8da5232faea37f",
+    "evaluator/main.go": "3b85b3f1508ad3d68faa2ebe9a946113b0b9042b07519ac0efb510354cc8cc9c",
+    "evaluator/go.mod": "d43f4c6ea32c49b716db227ffbf06d29ed865ed1af462b7efbb88f56254735bb",
+    "evaluator/grype_test.go": "11aeb2097d7142c142632ae09b5fd5e0d67897af22269653ef944bc3bc2d0212",
+    "evaluator/grype.go": "48e9c8557e1eeb974c649223097cfb44eb06882037df8042082e63d1f6af6dce",
+    "evaluator/evaluate_test.go": "abdf16f9d191197dd0d302657053e3bac503208fc02cb386e891305acb54d542",
+    "evaluator/summary.go": "21aff1928cb92ead3ca359a2f16a62d58cd38fa2dcb8cc04c59c03a2f093ccf4",
+    "evaluator/finding.go": "d320eaaaa1880443a30d064fcec35fd83517422bf6cfcbe9cd1d56575538fb54",
+    "evaluator/exit_test.go": "97c2ebc82686370c3cf366433aba6cdad6ffd6e3dd72b4f7a03cc3152bf2e30e",
+    "evaluator/go.sum": "d4583181c1c7ec5ab4db5c02abf3f94aa4d4e20caf1f5b7793789f94cf1cbee3",
+    "evaluator/evaluate.go": "0150c004b7470b4018753a7560ae4440a45be633ddc2f6cb56378b996d8e10c4",
+    "evaluator/sarif.go": "91024567064a54dfae052a42330b579968368b30d406f41ef9727a8e87c258bb",
+    "evaluator/image_test.go": "ca8cee275abe9212c99b05e68e0880994b185912766fa432fd885e18b535a2ea",
+    "evaluator/image.go": "1fcff87a582275a37249cf44d3e6bedea0b6c0ec71c4d3af28e6276ba0317b48",
+    "evaluator/exception.go": "90fdfcedfc9a9aae4d4e9d5eefc1de20528f8ce76013cf61e3ae584ffbfc46f6",
+    "evaluator/summary_test.go": "167151ebd5a170b6e90260388b5555a8c25fc50e0f939032f4de985017eb5b86",
+    "evaluator/trivy_test.go": "2a785c691e243890877442f4545a14f9f91fc4194ef6d4b3a60a702f5e5afffe",
+    "evaluator/exception_test.go": "e0c71168e172d2422a88b46b3293a9d4ee83966d50e2e910bbe440ff321b63ec",
+    "evaluator/README.md": "a38c6643c1d564b554e6de5acc6f0c08c36ffaa67c3b2e005ee957083311ef1a",
+    "evaluator/sarif_test.go": "c101ab5a3c879ebfb9b3ef433d21efe779b756de87990b4411530006c04d9303",
+    "evaluator/testdata/trivy-kafka-fixture.json": "2adddbaa79fce57f115d463761e0cfcd34b05133d29b65ea82a4ff5bf2165ba7",
+    "evaluator/testdata/grype-kafka-fixture.json": "bfa01786cb054c85f00523ea045fd6a6aed373e9f91a3e21d949adc9536fa397"
+  }
+}
