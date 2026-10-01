@@ -120,10 +120,11 @@ for variant in ['original','candidate']:
         (repo/'repository.yaml').write_text('repositories:\n  - name: unavailable\n    url: http://127.0.0.1:9\n    enabled: true\n')
         bindir=case/'bin';bindir.mkdir(exist_ok=True)
         tool=args.candidate/'trivy' if variant=='candidate' else args.original/'trivy/trivy'
-        identity=verify(tool,variant,'trivy');(bindir/'trivy').symlink_to(identity['path'])
-        env={**base_env,'PATH':str(bindir)+':'+os.environ['PATH'],'HOME':str(case),'TRIVY_CACHE_DIR':str(case/'cache'),'REPO_ROOT':str(repo.parent),'INPUT_MODE':mode}
+        identity=verify(tool,variant,'trivy');shim=bindir/'trivy'
+        shim.write_text('#!/usr/bin/env bash\nexec python3 '+shlex.quote(str(Path(__file__).with_name('invoke.py')))+' "$@"\n');shim.chmod(0o755)
+        env={**base_env,'PATH':str(bindir)+':'+os.environ['PATH'],'HOME':str(case),'TRIVY_CACHE_DIR':str(case/'cache'),'REPO_ROOT':str(repo.parent),'INPUT_MODE':mode,'QUALIFIED_BINARY':identity['path'],'QUALIFIED_VARIANT':variant,'QUALIFIED_LOG':str(work/'shell-identities.jsonl')}
         resolved=subprocess.check_output(['bash','-c','command -v trivy'],env=env,text=True).strip()
-        assert Path(resolved).resolve()==Path(identity['path'])
+        assert Path(resolved).resolve()==shim.resolve()
         r=subprocess.run(['bash','-c',configure],cwd=case,env=env,capture_output=True,text=True,timeout=60)
         (case/'vex-policy.log').write_text(r.stdout+r.stderr)
         evidence.append({'identity':identity,'control':'active unreachable VEX '+mode,'exit':r.returncode})
