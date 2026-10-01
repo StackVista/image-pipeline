@@ -16,6 +16,7 @@ def verify(path,variant,tool):
         assert 'vcs.revision='+HEAD in meta and 'vcs.modified=false' in meta
         assert 'go.yaml.in/yaml/v3\tv3.0.5' in meta and 'gopkg.in/yaml.' not in meta
     else:assert 'gopkg.in/yaml.v3\tv3.0.1' in meta
+    if variant=='candidate':assert digest(row['symbols']['audit_path'])==row['symbols']['signed_audit_sha256']
     version=subprocess.check_output([str(p),'version'],text=True)
     assert CONFIG['versions'][tool] in version
     return {'path':str(p),'sha256':row['sha256'],'host':platform.machine(),'elf_machine':183,'mode':oct(p.stat().st_mode & 0o777),'version':version,'build_metadata':meta,'symbols':row['symbols']}

@@ -73,9 +73,13 @@ for variant,folder in [('original',original),('candidate',candidate)]:
         else:assert 'gopkg.in/yaml.v3\tv3.0.1' in meta
         nm=subprocess.run(['go','tool','nm',str(binary)],capture_output=True,text=True)
         symbols=setup/f'{variant}-{tool}-symbols.txt';symbols.write_text(nm.stdout+nm.stderr)
-        if variant=='candidate':assert nm.returncode==0 and 'gopkg.in/yaml.' not in nm.stdout
+        if variant=='candidate':
+            audit=candidate/(tool+'-symbols.txt')
+            expected_audit=json.loads((d/'provenance.json').read_text())['files'][tool+'-symbols.txt']
+            assert sha(audit)==expected_audit and 'gopkg.in/yaml.' not in audit.read_text()
+            assert nm.returncode==0 or 'no symbol' in nm.stderr
         # Upstream release binaries can be stripped; retain that actual boundary.
-        row={'sha256':sha(binary),'symbols':{'exit':nm.returncode,'sha256':sha(symbols),'stripped':nm.returncode!=0},'module_metadata':meta,'elf_machine':183}
+        row={'sha256':sha(binary),'symbols':{'exit':nm.returncode,'sha256':sha(symbols),'stripped':nm.returncode!=0,'audit_path':str(audit) if variant=='candidate' else None,'signed_audit_sha256':expected_audit if variant=='candidate' else None},'module_metadata':meta,'elf_machine':183}
         version=run([str(binary),'version']);assert versions[tool] in version;row['version']=version
         config['tools'][variant][tool]=row
 (setup/'original-release-proof.json').write_text(json.dumps(release_proof,indent=2))
