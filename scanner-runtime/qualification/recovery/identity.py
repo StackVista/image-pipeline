@@ -27,6 +27,9 @@ def verify(path, variant, tool):
     elif 'gopkg.in/yaml.v3\tv3.0.1' not in metadata:
         raise ValueError('original parser identity mismatch')
     version = subprocess.check_output([str(path), 'version'], text=True)
+    expected_version={'trivy': '0.74.0', 'grype': '0.118.0'}[tool]
+    if expected_version not in version:
+        raise ValueError('scanner generation mismatch')
     return {'path': str(path), 'sha256': digest, 'version': version, 'build_metadata': metadata}
 
 
