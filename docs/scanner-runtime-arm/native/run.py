@@ -178,7 +178,7 @@ run([sys.executable,*control],env=env,timeout=2400)
 # Freeze each explicitly-created VEX error fixture before executing its policy.
 vtext=(harness/'vex.py').read_text().replace("env = {**os.environ", "fixture_manifest=case/'fixture-manifest.json'\n            fixture_manifest.write_text(json.dumps({str(repo/'repository.yaml'): __import__('hashlib').sha256((repo/'repository.yaml').read_bytes()).hexdigest()}))\n            env = {**os.environ, 'FROZEN_INPUTS_MANIFEST': str(fixture_manifest)")
 (harness/'vex.py').write_text(vtext)
-run(['python3',str(harness/'vex.py'),'--work',str(work),'--action',str(policy),'--original',str(original),'--candidate',str(candidate),'--family',family],env=env,timeout=600)
+run([sys.executable,str(harness/'vex.py'),'--work',str(work),'--action',str(policy),'--original',str(original),'--candidate',str(candidate),'--family',family],env=env,timeout=600)
 from identity import frozen_inputs
 frozen_inputs()
 (setup/'final-frozen-verification.json').write_text(json.dumps({'all_hashes_match':True,'native_host':platform.machine(),'snapshot':json.loads((setup/'snapshot.json').read_text())},indent=2))
