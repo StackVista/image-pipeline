@@ -1,0 +1,12 @@
+[
+  {
+    "path": "cache/grype/6/vulnerability.db",
+    "before": "e4fe52f11ab5fe8b5c83d64d5127173b3982a4fd768c9e979b9a3302a11c4488",
+    "after": "d16211e678fbd9fa8da33145c1eedbefa6ac3f3f2e0dd8c6acddb36bd29f027e"
+  },
+  {
+    "path": "cache/grype/6/import.json",
+    "before": "bba68a8d5c035ab7eb4ddd8b2b66ef6a060d3bbcce787ee2512b018d3ccb381a",
+    "after": "27a05d3f03d31bed53fb65dd1e791cf2b91c8c00b1c652dd4d23c84a4644ab10"
+  }
+]
