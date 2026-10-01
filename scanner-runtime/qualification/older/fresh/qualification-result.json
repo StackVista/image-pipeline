@@ -1,0 +1,206 @@
+{
+  "family": "older",
+  "primary_policy_cases": 28,
+  "primary_real_scanner_calls": 32,
+  "extra_vex_preflight_calls": 8,
+  "secret_policy_actual_exits": {
+    "original": {
+      "secrets": 1,
+      "gate": 1,
+      "inform": 1
+    },
+    "candidate": {
+      "secrets": 1,
+      "gate": 1,
+      "inform": 1
+    }
+  },
+  "all_primary_policy_exits_match": true,
+  "all_guarded_scanner_inputs_unchanged_before_after": true,
+  "output_comparisons": {
+    "clean": {
+      "trivy": {
+        "equal_except_volatile_and_output_path": true
+      },
+      "grype": {
+        "equal_except_volatile_and_output_path": true
+      },
+      "gate-sarif": {
+        "equal": true
+      },
+      "inform-sarif": {
+        "equal": true
+      }
+    },
+    "vulnerable": {
+      "trivy": {
+        "equal_except_volatile_and_output_path": true
+      },
+      "grype": {
+        "equal_except_volatile_and_output_path": false
+      },
+      "gate-sarif": {
+        "equal": false
+      },
+      "inform-sarif": {
+        "equal": false
+      }
+    },
+    "bci": {
+      "trivy": {
+        "equal_except_volatile_and_output_path": true
+      },
+      "grype": {
+        "equal_except_volatile_and_output_path": true
+      },
+      "gate-sarif": {
+        "equal": true
+      },
+      "inform-sarif": {
+        "equal": true
+      }
+    }
+  },
+  "architecture": "amd64",
+  "initial_shared_cache_run": "invalidated, not used as qualification",
+  "vex_conditions": [
+    {
+      "variant": "original",
+      "condition": "absent-usable-material",
+      "mode": "gate",
+      "exit": 1
+    },
+    {
+      "variant": "original",
+      "condition": "absent-usable-material",
+      "mode": "inform",
+      "exit": 1
+    },
+    {
+      "variant": "original",
+      "condition": "active-unreachable-endpoint",
+      "mode": "gate",
+      "exit": 1
+    },
+    {
+      "variant": "original",
+      "condition": "active-unreachable-endpoint",
+      "mode": "inform",
+      "exit": 1
+    },
+    {
+      "variant": "candidate",
+      "condition": "absent-usable-material",
+      "mode": "gate",
+      "exit": 1
+    },
+    {
+      "variant": "candidate",
+      "condition": "absent-usable-material",
+      "mode": "inform",
+      "exit": 1
+    },
+    {
+      "variant": "candidate",
+      "condition": "active-unreachable-endpoint",
+      "mode": "gate",
+      "exit": 1
+    },
+    {
+      "variant": "candidate",
+      "condition": "active-unreachable-endpoint",
+      "mode": "inform",
+      "exit": 1
+    }
+  ],
+  "bounded_repeat_comparisons": {
+    "original-baseline-repeat": {
+      "match_counts": [
+        535,
+        535
+      ],
+      "cve_artifact_severity_multiset_equal": true,
+      "changed_match_fields": {
+        "vulnerability": 31
+      },
+      "keyed_match_differing_paths": 304,
+      "strict_json_equal_except_timestamp_output_path": false,
+      "sarif": {
+        "gate": {
+          "equal": false,
+          "differing_paths": 34
+        },
+        "inform": {
+          "equal": false,
+          "differing_paths": 34
+        }
+      }
+    },
+    "candidate-baseline-repeat": {
+      "match_counts": [
+        535,
+        535
+      ],
+      "cve_artifact_severity_multiset_equal": true,
+      "changed_match_fields": {
+        "vulnerability": 31
+      },
+      "keyed_match_differing_paths": 298,
+      "strict_json_equal_except_timestamp_output_path": false,
+      "sarif": {
+        "gate": {
+          "equal": false,
+          "differing_paths": 26
+        },
+        "inform": {
+          "equal": false,
+          "differing_paths": 26
+        }
+      }
+    },
+    "migration-pair": {
+      "match_counts": [
+        535,
+        535
+      ],
+      "cve_artifact_severity_multiset_equal": true,
+      "changed_match_fields": {
+        "vulnerability": 29
+      },
+      "keyed_match_differing_paths": 287,
+      "strict_json_equal_except_timestamp_output_path": false,
+      "sarif": {
+        "gate": {
+          "equal": false,
+          "differing_paths": 30
+        },
+        "inform": {
+          "equal": false,
+          "differing_paths": 30
+        }
+      }
+    },
+    "migration-repeat-pair": {
+      "match_counts": [
+        535,
+        535
+      ],
+      "cve_artifact_severity_multiset_equal": true,
+      "changed_match_fields": {
+        "vulnerability": 37
+      },
+      "keyed_match_differing_paths": 367,
+      "strict_json_equal_except_timestamp_output_path": false,
+      "sarif": {
+        "gate": {
+          "equal": false,
+          "differing_paths": 38
+        },
+        "inform": {
+          "equal": false,
+          "differing_paths": 38
+        }
+      }
+    }
+  }
+}

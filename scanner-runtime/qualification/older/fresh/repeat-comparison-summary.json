@@ -1,0 +1,90 @@
+{
+  "original-baseline-repeat": {
+    "match_counts": [
+      535,
+      535
+    ],
+    "cve_artifact_severity_multiset_equal": true,
+    "changed_match_fields": {
+      "vulnerability": 31
+    },
+    "keyed_match_differing_paths": 304,
+    "strict_json_equal_except_timestamp_output_path": false,
+    "sarif": {
+      "gate": {
+        "equal": false,
+        "differing_paths": 34
+      },
+      "inform": {
+        "equal": false,
+        "differing_paths": 34
+      }
+    }
+  },
+  "candidate-baseline-repeat": {
+    "match_counts": [
+      535,
+      535
+    ],
+    "cve_artifact_severity_multiset_equal": true,
+    "changed_match_fields": {
+      "vulnerability": 31
+    },
+    "keyed_match_differing_paths": 298,
+    "strict_json_equal_except_timestamp_output_path": false,
+    "sarif": {
+      "gate": {
+        "equal": false,
+        "differing_paths": 26
+      },
+      "inform": {
+        "equal": false,
+        "differing_paths": 26
+      }
+    }
+  },
+  "migration-pair": {
+    "match_counts": [
+      535,
+      535
+    ],
+    "cve_artifact_severity_multiset_equal": true,
+    "changed_match_fields": {
+      "vulnerability": 29
+    },
+    "keyed_match_differing_paths": 287,
+    "strict_json_equal_except_timestamp_output_path": false,
+    "sarif": {
+      "gate": {
+        "equal": false,
+        "differing_paths": 30
+      },
+      "inform": {
+        "equal": false,
+        "differing_paths": 30
+      }
+    }
+  },
+  "migration-repeat-pair": {
+    "match_counts": [
+      535,
+      535
+    ],
+    "cve_artifact_severity_multiset_equal": true,
+    "changed_match_fields": {
+      "vulnerability": 37
+    },
+    "keyed_match_differing_paths": 367,
+    "strict_json_equal_except_timestamp_output_path": false,
+    "sarif": {
+      "gate": {
+        "equal": false,
+        "differing_paths": 38
+      },
+      "inform": {
+        "equal": false,
+        "differing_paths": 38
+      }
+    }
+  }
+}
