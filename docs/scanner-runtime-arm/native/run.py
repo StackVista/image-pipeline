@@ -17,7 +17,7 @@ def run(cmd,**kw):
 def sha(f):
     with Path(f).open('rb') as s:return hashlib.file_digest(s,'sha256').hexdigest()
 def fetch(url,dest):
-    with urllib.request.urlopen(url,timeout=120) as response,dest.open('wb') as f:shutil.copyfileobj(response,f)
+    run(['curl','--fail','--location','--retry','2','--max-time','180','--output',str(dest),url])
     return dest
 issuer='https://token.actions.githubusercontent.com'
 artifact=11174792711 if family=='newer' else 11179957417
