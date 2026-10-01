@@ -1,0 +1,34 @@
+[
+  {
+    "source": "trivy-0.70.0",
+    "commit": "8a3177aedf7ee0864920eb1852eef031cd3742b8",
+    "archive_sha256": "6060d3c05035f887033d80c7d8c330b1c68bd71bcf74e8d6011b9d3a28de12ce",
+    "entries": 3502,
+    "space_paths": 0,
+    "fresh_official_archive_matches_original_inventory": true
+  },
+  {
+    "source": "grype-0.112.0",
+    "commit": "244f2a10a5668078fcf771454bbd832b3a5b9e8a",
+    "archive_sha256": "81a055b1b72baa74461c57708f55276a3913299d4db2b82af17effde0e378b62",
+    "entries": 1234,
+    "space_paths": 0,
+    "fresh_official_archive_matches_original_inventory": true
+  },
+  {
+    "source": "syft-1.44.0",
+    "commit": "8cb78ce40ced6a731fb83f2a491a67444f541bf1",
+    "archive_sha256": "1a9ae108f789db7de86620232be5cf4423358f5055b06c0bf4383eef7aee24b1",
+    "entries": 2764,
+    "space_paths": 0,
+    "fresh_official_archive_matches_original_inventory": true
+  },
+  {
+    "source": "helm-3.20.2",
+    "commit": "8fb76d6ab555577e98e23b7500009537a471feee",
+    "archive_sha256": "3835ef863be2f670733374b9b36f8f9b2500f308949332190303cfc86f115bd3",
+    "entries": 1388,
+    "space_paths": 7,
+    "fresh_official_archive_matches_original_inventory": true
+  }
+]

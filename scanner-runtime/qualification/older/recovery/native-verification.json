@@ -1,0 +1,154 @@
+[
+  {
+    "architecture": "amd64",
+    "source": "906ee014101bb9a1697e91b0ba44e86d5b9044cc",
+    "archive_sha256": "7fb8f0d64843644129654bd25ce722539ac2b385b2a37e9c320469e5011416d4",
+    "binaries": {
+      "trivy": "e123a6ce7018c4ba09cdc1a7a0f49cb9572cd1295da6629d518774f815c92ed3",
+      "grype": "71c5ce3e6abdf04f2ac89f6647e61afc0197f8d5ef5c48d83969482709e441f3"
+    },
+    "contracts": {
+      "syft": {
+        "run": 26,
+        "output": 52,
+        "pass": 26
+      },
+      "jd": {
+        "run": 7153,
+        "output": 14314,
+        "pass": 7153
+      },
+      "kubernetes": {
+        "run": 19,
+        "output": 38,
+        "pass": 19
+      },
+      "trivy": {
+        "run": 334,
+        "output": 668,
+        "pass": 334
+      },
+      "helm": {
+        "run": 5,
+        "output": 10,
+        "pass": 5
+      },
+      "squealer": {
+        "run": 5,
+        "output": 13,
+        "pass": 5
+      },
+      "yaml": {
+        "run": 3,
+        "output": 6,
+        "pass": 3
+      },
+      "openvex-028": {
+        "run": 26,
+        "output": 75,
+        "pass": 26,
+        "pause": 11,
+        "cont": 11
+      },
+      "compliance": {
+        "run": 10,
+        "output": 20,
+        "pass": 10
+      },
+      "openvex-027": {
+        "run": 26,
+        "output": 75,
+        "pass": 26,
+        "pause": 11,
+        "cont": 11
+      },
+      "assertion-mock": {
+        "run": 737,
+        "output": 2274,
+        "pause": 396,
+        "pass": 736,
+        "cont": 396,
+        "skip": 1
+      }
+    },
+    "oidc_manifests_verified": true,
+    "all_manifest_files_verified": true,
+    "archived_parser_metadata_symbols_absent": true
+  },
+  {
+    "architecture": "arm64",
+    "source": "906ee014101bb9a1697e91b0ba44e86d5b9044cc",
+    "archive_sha256": "028e882e81aac0d71348654516c53e6b3375d5f3aa690b1542ca05d02b6a7912",
+    "binaries": {
+      "trivy": "be39773f322bb9d81b051331c38826f9434efc101cc92c4290d0ee29218c2ae9",
+      "grype": "61b9d67a2a9b6f4e09be345a72fa3185cd8a4b9e7b0c80e506cc5acc0709cde1"
+    },
+    "contracts": {
+      "syft": {
+        "run": 26,
+        "output": 52,
+        "pass": 26
+      },
+      "jd": {
+        "run": 7153,
+        "output": 14314,
+        "pass": 7153
+      },
+      "kubernetes": {
+        "run": 19,
+        "output": 38,
+        "pass": 19
+      },
+      "trivy": {
+        "run": 334,
+        "output": 668,
+        "pass": 334
+      },
+      "helm": {
+        "run": 5,
+        "output": 10,
+        "pass": 5
+      },
+      "squealer": {
+        "run": 5,
+        "output": 13,
+        "pass": 5
+      },
+      "yaml": {
+        "run": 3,
+        "output": 6,
+        "pass": 3
+      },
+      "openvex-028": {
+        "run": 26,
+        "output": 75,
+        "pass": 26,
+        "pause": 11,
+        "cont": 11
+      },
+      "compliance": {
+        "run": 10,
+        "output": 20,
+        "pass": 10
+      },
+      "openvex-027": {
+        "run": 26,
+        "output": 75,
+        "pass": 26,
+        "pause": 11,
+        "cont": 11
+      },
+      "assertion-mock": {
+        "run": 737,
+        "output": 2274,
+        "pause": 396,
+        "pass": 736,
+        "cont": 396,
+        "skip": 1
+      }
+    },
+    "oidc_manifests_verified": true,
+    "all_manifest_files_verified": true,
+    "archived_parser_metadata_symbols_absent": true
+  }
+]
