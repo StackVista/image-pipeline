@@ -144,10 +144,15 @@ else:
     with tarfile.open(out/'new-frozen-inputs.tar.gz','w:gz') as t:
         for parent in ['cache','home','fixtures']:t.add(work/parent,arcname=parent)
     (setup/'frozen-archive-sha256.txt').write_text(sha(out/'new-frozen-inputs.tar.gz')+'\n')
-for kind in ['clean','secret']:
-    run(['docker','build','--platform','linux/arm64','-t','runtime-'+kind,str(work/'fixtures'/kind)])
-    (setup/(kind+'-image.json')).write_text(run(['docker','image','inspect','runtime-'+kind]))
-    assert json.loads((setup/(kind+'-image.json')).read_text())[0]['Architecture']=='arm64'
+selected_cases=['vulnerable','bci']
+config['image_inputs']={}
+for image_ref in ['registry.suse.com/bci/bci-base:15.3@sha256:906ade16ed715fc25a4eb72afcabc51330b9c4f549bb48d752ca64369ba1e227','registry.suse.com/bci/bci-micro@sha256:e3a512199e98075db7d74ef9be486aea9ca6c841046330e5dc8c80d77c68df2b']:
+    run(['docker','pull','--platform','linux/arm64',image_ref])
+    info=json.loads(run(['docker','image','inspect',image_ref]))[0]
+    assert info['Architecture']=='arm64'
+    config['image_inputs'][image_ref]={'id':info['Id'],'architecture':'arm64','repo_digests':info['RepoDigests']}
+(setup/'frozen-image-identities.json').write_text(json.dumps(config['image_inputs'],indent=2))
+configfile.write_text(json.dumps(config,indent=2))
 # Compile only unchanged evaluator, in the established signed BCI builder.
 evalroot=setup/'evaluator-source';evalroot.mkdir()
 evaluator_revision='0a1619a8a8ac1235fdbbc3f224bf329cb80903cf' if family=='newer' else '5dabd41a1cecfea5f865d844ea7febec4ab4f38b'
@@ -168,6 +173,10 @@ orig=root/('scanner-runtime/qualification/recovery' if family=='newer' else 'sca
 for name in ['invoke.py','vex.py']:shutil.copyfile(orig/name,harness/name)
 shutil.copyfile(Path(__file__).with_name('identity.py'),harness/'identity.py')
 text=(orig/('controls.py' if family=='newer' else 'run.py')).read_text().replace('from identity import execute, verify, HEAD','from identity import execute, verify, HEAD, evaluator_command').replace('command=[str(args.evaluator),*arguments]','command=[evaluator_command(args.evaluator),*arguments]')
+text=text.replace("docs = sorted(", "images={key:value for key,value in images.items() if key in ['vulnerable','bci']}\ndocs = sorted(",1)
+begin=text.index("    errorcase=work/variant/'errors'");end=text.index("    (work/'results.json').write_text",begin)
+text=text[:begin]+text[end:]
+text=text.replace("for kind in ['clean','vulnerable','bci']:","for kind in ['vulnerable','bci']:")
 (harness/'controls.py').write_text(text)
 policy=setup/'action.yml'
 ref=source if family=='newer' else '5dabd41a1cecfea5f865d844ea7febec4ab4f38b'
@@ -175,10 +184,6 @@ run(['git','fetch','origin',ref]);policy.write_text(run(['git','show',ref+':.git
 env={**os.environ,'GRYPE_CHECK_FOR_APP_UPDATE':'false'}
 control=[str(harness/'controls.py'),'--work',str(work),'--candidate',str(candidate),'--original',str(original),'--evaluator',str(evaluator),'--action',str(policy)]
 run([sys.executable,*control],env=env,timeout=2400)
-# Freeze each explicitly-created VEX error fixture before executing its policy.
-vtext=(harness/'vex.py').read_text().replace("env = {**os.environ", "fixture_manifest=case/'fixture-manifest.json'\n            fixture_manifest.write_text(json.dumps({str(repo/'repository.yaml'): __import__('hashlib').sha256((repo/'repository.yaml').read_bytes()).hexdigest()}))\n            env = {**os.environ, 'FROZEN_INPUTS_MANIFEST': str(fixture_manifest)")
-(harness/'vex.py').write_text(vtext)
-run([sys.executable,str(harness/'vex.py'),'--work',str(work),'--action',str(policy),'--original',str(original),'--candidate',str(candidate),'--family',family],env=env,timeout=600)
 from identity import frozen_inputs
 frozen_inputs()
 (setup/'final-frozen-verification.json').write_text(json.dumps({'all_hashes_match':True,'native_host':platform.machine(),'snapshot':json.loads((setup/'snapshot.json').read_text())},indent=2))
@@ -193,7 +198,7 @@ def diff(a,b,path=''):
         for i,(x,y) in enumerate(zip(a,b)):rows+=diff(x,y,path+'/'+str(i))
         return rows
     return [{'path':path,'original':a,'candidate':b}]
-for case in ['clean','vulnerable','bci']:
+for case in ['vulnerable','bci']:
     for report in ['trivy.json','grype.json','gate.sarif','inform.sarif']:
         a=json.loads((work/'original'/case/report).read_text());b=json.loads((work/'candidate'/case/report).read_text())
         (work/(case+'-'+report+'-raw-differing-fields.json')).write_text(json.dumps(diff(a,b),indent=2)+'\n')

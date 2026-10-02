@@ -35,6 +35,10 @@ def evaluator_command(path):
     return str(p)
 def execute(path,variant,tool,arguments,evidence,**kwargs):
     before=frozen_inputs();identity=verify(path,variant,tool)
+    image=next((a for a in arguments if a in CONFIG.get('image_inputs',{})),None)
+    if image:
+        actual=json.loads(subprocess.check_output(['docker','image','inspect',image],text=True))[0]
+        assert actual['Id']==CONFIG['image_inputs'][image]['id'] and actual['Architecture']=='arm64' 
     env=dict(kwargs.get('env',os.environ));clones={}
     with tempfile.TemporaryDirectory(prefix='arm-invocation-') as tmp:
         for key in ['GRYPE_DB_CACHE_DIR','TRIVY_CACHE_DIR']:
@@ -47,7 +51,20 @@ def execute(path,variant,tool,arguments,evidence,**kwargs):
                 env[key]=str(dest)
         kwargs['env']=env
         r=subprocess.run([identity['path'],*arguments],**kwargs)
+        image_evidence=None
+        if image and r.returncode==0:
+            output=arguments[arguments.index('--output')+1] if tool=='trivy' else next(a[5:] for a in arguments if a.startswith('json='))
+            report=json.loads(Path(output).read_text())
+            if tool=='trivy':
+                image_id=report['Metadata']['ImageID'];architecture=report['Metadata']['ImageConfig']['architecture']
+            else:
+                image_id=report['source']['target']['imageID']
+                import base64
+                image_config=json.loads(base64.b64decode(report['source']['target']['config']))
+                architecture=image_config['architecture']
+            assert image_id==CONFIG['image_inputs'][image]['id'] and architecture=='arm64'
+            image_evidence={'reference':image,'image_id':image_id,'architecture':architecture}
         for f,h in clones.items():assert digest(f)==h,'invocation input mutated: '+f
         after=frozen_inputs();assert before==after
-        evidence.append({'identity':identity,'arguments':arguments,'exit':r.returncode,'frozen_input_manifest_sha256':before,'isolated_cache_file_sha256':clones,'frozen_inputs_unchanged_before_after':True})
+        evidence.append({'identity':identity,'actual_image':image_evidence,'arguments':arguments,'exit':r.returncode,'frozen_input_manifest_sha256':before,'isolated_cache_file_sha256':clones,'frozen_inputs_unchanged_before_after':True})
         return r

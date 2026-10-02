@@ -131,3 +131,16 @@ OIDC signatures remain mandatory; newly produced policy evidence is unsigned bey
 normal Actions artifact digests and the signed source head. No new OIDC signing
 permission, loader or publication/trust path is introduced. Current artifact IDs,
 control outcomes and any failed stage must be read from the actual new run.
+
+## October 2 affected-image correction
+
+Run 36916409152 retains valid native clean/secret/error/VEX controls. Its vulnerable
+and BCI original/candidate comparisons are invalid: the original Trivy remote
+selection used amd64 before Docker was populated, while the candidate used ARM.
+The resumed lane executes only those two cases per generation. It preloads the
+immutable image index with linux/arm64, records Docker IDs, and requires both
+Trivy and Grype actual report image IDs and architecture to match before accepting
+an invocation. No package architecture differences are normalized away. Original
+invalid reports remain retained under artifacts 11191070849 and 11190962921.
+The new snapshots and their labels/bytes are reused without hydration. Prior
+amd64 and valid native non-image receipts are neither overwritten nor repeated.
