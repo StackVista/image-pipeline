@@ -99,7 +99,7 @@ runs:
       shell: bash
       env:
         GRYPE_VERSION: 0.119.0
-        INSTALL_SHA: b6f5194537747ee7f705f4113069ac9eb269919f
+        INSTALL_SHA: 10fbc043ecbaf8436daa9efac9f1632557caf277
       run: |
         curl -sSfL "https://raw.githubusercontent.com/anchore/grype/${INSTALL_SHA}/install.sh" \
           | sudo sh -s -- -b /usr/local/bin "v${GRYPE_VERSION}"
