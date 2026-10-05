@@ -98,7 +98,7 @@ runs:
       if: ${{ inputs.with-grype == 'true' }}
       shell: bash
       env:
-        GRYPE_VERSION: 0.119.0
+        GRYPE_VERSION: 0.120.0
         INSTALL_SHA: 10fbc043ecbaf8436daa9efac9f1632557caf277
       run: |
         curl -sSfL "https://raw.githubusercontent.com/anchore/grype/${INSTALL_SHA}/install.sh" \
