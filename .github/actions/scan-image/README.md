@@ -20,8 +20,8 @@ Input/output reference: [`action.yml`](./action.yml).
    secrets fail closed).
 4. Runs **Trivy** vuln scan with bounded retries, with `--vex repo`
    sourcing from `../../../vex/repository.yaml`.
-5. Optionally runs **Grype** with the same downloaded OpenVEX
-   documents (multi-scanner coverage).
+5. Optionally runs **Grype** with `--only-fixed` and the same downloaded
+   OpenVEX documents. Grype omits findings without an available fix.
 6. Runs the evaluator against the merged findings + the consumer's
    exception files; emits SARIF.
 7. Uploads SARIF to GHAS Code Scanning (best-effort; failure does

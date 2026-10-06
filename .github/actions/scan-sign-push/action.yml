@@ -209,7 +209,7 @@ runs:
     # result non-blocking per the release contract.
     - name: Scan amd64
       if: ${{ contains(inputs.arches, 'amd64') }}
-      uses: StackVista/image-pipeline/.github/actions/scan-image@6284a6fc006a7cc46a7f00d02c50d5f21b117b63
+      uses: StackVista/image-pipeline/.github/actions/scan-image@eec1482766390cc352b57a0609f33590473fe7c1
       with:
         image: scan-target:amd64
         mode: inform
@@ -222,7 +222,7 @@ runs:
 
     - name: Scan arm64
       if: ${{ contains(inputs.arches, 'arm64') }}
-      uses: StackVista/image-pipeline/.github/actions/scan-image@6284a6fc006a7cc46a7f00d02c50d5f21b117b63
+      uses: StackVista/image-pipeline/.github/actions/scan-image@eec1482766390cc352b57a0609f33590473fe7c1
       with:
         image: scan-target:arm64
         mode: inform
