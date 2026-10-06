@@ -95,6 +95,8 @@ jobs:
           test "${DECISION}" = "${EXPECTED_DECISION}"
           test "${SARIF_PATH}" = "reports/image-pipeline.sarif"
           test -f reports/image-pipeline.sarif
+          jq -e '.descriptor.configuration["only-fixed"] == true and
+            all(.matches[]; .vulnerability.fix.state == "fixed")' reports/grype.json
 
   scan-sign-push-smoke:
     # End-to-end coverage for scan-sign-push: build two per-arch tarballs, run the

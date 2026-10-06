@@ -18,7 +18,7 @@ inputs:
     required: false
     default: HIGH,CRITICAL
   with-grype:
-    description: "Also run Grype against the image"
+    description: "Also run Grype for vulnerabilities with available fixes"
     required: false
     default: "true"
   skip-files:
@@ -278,7 +278,7 @@ runs:
         done <<< "${INPUT_SKIP_FILES}"
 
         echo "::group::Grype vuln report (table)"
-        grype "${INPUT_IMAGE}" "${vex_args[@]}" "${skip_args[@]}" --by-cve -o table -o "json=reports/grype.json"
+        grype "${INPUT_IMAGE}" "${vex_args[@]}" "${skip_args[@]}" --by-cve --only-fixed -o table -o "json=reports/grype.json"
         echo "::endgroup::"
 
     - name: Evaluate
