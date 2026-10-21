@@ -147,9 +147,14 @@ jobs:
           arches: amd64,arm64
           source-mode: tarball
           tarball-dir: .
-          with-grype: "false"
+          with-grype: "true"
           upload-sarif: "false"
           target-registry: localhost:5000
+
+      - name: Assert nested Grype uses only-fixed policy
+        run: |
+          jq -e '.descriptor.configuration["only-fixed"] == true and
+            all(.matches[]; .vulnerability.fix.state == "fixed")' reports/grype.json
 
       - name: Assert both tags resolve to one signed multi-arch digest
         run: |
