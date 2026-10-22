@@ -19,6 +19,44 @@ scan-image action.
 Per-action docs live alongside the action: see
 [`.github/actions/scan-image/README.md`](./.github/actions/scan-image/README.md).
 
+## Scan an image manually
+
+The [Manual image scan](.github/workflows/scan-image.yml) workflow accepts an
+image reference, architecture, mode, severities, optional Grype scanning, file
+exclusions and an exception directory. It runs the scan action from the selected
+workflow revision. Defaults are `inform`, both scanners, and all severities.
+Secret findings and scanner errors still fail the run.
+
+Once the workflow is on `main`, open **Actions → Manual image scan → Run
+workflow**, select the branch to test and enter an image. Enable
+`compare-without-vex` to also scan without VEX using the downloaded databases.
+The comparison runs after vulnerability scanning has produced a Trivy report,
+including when the vulnerability gate fails.
+
+For example:
+
+```bash
+gh workflow run scan-image.yml --repo StackVista/image-pipeline --ref main \
+  -f image=quay.io/stackstate/zookeeper:3.9.5-so16 \
+  -f mode=inform \
+  -f architecture=amd64 \
+  -f severity=UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL \
+  -f with-grype=true \
+  -f compare-without-vex=true
+```
+
+The job summary shows raw finding counts. Its artifact contains vulnerability
+reports, SARIF, scan settings, the Grype document list and converted VEX files,
+including available reports from failed scans. Raw secret reports are excluded.
+Use an image digest and compare vulnerability identities in the JSON reports
+when investigating VEX effects; a clean result alone does not demonstrate that
+an exception was applied. Grype reports findings with available fixes.
+
+`skip-files` accepts newline-separated paths, and `exceptions-path` is relative
+to the repository checkout. For private images, the workflow can use the
+repository variable `SCAN_SOURCE_REGISTRY` and secrets `SCAN_REGISTRY_USER` and
+`SCAN_REGISTRY_PASSWORD`.
+
 ## Local development
 
 [mise](https://mise.jdx.dev) handles tool versions:
