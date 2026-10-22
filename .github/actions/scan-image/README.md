@@ -42,6 +42,18 @@ previously working scanner path instead.
 
 ## VEX formats
 
+Rancher publishes its indexed reports as CSAF-VEX. The Grype versions tested
+for this pipeline can read CSAF, but do not apply Rancher's assessments that
+reference a component inside an image through CSAF product relationships.
+Mixing CSAF and OpenVEX inputs can also fail depending on document order.
+
+The adapter resolves the relationship references and represents the parent
+image and component as an OpenVEX product and subcomponent. This lets Grype
+apply supported assessments to the intended image/package scope while
+consuming one format from both hubs. Trivy reads the original hub documents
+directly. Conversion creates local files for Grype; it does not change the
+published reports.
+
 Trivy consumes the configured hubs directly with `--vex repo`. Grype's VEX
 adapter reads each enabled hub's `index.json`, passes through OpenVEX documents,
 and converts CSAF-VEX dispositions to local OpenVEX documents when Grype is
@@ -65,6 +77,11 @@ remediation date as the OpenVEX action statement; missing actions are rejected.
 CVE, GHSA, and GO identifiers are retained, including assessments without a
 `cve` field. Other advisory identifiers are not converted. CSAF CVSS rescoring
 is not represented by the OpenVEX compatibility format.
+
+This is not a lossless conversion of the full CSAF document: assessment dates,
+revision history and other metadata are omitted. Inspect the
+[input/expected-output examples](../../../evaluator/internal/grypevex/testdata/conversion/README.md)
+to see the supported mapping.
 
 ## Skipping upstream binaries
 
