@@ -10,7 +10,12 @@ run = "go build -o ../bin/image-pipeline-evaluate ."
 
 [tasks.build]
 description = "Build all image-pipeline binaries into ./bin/"
-depends = ["build-evaluator"]
+depends = ["build-evaluator", "build-grype-vex"]
+
+[tasks.build-grype-vex]
+description = "Build the Grype VEX adapter into ./bin/"
+dir = "evaluator"
+run = "go build -o ../bin/image-pipeline-grype-vex ./cmd/grype-vex"
 
 [tasks.test-evaluator]
 description = "Run Go tests for the image-pipeline evaluator"

@@ -1,0 +1,1 @@
+CVE-2026-54515: CSAF relationship "C" has an identification helper that cannot be preserved

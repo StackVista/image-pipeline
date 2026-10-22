@@ -11,17 +11,17 @@ Input/output reference: [`action.yml`](./action.yml).
 
 ## What it does
 
-1. Builds and installs the `image-pipeline-evaluate` binary from this
-   repo (single-version contract — the action ref pins the evaluator
-   version).
-2. Downloads the configured VEX repositories and prepares the OpenVEX
-   documents for both scanners.
+1. Builds and installs the evaluator and Grype VEX adapter from this
+   repo. The action ref pins both binaries.
+2. Downloads the configured VEX repositories and prepares their indexed
+   documents for Grype.
 3. Runs **Trivy** secrets scan with bounded retries (no exception path —
    secrets fail closed).
 4. Runs **Trivy** vuln scan with bounded retries, with `--vex repo`
    sourcing from `../../../vex/repository.yaml`.
-5. Optionally runs **Grype** with `--only-fixed` and the same downloaded
-   OpenVEX documents. Grype omits findings without an available fix.
+5. Optionally runs **Grype** with `--only-fixed` and the indexed OpenVEX
+   documents plus local conversions of indexed CSAF documents. Grype
+   omits findings without an available fix.
 6. Runs the evaluator against the merged findings + the consumer's
    exception files; emits SARIF.
 7. Uploads SARIF to GHAS Code Scanning (best-effort; failure does
@@ -39,6 +39,32 @@ This intentionally avoids forcing Trivy or Grype through Docker's local image
 source. Docker can successfully pull image formats that a scanner's local
 Docker extractor may still fail to analyze, so the retry is applied to the
 previously working scanner path instead.
+
+## VEX formats
+
+Trivy consumes the configured hubs directly with `--vex repo`. Grype's VEX
+adapter reads each enabled hub's `index.json`, passes through OpenVEX documents,
+and converts CSAF-VEX dispositions to local OpenVEX documents when Grype is
+enabled. Grype receives one input format while preserving CSAF image/component
+relationships as OpenVEX products and subcomponents. It does not download
+standalone exports from the hubs' `reports/` directories.
+
+An unresolvable product, unsupported relationship, missing document, or
+unsupported format fails preparation in `gate` mode. In `inform` mode,
+preparation reports the problem and continues with the valid documents.
+Relationship-level identification helpers are rejected because discarding
+them could broaden an assessment. Nested relationships are also unsupported.
+Assessed products must use PURLs alone; additional identification methods
+are rejected when their constraints cannot be represented.
+Conflicting statuses for the same resolved image/package scope are rejected,
+including equivalent PURLs with different encodings.
+
+Product groups can scope justifications, impact statements, and remediations.
+Affected assessments retain their scoped remediation text and latest
+remediation date as the OpenVEX action statement; missing actions are rejected.
+CVE, GHSA, and GO identifiers are retained, including assessments without a
+`cve` field. Other advisory identifiers are not converted. CSAF CVSS rescoring
+is not represented by the OpenVEX compatibility format.
 
 ## Skipping upstream binaries
 

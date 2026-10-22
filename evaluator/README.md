@@ -100,6 +100,13 @@ LOW→note/2.0. `partialFingerprints.primaryLocationLineHash` is a
 SHA-256 of `(image, CVE, package, version)` so GHAS can dedupe the
 same finding across runs.
 
+## VEX conversion examples
+
+CSAF conversion examples pair real Rancher inputs and small synthetic inputs
+with their expected OpenVEX outputs. See
+[`internal/grypevex/testdata/conversion/`](internal/grypevex/testdata/conversion/README.md)
+to inspect the files and run their comparison test.
+
 ## Adding a new scanner
 
 The `Scanner` interface in `finding.go` is the only contract a new
