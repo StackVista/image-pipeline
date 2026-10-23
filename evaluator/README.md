@@ -100,6 +100,13 @@ LOW→note/2.0. `partialFingerprints.primaryLocationLineHash` is a
 SHA-256 of `(image, CVE, package, version)` so GHAS can dedupe the
 same finding across runs.
 
+## VEX conversion examples
+
+See the action's [VEX formats](../.github/actions/scan-image/README.md#vex-formats)
+for conversion rationale and limitations. The
+[input/output fixtures](internal/grypevex/testdata/conversion/README.md)
+show the mappings and how to run their comparison test.
+
 ## Adding a new scanner
 
 The `Scanner` interface in `finding.go` is the only contract a new

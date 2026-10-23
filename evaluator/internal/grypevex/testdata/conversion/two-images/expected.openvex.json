@@ -1,0 +1,47 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "urn:csaf:0fab4213e66d4e0f5635edf370e54a912872c559c804732a08ab640d1435fda7",
+  "author": "Adapter conversion examples",
+  "timestamp": "2026-10-22T00:00:00Z",
+  "version": 2,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2099-0001"
+      },
+      "timestamp": "2026-10-22T00:00:00Z",
+      "products": [
+        {
+          "@id": "pkg:oci/zookeeper?repository_url=quay.io%2Fstackstate%2Fzookeeper",
+          "subcomponents": [
+            {
+              "@id": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.22.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The vulnerable Jackson function is never called in this image."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2099-0001"
+      },
+      "timestamp": "2026-10-22T00:00:00Z",
+      "products": [
+        {
+          "@id": "pkg:oci/example-service?repository_url=quay.io%2Fexample%2Fexample-service",
+          "subcomponents": [
+            {
+              "@id": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.22.0"
+            }
+          ]
+        }
+      ],
+      "status": "affected",
+      "action_statement": "Upgrade Jackson to a fixed version.\n\nDisable the feature that parses untrusted input.",
+      "action_statement_timestamp": "2026-10-22T10:00:00.123Z"
+    }
+  ]
+}

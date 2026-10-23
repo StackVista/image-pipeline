@@ -1,0 +1,65 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {"name": "Rancher Security team"},
+    "tracking": {
+      "current_release_date": "2026-10-21T04:27:47Z",
+      "version": "2"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "product": {
+              "product_id": "image",
+              "product_identification_helper": {
+                "purl": "pkg:oci/zookeeper?repository_url=quay.io/stackstate/zookeeper"
+              }
+            }
+          },
+          {
+            "product": {
+              "product_id": "jackson",
+              "product_identification_helper": {
+                "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.22.0"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "category": "default_component_of",
+        "product_reference": "jackson",
+        "relates_to_product_reference": "image",
+        "full_product_name": {"product_id": "jackson-in-zookeeper"}
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2026-54515",
+      "product_status": {"known_not_affected": ["jackson-in-zookeeper"]},
+      "flags": [
+        {
+          "label": "vulnerable_code_not_in_execute_path",
+          "product_ids": ["jackson-in-zookeeper"]
+        }
+      ],
+      "scores": [
+        {
+          "products": ["jackson-in-zookeeper"],
+          "cvss_v3": {"version": "3.1", "baseScore": 5.3}
+        }
+      ]
+    },
+    {
+      "ids": [{"system_name": "SUSE", "text": "SUSE-SU-2026:0001-1"}],
+      "product_status": {"fixed": ["unresolved-advisory-product"]}
+    }
+  ]
+}

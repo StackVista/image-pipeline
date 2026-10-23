@@ -1,0 +1,190 @@
+name: Manual image scan
+run-name: Scan ${{ inputs.image }} (${{ inputs.architecture }}, ${{ inputs.mode }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: Image reference to scan (a digest makes comparisons reproducible)
+        required: true
+        type: string
+      mode:
+        description: Fail on unmanaged vulnerabilities (gate) or report them (inform)
+        type: choice
+        default: inform
+        options:
+          - inform
+          - gate
+      severity:
+        description: Comma-separated vulnerability severities
+        type: string
+        default: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+      with-grype:
+        description: Also scan with Grype
+        type: boolean
+        default: true
+      architecture:
+        description: Image architecture
+        type: choice
+        default: amd64
+        options:
+          - amd64
+          - arm64
+      skip-files:
+        description: Newline-separated absolute paths to exclude from vulnerability scanning
+        type: string
+        default: ""
+      exceptions-path:
+        description: Optional exception directory in this repository
+        type: string
+        default: ""
+      compare-without-vex:
+        description: Also scan without VEX using the same vulnerability databases
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  scan:
+    name: Trivy secret and vulnerability scan, optional Grype
+    runs-on: ${{ inputs.architecture == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Scan image with VEX
+        id: scan
+        uses: ./.github/actions/scan-image # zizmor: ignore[self-repository] -- pinned CI auditor cannot parse $/
+        with:
+          image: ${{ inputs.image }}
+          mode: ${{ inputs.mode }}
+          severity: ${{ inputs.severity }}
+          with-grype: ${{ inputs.with-grype }}
+          skip-files: ${{ inputs.skip-files }}
+          exceptions-path: ${{ inputs.exceptions-path }}
+          upload-sarif: "false"
+          source_registry: ${{ vars.SCAN_SOURCE_REGISTRY }}
+          source_registry_user: ${{ secrets.SCAN_REGISTRY_USER }}
+          source_registry_password: ${{ secrets.SCAN_REGISTRY_PASSWORD }}
+
+      - name: Compare vulnerability results without VEX
+        if: ${{ !cancelled() && inputs.compare-without-vex && hashFiles('reports/trivy.json') != '' }}
+        shell: bash
+        env:
+          INPUT_IMAGE: ${{ inputs.image }}
+          INPUT_SEVERITY: ${{ inputs.severity }}
+          INPUT_SKIP_FILES: ${{ inputs.skip-files }}
+          INPUT_WITH_GRYPE: ${{ inputs.with-grype }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GRYPE_DB_AUTO_UPDATE: "false"
+          GRYPE_CHECK_FOR_APP_UPDATE: "false"
+        run: |
+          set -euo pipefail
+          trivy_skip=()
+          grype_skip=()
+          while IFS= read -r path; do
+            path="${path#"${path%%[![:space:]]*}"}"
+            path="${path%"${path##*[![:space:]]}"}"
+            [ -z "${path}" ] && continue
+            trivy_skip+=(--skip-files "${path}")
+            grype_skip+=(--exclude "${path}")
+          done <<< "${INPUT_SKIP_FILES}"
+
+          trivy image "${INPUT_IMAGE}" \
+            --scanners vuln \
+            --severity "${INPUT_SEVERITY}" \
+            --skip-db-update \
+            --exit-code 0 \
+            --format json \
+            --output reports/trivy-without-vex.json \
+            "${trivy_skip[@]}"
+
+          if [ "${INPUT_WITH_GRYPE}" = "true" ]; then
+            grype "${INPUT_IMAGE}" \
+              --by-cve --only-fixed \
+              "${grype_skip[@]}" \
+              -o json > reports/grype-without-vex.json
+          fi
+
+      - name: Summarize scan
+        if: ${{ !cancelled() }}
+        shell: bash
+        env:
+          INPUT_IMAGE: ${{ inputs.image }}
+          INPUT_MODE: ${{ inputs.mode }}
+          INPUT_SEVERITY: ${{ inputs.severity }}
+          INPUT_WITH_GRYPE: ${{ inputs.with-grype }}
+          INPUT_ARCHITECTURE: ${{ inputs.architecture }}
+          INPUT_SKIP_FILES: ${{ inputs.skip-files }}
+          INPUT_EXCEPTIONS_PATH: ${{ inputs.exceptions-path }}
+          INPUT_COMPARE_WITHOUT_VEX: ${{ inputs.compare-without-vex }}
+          SCAN_OUTCOME: ${{ steps.scan.outcome }}
+          SCAN_DECISION: ${{ steps.scan.outputs.decision }}
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          jq -n \
+            --arg image "${INPUT_IMAGE}" \
+            --arg mode "${INPUT_MODE}" \
+            --arg severity "${INPUT_SEVERITY}" \
+            --arg architecture "${INPUT_ARCHITECTURE}" \
+            --arg skip_files "${INPUT_SKIP_FILES}" \
+            --arg exceptions_path "${INPUT_EXCEPTIONS_PATH}" \
+            --argjson with_grype "${INPUT_WITH_GRYPE}" \
+            --argjson compare_without_vex "${INPUT_COMPARE_WITHOUT_VEX}" \
+            --arg outcome "${SCAN_OUTCOME}" \
+            --arg decision "${SCAN_DECISION}" \
+            --arg revision "${GITHUB_SHA}" \
+            '{image: $image, mode: $mode, severity: $severity,
+              architecture: $architecture, skip_files: $skip_files,
+              exceptions_path: $exceptions_path, with_grype: $with_grype,
+              compare_without_vex: $compare_without_vex, outcome: $outcome,
+              decision: $decision, revision: $revision}' > reports/scan-settings.json
+
+          {
+            printf '## Image scan\n\n'
+            printf 'Image: `%s`\n\n' "${INPUT_IMAGE}"
+            printf 'Architecture: `%s`; mode: `%s`; severity: `%s`\n\n' \
+              "${INPUT_ARCHITECTURE}" "${INPUT_MODE}" "${INPUT_SEVERITY}"
+            printf 'Action outcome: `%s`; policy decision: `%s`\n\n' \
+              "${SCAN_OUTCOME}" "${SCAN_DECISION:-unavailable}"
+            printf '| Report | Active findings | Ignored findings |\n'
+            printf '| --- | ---: | ---: |\n'
+            for report in reports/trivy.json reports/trivy-without-vex.json; do
+              if [ -s "${report}" ]; then
+                count=$(jq '[.Results[]?.Vulnerabilities[]?] | length' "${report}")
+                printf '| %s | %s | — |\n' "${report}" "${count}"
+              fi
+            done
+            for report in reports/grype.json reports/grype-without-vex.json; do
+              if [ -s "${report}" ]; then
+                counts=$(jq -r '[((.matches // []) | length), ((.ignoredMatches // []) | length)] | @tsv' "${report}")
+                IFS=$'\t' read -r active ignored <<< "${counts}"
+                printf '| %s | %s | %s |\n' "${report}" "${active}" "${ignored}"
+              fi
+            done
+            printf '\nTrivy counts use the requested severities. Grype reports all severities with available fixes.\n'
+            printf '\nCompare vulnerability identities and image digests in the JSON reports before attributing count differences to VEX.\n'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Save vulnerability reports and converted VEX
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: image-scan-${{ inputs.architecture }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            reports/scan-settings.json
+            reports/trivy.json
+            reports/grype.json
+            reports/trivy-without-vex.json
+            reports/grype-without-vex.json
+            reports/image-pipeline.sarif
+            reports/grype-vex-documents.txt
+            reports/grype-vex/

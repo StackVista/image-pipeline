@@ -1,0 +1,119 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "Adapter conversion examples",
+      "namespace": "https://example.invalid"
+    },
+    "title": "TEST ONLY: two-images",
+    "tracking": {
+      "id": "test-two-images",
+      "status": "draft",
+      "version": "2",
+      "initial_release_date": "2026-10-22T00:00:00Z",
+      "current_release_date": "2026-10-22T00:00:00Z",
+      "revision_history": [
+        {
+          "number": "2",
+          "date": "2026-10-22T00:00:00Z",
+          "summary": "Synthetic example; not a security assessment."
+        }
+      ]
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "jackson",
+        "product_id": "jackson",
+        "product_identification_helper": {
+          "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.22.0"
+        }
+      },
+      {
+        "name": "zookeeper",
+        "product_id": "zookeeper",
+        "product_identification_helper": {
+          "purl": "pkg:oci/zookeeper?repository_url=quay.io%2Fstackstate%2Fzookeeper"
+        }
+      },
+      {
+        "name": "example-service",
+        "product_id": "example-service",
+        "product_identification_helper": {
+          "purl": "pkg:oci/example-service?repository_url=quay.io%2Fexample%2Fexample-service"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "category": "default_component_of",
+        "product_reference": "jackson",
+        "relates_to_product_reference": "zookeeper",
+        "full_product_name": {
+          "name": "Jackson inside zookeeper",
+          "product_id": "jackson-in-zookeeper"
+        }
+      },
+      {
+        "category": "default_component_of",
+        "product_reference": "jackson",
+        "relates_to_product_reference": "example-service",
+        "full_product_name": {
+          "name": "Jackson inside example-service",
+          "product_id": "jackson-in-example-service"
+        }
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2099-0001",
+      "product_status": {
+        "known_not_affected": [
+          "jackson-in-zookeeper"
+        ],
+        "known_affected": [
+          "jackson-in-example-service"
+        ]
+      },
+      "flags": [
+        {
+          "label": "vulnerable_code_not_in_execute_path",
+          "product_ids": [
+            "jackson-in-zookeeper"
+          ]
+        }
+      ],
+      "threats": [
+        {
+          "category": "impact",
+          "details": "The vulnerable Jackson function is never called in this image.",
+          "product_ids": [
+            "jackson-in-zookeeper"
+          ]
+        }
+      ],
+      "remediations": [
+        {
+          "category": "vendor_fix",
+          "details": "Upgrade Jackson to a fixed version.",
+          "date": "2026-10-22T11:00:00+02:00",
+          "product_ids": [
+            "jackson-in-example-service"
+          ]
+        },
+        {
+          "category": "workaround",
+          "details": "Disable the feature that parses untrusted input.",
+          "date": "2026-10-22T12:00:00.123+02:00",
+          "product_ids": [
+            "jackson-in-example-service"
+          ]
+        }
+      ]
+    }
+  ]
+}

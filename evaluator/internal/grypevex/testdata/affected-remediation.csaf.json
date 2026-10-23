@@ -1,0 +1,74 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "Grype matching PoC",
+      "namespace": "https://example.invalid"
+    },
+    "title": "TEST ONLY: component inside image matching",
+    "tracking": {
+      "id": "grype-csaf-poc-relationship",
+      "status": "draft",
+      "version": "1",
+      "initial_release_date": "2026-10-22T00:00:00Z",
+      "current_release_date": "2026-10-22T00:00:00Z",
+      "revision_history": [
+        {
+          "number": "1",
+          "date": "2026-10-22T00:00:00Z",
+          "summary": "Synthetic matching fixture, not a security assessment."
+        }
+      ]
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "product_id": "A",
+        "name": "Jackson 2.22.0",
+        "product_identification_helper": {
+          "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.22.0"
+        }
+      },
+      {
+        "product_id": "B",
+        "name": "ZooKeeper",
+        "product_identification_helper": {
+          "purl": "pkg:oci/zookeeper?repository_url=quay.io%2Fstackstate%2Fzookeeper"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "category": "default_component_of",
+        "product_reference": "A",
+        "relates_to_product_reference": "B",
+        "full_product_name": {
+          "product_id": "C",
+          "name": "Jackson inside ZooKeeper"
+        }
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2026-54515",
+      "product_status": {
+        "known_affected": [
+          "C"
+        ]
+      },
+      "remediations": [
+        {
+          "category": "vendor_fix",
+          "details": "Upgrade Jackson.",
+          "product_ids": [
+            "C"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -82,12 +82,14 @@ runs:
         go-version-file: ${{ steps.paths.outputs.repo_root }}/evaluator/go.mod
         cache-dependency-path: ${{ steps.paths.outputs.repo_root }}/evaluator/go.sum
 
-    - name: Build evaluator
+    - name: Build evaluator and Grype VEX adapter
       shell: bash
       working-directory: ${{ steps.paths.outputs.repo_root }}/evaluator
       run: |
         go build -o /tmp/image-pipeline-evaluate .
+        go build -o /tmp/image-pipeline-grype-vex ./cmd/grype-vex
         sudo install -m 0755 /tmp/image-pipeline-evaluate /usr/local/bin/
+        sudo install -m 0755 /tmp/image-pipeline-grype-vex /usr/local/bin/
 
     - name: Set up Trivy
       uses: aquasecurity/setup-trivy@3fb12ec12f41e471780db15c232d5dd185dcb514 # v0.2.6
@@ -110,6 +112,7 @@ runs:
         REPO_ROOT: ${{ steps.paths.outputs.repo_root }}
         GITHUB_TOKEN: ${{ github.token }}
         INPUT_MODE: ${{ inputs.mode }}
+        INPUT_WITH_GRYPE: ${{ inputs.with-grype }}
       run: |
         set -euo pipefail
 
@@ -117,40 +120,25 @@ runs:
         cp "${REPO_ROOT}/vex/repository.yaml" ~/.trivy/vex/repository.yaml
         : > reports/grype-vex-documents.txt
 
-        # Unavailable VEX must fail a gate: without it the scanners report findings that
-        # VEX would mark not-affected, so a clear failure beats a misleading CVE list.
-        # An inform run gates on nothing, so it proceeds with whatever VEX did download --
-        # one unreachable repository should not discard the documents that others provided.
         vex_unavailable() {
-          if [ "${INPUT_MODE}" = "inform" ]; then
-            echo "::warning::$1"
-            return 0
-          fi
           echo "::error::$1"
           exit 1
         }
 
         if ! trivy vex repo download; then
-          vex_unavailable "VEX repository download reported a failure; continuing with any repositories that did download"
+          vex_unavailable "VEX repository download failed"
         fi
 
         vex_cache="${TRIVY_CACHE_DIR:-${HOME}/.cache/trivy}/vex/repositories"
-        if [ -d "${vex_cache}" ]; then
-          while IFS= read -r doc; do
-            if jq -e 'type == "object" and (.statements | type == "array")' "${doc}" >/dev/null 2>&1; then
-              printf '%s\n' "${doc}" >> reports/grype-vex-documents.txt
-            else
-              echo "::notice::Skipping non-OpenVEX JSON document for Grype: ${doc}"
-            fi
-          done < <(find "${vex_cache}" -type f -iname '*openvex*.json' | sort)
-        else
-          vex_unavailable "VEX repository cache was not created at ${vex_cache}"
-        fi
-
-        if [ -s reports/grype-vex-documents.txt ]; then
-          echo "Prepared $(wc -l < reports/grype-vex-documents.txt | tr -d ' ') OpenVEX document(s) for Grype"
-        else
-          vex_unavailable "No OpenVEX documents were found for Grype"
+        if [ "${INPUT_WITH_GRYPE}" = "true" ]; then
+          if ! image-pipeline-grype-vex \
+            --cache-dir "${vex_cache}" \
+            --config ~/.trivy/vex/repository.yaml \
+            --output-dir reports/grype-vex \
+            --documents-list reports/grype-vex-documents.txt \
+            --mode "${INPUT_MODE}"; then
+            vex_unavailable "Indexed VEX documents could not be prepared for Grype"
+          fi
         fi
 
     - name: Log in to source registry
@@ -262,11 +250,8 @@ runs:
         done < reports/grype-vex-documents.txt
 
         if [ "${#vex_args[@]}" -eq 0 ]; then
-          if [ "${INPUT_MODE}" != "inform" ]; then
-            echo "::error::No OpenVEX documents were prepared for Grype"
-            exit 1
-          fi
-          echo "::warning::No OpenVEX documents were prepared for Grype; scanning without VEX"
+          echo "::error::No VEX documents were prepared for Grype"
+          exit 1
         fi
 
         skip_args=()

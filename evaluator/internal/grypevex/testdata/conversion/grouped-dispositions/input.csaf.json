@@ -1,0 +1,181 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "Adapter conversion examples",
+      "namespace": "https://example.invalid"
+    },
+    "title": "TEST ONLY: grouped-dispositions",
+    "tracking": {
+      "id": "test-grouped-dispositions",
+      "status": "draft",
+      "version": "2",
+      "initial_release_date": "2026-10-22T00:00:00Z",
+      "current_release_date": "2026-10-22T00:00:00Z",
+      "revision_history": [
+        {
+          "number": "2",
+          "date": "2026-10-22T00:00:00Z",
+          "summary": "Synthetic example; not a security assessment."
+        }
+      ]
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "jackson",
+        "product_id": "jackson",
+        "product_identification_helper": {
+          "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.22.0"
+        }
+      },
+      {
+        "name": "image-a",
+        "product_id": "image-a",
+        "product_identification_helper": {
+          "purl": "pkg:oci/image-a?repository_url=quay.io%2Fexample%2Fimage-a"
+        }
+      },
+      {
+        "name": "image-b",
+        "product_id": "image-b",
+        "product_identification_helper": {
+          "purl": "pkg:oci/image-b?repository_url=quay.io%2Fexample%2Fimage-b"
+        }
+      },
+      {
+        "name": "image-c",
+        "product_id": "image-c",
+        "product_identification_helper": {
+          "purl": "pkg:oci/image-c?repository_url=quay.io%2Fexample%2Fimage-c"
+        }
+      },
+      {
+        "name": "image-d",
+        "product_id": "image-d",
+        "product_identification_helper": {
+          "purl": "pkg:oci/image-d?repository_url=quay.io%2Fexample%2Fimage-d"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "category": "default_component_of",
+        "product_reference": "jackson",
+        "relates_to_product_reference": "image-a",
+        "full_product_name": {
+          "name": "Jackson inside image-a",
+          "product_id": "jackson-in-image-a"
+        }
+      },
+      {
+        "category": "default_component_of",
+        "product_reference": "jackson",
+        "relates_to_product_reference": "image-b",
+        "full_product_name": {
+          "name": "Jackson inside image-b",
+          "product_id": "jackson-in-image-b"
+        }
+      },
+      {
+        "category": "default_component_of",
+        "product_reference": "jackson",
+        "relates_to_product_reference": "image-c",
+        "full_product_name": {
+          "name": "Jackson inside image-c",
+          "product_id": "jackson-in-image-c"
+        }
+      },
+      {
+        "category": "default_component_of",
+        "product_reference": "jackson",
+        "relates_to_product_reference": "image-d",
+        "full_product_name": {
+          "name": "Jackson inside image-d",
+          "product_id": "jackson-in-image-d"
+        }
+      }
+    ],
+    "product_groups": [
+      {
+        "group_id": "not-affected-images",
+        "product_ids": [
+          "jackson-in-image-a",
+          "jackson-in-image-b"
+        ]
+      },
+      {
+        "group_id": "affected-images",
+        "product_ids": [
+          "jackson-in-image-c",
+          "jackson-in-image-d"
+        ]
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "ids": [
+        {
+          "system_name": "GHSA",
+          "text": "GHSA-2345-6789-cfgh"
+        },
+        {
+          "system_name": "GO",
+          "text": "GO-2099-0001"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "jackson-in-image-a",
+          "jackson-in-image-b"
+        ],
+        "known_affected": [
+          "jackson-in-image-c",
+          "jackson-in-image-d"
+        ]
+      },
+      "flags": [
+        {
+          "label": "vulnerable_code_not_present",
+          "group_ids": [
+            "not-affected-images"
+          ]
+        }
+      ],
+      "threats": [
+        {
+          "category": "impact",
+          "details": "The vulnerable function was removed from these builds.",
+          "group_ids": [
+            "not-affected-images"
+          ]
+        }
+      ],
+      "remediations": [
+        {
+          "category": "vendor_fix",
+          "details": "Upgrade the affected images.",
+          "date": "2026-10-22T01:00:00Z",
+          "group_ids": [
+            "affected-images"
+          ]
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2099-0002",
+      "product_status": {
+        "fixed": [
+          "jackson-in-image-a"
+        ],
+        "under_investigation": [
+          "jackson-in-image-c"
+        ]
+      }
+    }
+  ]
+}

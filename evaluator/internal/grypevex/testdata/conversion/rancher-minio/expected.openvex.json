@@ -1,0 +1,1605 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "urn:csaf:30cf568297ff36353b62b89a32b9cde101ec80ec21ae5932405cd1f5cb39089c",
+  "author": "Rancher Security team",
+  "timestamp": "2026-10-20T21:41:46Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2020-15112"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/go.etcd.io/etcd@v0.5.0-alpha.5.0.20190108173120-83c051b701d3"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2020-15106"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/go.etcd.io/etcd@v0.5.0-alpha.5.0.20190108173120-83c051b701d3"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2020-0005"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/go.etcd.io/etcd@v0.5.0-alpha.5.0.20190108173120-83c051b701d3"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-m332-53r6-2w93"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/go.etcd.io/etcd@v0.5.0-alpha.5.0.20190108173120-83c051b701d3"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-p4g4-wgrh-qrg2"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/go.etcd.io/etcd@v0.5.0-alpha.5.0.20190108173120-83c051b701d3"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2023-30464"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.10.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2023-30464"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.4.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-3134"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.10.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-3134"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.4.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-h92q-fgpp-qhrq"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.10.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-h92q-fgpp-qhrq"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.4.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2023-39325"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2023-2102"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-4374-p667-p6c8"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2023-3978"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2023-1988"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-2wrh-6pvc-2jm9"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2023-46129"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/nats-io/nkeys@v0.4.4"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2023-2163"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/nats-io/nkeys@v0.4.4"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-mr45-rx8q-wcm9"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/nats-io/nkeys@v0.4.4"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2024-0874"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.10.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2024-0874"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.4.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-2785"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.10.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-2785"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.4.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-m9w6-wp3h-vq8g"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.10.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-m9w6-wp3h-vq8g"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/coredns/coredns@v1.4.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2024-21664"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/lestrrat-go/jwx@v1.2.26"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-2454"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/lestrrat-go/jwx@v1.2.26"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-pvcr-v8j8-j5q3"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/lestrrat-go/jwx@v1.2.26"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2024-24786"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/google.golang.org/protobuf@v1.26.0-rc.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-2611"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/google.golang.org/protobuf@v1.26.0-rc.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-8r3f-844c-mc37"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/google.golang.org/protobuf@v1.26.0-rc.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2024-28180"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/gopkg.in/square/go-jose.v2@v2.3.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2024-28180"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/gopkg.in/square/go-jose.v2@v2.6.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-2631"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/gopkg.in/square/go-jose.v2@v2.3.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-2631"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/gopkg.in/square/go-jose.v2@v2.6.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-c5q2-7r4c-mv6g"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/gopkg.in/square/go-jose.v2@v2.3.1"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-c5q2-7r4c-mv6g"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/gopkg.in/square/go-jose.v2@v2.6.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2024-45338"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2024-45338"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.25.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-3333"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2024-3333"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.25.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-w32m-9786-jp63"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-w32m-9786-jp63"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.25.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-22868"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/oauth2@v0.0.0-20190226205417-e64efc72b421"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-22868"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/oauth2@v0.10.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-3488"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/oauth2@v0.0.0-20190226205417-e64efc72b421"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-3488"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/oauth2@v0.10.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-22869"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-3487"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-22872"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-22872"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.25.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-3595"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.12.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-3595"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.25.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-47911"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.43.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2026-4440"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.43.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-47913"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-47913"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.41.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-4116"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-4116"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.41.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-47914"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-47914"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.41.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-4135"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-4135"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.41.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-f6x5-jh6r-wrfv"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-f6x5-jh6r-wrfv"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.41.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-58181"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-58181"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.41.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-4134"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2025-4134"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.41.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-j5w8-q4qc-rx2x"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.31.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-j5w8-q4qc-rx2x"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto@v0.41.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-58190"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.43.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2026-4441"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net@v0.43.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-61728"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib@v1.24.9"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2026-4342"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib@v1.24.9"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-24051"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/go.opentelemetry.io/otel/sdk@v1.37.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-32282"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib@v1.24.9"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2026-4864"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib@v1.24.9"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-39820"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib@v1.24.9"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2026-4986"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib@v1.24.9"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-39883"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/go.opentelemetry.io/otel/sdk@v1.37.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-42499"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib@v1.24.9"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    },
+    {
+      "vulnerability": {
+        "name": "GO-2026-4977"
+      },
+      "timestamp": "2026-10-20T21:41:46Z",
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/minio/minio",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib@v1.24.9"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "vulnerable_code_not_present"
+    }
+  ]
+}

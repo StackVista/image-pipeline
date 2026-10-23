@@ -5,3 +5,4 @@ repositories:
   - name: rancher
     url: https://github.com/rancher/vexhub
     enabled: true
+    skip_invalid_documents: true
