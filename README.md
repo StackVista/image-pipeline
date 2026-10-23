@@ -56,9 +56,9 @@ when investigating VEX effects; a clean result alone does not demonstrate that
 an exception was applied. Grype reports findings with available fixes.
 
 `skip-files` accepts newline-separated paths, and `exceptions-path` is relative
-to the repository checkout. For private images, the workflow can use the
-repository variable `SCAN_SOURCE_REGISTRY` and secrets `SCAN_REGISTRY_USER` and
-`SCAN_REGISTRY_PASSWORD`.
+to the repository checkout. Optional registry authentication uses variables
+`REGISTRY_HOST` and `REGISTRY_USER`, and secret `REGISTRY_PASSWORD`.
+When `REGISTRY_HOST` is unset, public images are scanned anonymously.
 
 ## Local development
 
