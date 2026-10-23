@@ -37,13 +37,9 @@ func TestCLIRejectsUnsafeDocumentWithoutReusingOldList(t *testing.T) {
 				"--documents-list", list, "--mode", mode)
 			command.Env = append(os.Environ(), "GRYPE_VEX_TEST_PROCESS=1")
 			log, err := command.CombinedOutput()
-			if mode == "gate" {
-				exit, ok := err.(*exec.ExitError)
-				if !ok || exit.ExitCode() != 1 {
-					t.Fatalf("gate did not fail on unsafe CSAF: %v\n%s", err, log)
-				}
-			} else if err != nil {
-				t.Fatalf("inform did not continue with valid documents: %v\n%s", err, log)
+			exit, ok := err.(*exec.ExitError)
+			if !ok || exit.ExitCode() != 1 {
+				t.Fatalf("%s did not fail on strict CSAF: %v\n%s", mode, err, log)
 			}
 			if !strings.Contains(string(log), "cannot be preserved") {
 				t.Fatalf("missing unsafe-scope diagnostic: %s", log)
@@ -54,6 +50,60 @@ func TestCLIRejectsUnsafeDocumentWithoutReusingOldList(t *testing.T) {
 			}
 			if string(documents) != good+"\n" {
 				t.Fatalf("unsafe or stale document leaked into Grype's list: %s", documents)
+			}
+		})
+	}
+}
+
+func TestCLISkipsPermissiveDocumentInBothModes(t *testing.T) {
+	for _, mode := range []string{"gate", "inform"} {
+		t.Run(mode, func(t *testing.T) {
+			root := t.TempDir()
+			cache := filepath.Join(root, "cache")
+			config := filepath.Join(root, "repository.yaml")
+			version := filepath.Join(cache, "rancher/0.1")
+			good := filepath.Join(version, "good.json")
+			bad := filepath.Join(version, "bad.json")
+			list := filepath.Join(root, "documents.txt")
+			writeCLIFile(t, config, []byte("repositories:\n  - name: rancher\n    enabled: true\n    skip_invalid_documents: true\n"))
+			writeCLIFile(t, filepath.Join(version, "index.json"), []byte(`{"packages":[{"format":"openvex","location":"good.json"},{"format":"csaf","location":"bad.json"}]}`))
+			writeCLIFile(t, good, []byte(`{"@context":"https://openvex.dev/ns/v0.2.0","statements":[]}`))
+			writeCLIFile(t, bad, []byte("{}"))
+			writeCLIFile(t, list, []byte(bad+"\n"))
+			command := exec.Command(os.Args[0], "-test.run=^TestCLIHelperProcess$", "--",
+				"--cache-dir", cache, "--config", config, "--output-dir", filepath.Join(root, "converted"),
+				"--documents-list", list, "--mode", mode)
+			command.Env = append(os.Environ(), "GRYPE_VEX_TEST_PROCESS=1")
+			log, err := command.CombinedOutput()
+			if err != nil {
+				t.Fatalf("rejected upstream document blocked scan: %v\n%s", err, log)
+			}
+			if !strings.Contains(string(log), "::warning::") || !strings.Contains(string(log), "bad.json") {
+				t.Fatalf("missing document warning: %s", log)
+			}
+			documents, err := os.ReadFile(list)
+			if err != nil || string(documents) != good+"\n" {
+				t.Fatalf("rejected or stale document leaked into list: %s %v", documents, err)
+			}
+		})
+	}
+}
+
+func TestCLIRejectsMissingRepositoryInBothModes(t *testing.T) {
+	for _, mode := range []string{"gate", "inform"} {
+		t.Run(mode, func(t *testing.T) {
+			root := t.TempDir()
+			config := filepath.Join(root, "repository.yaml")
+			writeCLIFile(t, config, []byte("repositories:\n  - name: rancher\n    enabled: true\n    skip_invalid_documents: true\n"))
+			command := exec.Command(os.Args[0], "-test.run=^TestCLIHelperProcess$", "--",
+				"--cache-dir", filepath.Join(root, "cache"), "--config", config,
+				"--output-dir", filepath.Join(root, "converted"),
+				"--documents-list", filepath.Join(root, "documents.txt"), "--mode", mode)
+			command.Env = append(os.Environ(), "GRYPE_VEX_TEST_PROCESS=1")
+			log, err := command.CombinedOutput()
+			exit, ok := err.(*exec.ExitError)
+			if !ok || exit.ExitCode() != 1 {
+				t.Fatalf("missing feed was accepted: %v\n%s", err, log)
 			}
 		})
 	}

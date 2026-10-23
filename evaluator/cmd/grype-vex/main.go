@@ -38,9 +38,13 @@ func main() {
 	for _, problem := range problems {
 		fmt.Fprintln(os.Stderr, "VEX preparation:", problem)
 	}
+	for _, warning := range prepared.Warnings {
+		message := strings.NewReplacer("%", "%25", "\r", "%0D", "\n", "%0A").Replace(warning.Error())
+		fmt.Fprintln(os.Stderr, "::warning::VEX preparation:", message)
+	}
 	fmt.Printf("Prepared %d OpenVEX document(s) and converted %d CSAF document(s) for Grype\n",
 		prepared.OpenVEX, prepared.CSAF)
-	if len(problems) > 0 && *mode == "gate" {
+	if len(problems) > 0 {
 		os.Exit(1)
 	}
 }

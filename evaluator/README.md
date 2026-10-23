@@ -102,10 +102,10 @@ same finding across runs.
 
 ## VEX conversion examples
 
-CSAF conversion examples pair real Rancher inputs and small synthetic inputs
-with their expected OpenVEX outputs. See
-[`internal/grypevex/testdata/conversion/`](internal/grypevex/testdata/conversion/README.md)
-to inspect the files and run their comparison test.
+See the action's [VEX formats](../.github/actions/scan-image/README.md#vex-formats)
+for conversion rationale and limitations. The
+[input/output fixtures](internal/grypevex/testdata/conversion/README.md)
+show the mappings and how to run their comparison test.
 
 ## Adding a new scanner
 

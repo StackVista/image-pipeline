@@ -1,12 +1,103 @@
 package grypevex
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
+
+func TestPrepareSkipsRejectedThirdPartyDocuments(t *testing.T) {
+	cases := []struct {
+		name   string
+		change func(*advisory)
+		reason string
+	}{
+		{"nested relationship", func(s *advisory) {
+			s.ProductTree.Relationships[0].Product = s.ProductTree.Relationships[0].FullProductName.ID
+		}, "nested CSAF relationship"},
+		{"CPE helper", func(s *advisory) {
+			s.ProductTree.Branches[0].Branches[1].Product.Helper["cpe"] = json.RawMessage(`"cpe:/a:example:jackson:2.22.0"`)
+		}, "cannot be preserved"},
+		{"affected without remediation", func(s *advisory) {
+			id := s.ProductTree.Relationships[0].FullProductName.ID
+			s.Vulnerabilities[0].ProductStatus = map[string][]string{"known_affected": {id}}
+			s.Vulnerabilities[0].Remediations = nil
+		}, "no affected action statement"},
+	}
+	for _, tc := range cases {
+		for _, permissive := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/skip=%t", tc.name, permissive), func(t *testing.T) {
+				root := t.TempDir()
+				config := filepath.Join(root, "repository.yaml")
+				write(t, config, []byte(fmt.Sprintf("repositories:\n  - name: rancher\n    enabled: true\n    skip_invalid_documents: %t\n", permissive)))
+				version := filepath.Join(root, "cache/rancher/0.1")
+				write(t, filepath.Join(version, "index.json"), []byte(`{"packages":[{"format":"csaf","location":"good.json"},{"format":"csaf","location":"bad.json"}]}`))
+				write(t, filepath.Join(version, "good.json"), fixture(t))
+				var source advisory
+				if err := json.Unmarshal(fixture(t), &source); err != nil {
+					t.Fatal(err)
+				}
+				tc.change(&source)
+				bad, err := json.Marshal(source)
+				if err != nil {
+					t.Fatal(err)
+				}
+				write(t, filepath.Join(version, "bad.json"), bad)
+				result, problems := Prepare(filepath.Join(root, "cache"), config, filepath.Join(root, "converted"))
+				if len(result.Documents) != 1 || result.CSAF != 1 {
+					t.Fatalf("rejected document leaked into output: %+v", result)
+				}
+				diagnostics := problems
+				if permissive {
+					if len(problems) != 0 {
+						t.Fatal(problems)
+					}
+					diagnostics = result.Warnings
+				} else if len(result.Warnings) != 0 {
+					t.Fatal("strict repository produced a warning instead of an error")
+				}
+				if len(diagnostics) != 1 || !strings.Contains(diagnostics[0].Error(), tc.reason) ||
+					!strings.Contains(diagnostics[0].Error(), "bad.json") {
+					t.Fatalf("missing file/reason diagnostic: %v", diagnostics)
+				}
+			})
+		}
+	}
+}
+
+func TestPreparePermissiveRepositoryStillRequiresUsableFeed(t *testing.T) {
+	for _, failure := range []string{"missing index", "invalid index", "empty index", "missing document", "unsafe path", "all rejected"} {
+		t.Run(failure, func(t *testing.T) {
+			root := t.TempDir()
+			config := filepath.Join(root, "repository.yaml")
+			write(t, config, []byte("repositories:\n  - name: rancher\n    enabled: true\n    skip_invalid_documents: true\n  - name: stackvista\n    enabled: true\n"))
+			local := filepath.Join(root, "cache/stackvista/0.1")
+			write(t, filepath.Join(local, "index.json"), []byte(`{"packages":[{"format":"openvex","location":"good.json"}]}`))
+			write(t, filepath.Join(local, "good.json"), []byte(`{"@context":"https://openvex.dev/ns/v0.2.0","statements":[]}`))
+			version := filepath.Join(root, "cache/rancher/0.1")
+			switch failure {
+			case "invalid index":
+				write(t, filepath.Join(version, "index.json"), []byte("{"))
+			case "empty index":
+				write(t, filepath.Join(version, "index.json"), []byte(`{"packages":[]}`))
+			case "missing document":
+				write(t, filepath.Join(version, "index.json"), []byte(`{"packages":[{"format":"csaf","location":"missing.json"}]}`))
+			case "unsafe path":
+				write(t, filepath.Join(version, "index.json"), []byte(`{"packages":[{"format":"csaf","location":"../outside.json"}]}`))
+			case "all rejected":
+				write(t, filepath.Join(version, "index.json"), []byte(`{"packages":[{"format":"csaf","location":"bad.json"}]}`))
+				write(t, filepath.Join(version, "bad.json"), []byte("{}"))
+			}
+			result, problems := Prepare(filepath.Join(root, "cache"), config, filepath.Join(root, "converted"))
+			if len(problems) == 0 || len(result.Documents) != 1 {
+				t.Fatalf("incomplete third-party feed was accepted: %+v %v", result, problems)
+			}
+		})
+	}
+}
 
 func write(t *testing.T, path string, data []byte) {
 	t.Helper()

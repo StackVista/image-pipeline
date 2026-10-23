@@ -19,11 +19,8 @@ scan-image action.
 Per-action docs live alongside the action: see
 [`.github/actions/scan-image/README.md`](./.github/actions/scan-image/README.md).
 
-Rancher's CSAF-VEX reports are converted locally to OpenVEX for Grype because
-the tested Grype CSAF parsers do not apply its image/component relationship
-assessments. Trivy reads the original reports directly. The action's
-[VEX format documentation](.github/actions/scan-image/README.md#vex-formats)
-explains the adapter and its limitations.
+See [VEX formats](.github/actions/scan-image/README.md#vex-formats)
+for the conversion rationale, supported mappings, and failure handling.
 
 ## Scan an image manually
 

@@ -42,46 +42,30 @@ previously working scanner path instead.
 
 ## VEX formats
 
-Rancher publishes its indexed reports as CSAF-VEX. The Grype versions tested
-for this pipeline can read CSAF, but do not apply Rancher's assessments that
-reference a component inside an image through CSAF product relationships.
-Mixing CSAF and OpenVEX inputs can also fail depending on document order.
+Trivy reads the original hubs with `--vex repo`. Grype's tested CSAF parsers
+do not apply Rancher's image/component relationships, and mixed formats can
+fail depending on input order. Its adapter reads each enabled hub's `index.json`,
+passes through OpenVEX, and converts CSAF to local OpenVEX with image products
+and package subcomponents. Published reports remain unchanged; standalone
+`reports/` exports are unused.
 
-The adapter resolves the relationship references and represents the parent
-image and component as an OpenVEX product and subcomponent. This lets Grype
-apply supported assessments to the intended image/package scope while
-consuming one format from both hubs. Trivy reads the original hub documents
-directly. Conversion creates local files for Grype; it does not change the
-published reports.
+All indexed documents are considered, regardless of the scanned image.
+Rancher's `skip_invalid_documents: true` skips rejected documents with a
+filename/reason warning; their suppressions are unavailable to Grype.
+Internal StackVista documents remain strict. Download/index failures, missing
+files, unsafe paths, output errors, or a hub with no usable documents fail in
+either mode.
 
-Trivy consumes the configured hubs directly with `--vex repo`. Grype's VEX
-adapter reads each enabled hub's `index.json`, passes through OpenVEX documents,
-and converts CSAF-VEX dispositions to local OpenVEX documents when Grype is
-enabled. Grype receives one input format while preserving CSAF image/component
-relationships as OpenVEX products and subcomponents. It does not download
-standalone exports from the hubs' `reports/` directories.
+Conversion rejects nested relationships, relationship identification helpers,
+unrepresentable extra identifiers, conflicting statuses, and affected
+assessments without remediation. Supported mappings retain PURL scopes,
+CVE/GHSA/GO identifiers, group-scoped justifications and impacts, and affected
+remediation text with its latest date.
 
-An unresolvable product, unsupported relationship, missing document, or
-unsupported format fails preparation in `gate` mode. In `inform` mode,
-preparation reports the problem and continues with the valid documents.
-Relationship-level identification helpers are rejected because discarding
-them could broaden an assessment. Nested relationships are also unsupported.
-Assessed products must use PURLs alone; additional identification methods
-are rejected when their constraints cannot be represented.
-Conflicting statuses for the same resolved image/package scope are rejected,
-including equivalent PURLs with different encodings.
-
-Product groups can scope justifications, impact statements, and remediations.
-Affected assessments retain their scoped remediation text and latest
-remediation date as the OpenVEX action statement; missing actions are rejected.
-CVE, GHSA, and GO identifiers are retained, including assessments without a
-`cve` field. Other advisory identifiers are not converted. CSAF CVSS rescoring
-is not represented by the OpenVEX compatibility format.
-
-This is not a lossless conversion of the full CSAF document: assessment dates,
-revision history and other metadata are omitted. Inspect the
+Conversion omits other advisory identifiers, CVSS rescoring, assessment dates,
+revision history, and other metadata. See the
 [input/expected-output examples](../../../evaluator/internal/grypevex/testdata/conversion/README.md)
-to see the supported mapping.
+for details.
 
 ## Skipping upstream binaries
 

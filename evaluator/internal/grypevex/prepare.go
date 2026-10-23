@@ -13,8 +13,9 @@ import (
 
 type repositoryConfig struct {
 	Repositories []struct {
-		Name    string `yaml:"name"`
-		Enabled bool   `yaml:"enabled"`
+		Name                 string `yaml:"name"`
+		Enabled              bool   `yaml:"enabled"`
+		SkipInvalidDocuments bool   `yaml:"skip_invalid_documents"`
 	} `yaml:"repositories"`
 }
 
@@ -29,6 +30,7 @@ type Prepared struct {
 	Documents []string
 	OpenVEX   int
 	CSAF      int
+	Warnings  []error
 }
 
 func Prepare(cacheDir, configPath, outputDir string) (Prepared, []error) {
@@ -74,6 +76,15 @@ func Prepare(cacheDir, configPath, outputDir string) (Prepared, []error) {
 		}
 		if len(entries.Packages) == 0 {
 			problems = append(problems, fmt.Errorf("repository %s has no indexed VEX documents", repository.Name))
+			continue
+		}
+		documentCount := len(result.Documents)
+		rejected := func(err error) {
+			if repository.SkipInvalidDocuments {
+				result.Warnings = append(result.Warnings, fmt.Errorf("repository %s: skipping document: %w", repository.Name, err))
+			} else {
+				problems = append(problems, err)
+			}
 		}
 		for _, entry := range entries.Packages {
 			path, err := documentPath(root, entry.Location)
@@ -98,14 +109,14 @@ func Prepare(cacheDir, configPath, outputDir string) (Prepared, []error) {
 				}
 				if err := json.Unmarshal(data, &document); err != nil ||
 					!strings.HasPrefix(document.Context, "https://openvex.dev/ns") || document.Statements == nil {
-					problems = append(problems, fmt.Errorf("%s: invalid OpenVEX document", path))
+					rejected(fmt.Errorf("%s: invalid OpenVEX document", path))
 					continue
 				}
 				result.OpenVEX++
 			case "csaf":
 				converted, err := Convert(data)
 				if err != nil {
-					problems = append(problems, fmt.Errorf("%s: %w", path, err))
+					rejected(fmt.Errorf("%s: %w", path, err))
 					continue
 				}
 				filename := fmt.Sprintf("%x.openvex.json", sha256.Sum256([]byte(path)))
@@ -122,10 +133,13 @@ func Prepare(cacheDir, configPath, outputDir string) (Prepared, []error) {
 				}
 				result.CSAF++
 			default:
-				problems = append(problems, fmt.Errorf("%s: unsupported VEX format %q", path, entry.Format))
+				rejected(fmt.Errorf("%s: unsupported VEX format %q", path, entry.Format))
 				continue
 			}
 			result.Documents = append(result.Documents, path)
+		}
+		if len(result.Documents) == documentCount {
+			problems = append(problems, fmt.Errorf("repository %s has no usable indexed VEX documents", repository.Name))
 		}
 	}
 	if len(result.Documents) == 0 {
