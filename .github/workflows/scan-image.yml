@@ -68,9 +68,9 @@ jobs:
           skip-files: ${{ inputs.skip-files }}
           exceptions-path: ${{ inputs.exceptions-path }}
           upload-sarif: "false"
-          source_registry: ${{ vars.SCAN_SOURCE_REGISTRY }}
-          source_registry_user: ${{ secrets.SCAN_REGISTRY_USER }}
-          source_registry_password: ${{ secrets.SCAN_REGISTRY_PASSWORD }}
+          source_registry: ${{ vars.REGISTRY_HOST }}
+          source_registry_user: ${{ vars.REGISTRY_USER }}
+          source_registry_password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Compare vulnerability results without VEX
         if: ${{ !cancelled() && inputs.compare-without-vex && hashFiles('reports/trivy.json') != '' }}
