@@ -12,7 +12,7 @@ require (
 require (
 	github.com/in-toto/attestation v1.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/package-url/packageurl-go v0.1.5 // indirect
+	github.com/package-url/packageurl-go v0.1.7 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 )
