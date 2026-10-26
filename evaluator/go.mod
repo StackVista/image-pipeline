@@ -4,7 +4,7 @@ go 1.27
 
 require (
 	github.com/anchore/packageurl-go v0.2.0
-	github.com/openvex/go-vex v0.2.8
+	github.com/openvex/go-vex v0.2.9
 	github.com/stretchr/testify v1.12.1
 	gopkg.in/yaml.v3 v3.0.1
 )
