@@ -103,8 +103,19 @@ runs:
         GRYPE_VERSION: 0.118.0
         INSTALL_SHA: 756eb9a24f7beeafb6871a24e943e8a3ae210695
       run: |
-        curl -sSfL "https://raw.githubusercontent.com/anchore/grype/${INSTALL_SHA}/install.sh" \
-          | sudo sh -s -- -b /usr/local/bin "v${GRYPE_VERSION}"
+        set -euo pipefail
+        installer="${RUNNER_TEMP}/grype-install.sh"
+        curl --fail --silent --show-error --location \
+          --retry 3 --retry-all-errors --connect-timeout 10 --max-time 120 \
+          "https://raw.githubusercontent.com/anchore/grype/${INSTALL_SHA}/install.sh" \
+          --output "${installer}"
+        test -s "${installer}"
+        # The pinned installer verifies release checksums itself. Avoid its
+        # second script download, which can return an empty script and exit 0.
+        sudo env DOWNLOAD_TAG_INSTALL_SCRIPT=false \
+          sh "${installer}" -b /usr/local/bin "v${GRYPE_VERSION}"
+        grype version
+        test "$(grype version -o json | jq -r .version)" = "${GRYPE_VERSION}"
 
     - name: Configure and download VEX repos
       shell: bash
