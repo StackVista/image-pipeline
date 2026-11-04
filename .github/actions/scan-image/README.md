@@ -40,6 +40,18 @@ source. Docker can successfully pull image formats that a scanner's local
 Docker extractor may still fail to analyze, so the retry is applied to the
 previously working scanner path instead.
 
+## Trivy caches
+
+The setup action caches the Trivy binary by version, operating system, and architecture.
+Database caches contain only `db/` and `java-db/`, use daily UTC keys, and restore the most recent available cache.
+Trivy still checks database freshness and downloads updates.
+Cache paths respect `TRIVY_CACHE_DIR`, or default to `~/.cache/trivy`.
+
+GitHub scopes caches to each consumer repository.
+PRs can restore default-branch caches, but a cache created by one PR is unavailable to sibling PRs.
+Database caches save after a successful Trivy vulnerability scan, before later policy gates.
+The existing download sources remain in use on cache misses.
+
 ## VEX formats
 
 Trivy reads the original hubs with `--vex repo`. Grype's tested CSAF parsers

@@ -4,11 +4,93 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
 )
+
+func TestActionTrivyCaching(t *testing.T) {
+	data, err := os.ReadFile("../../../.github/actions/scan-image/action.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var action struct {
+		Runs struct {
+			Steps []struct {
+				Name string            `yaml:"name"`
+				ID   string            `yaml:"id"`
+				If   string            `yaml:"if"`
+				Run  string            `yaml:"run"`
+				With map[string]string `yaml:"with"`
+			} `yaml:"steps"`
+		} `yaml:"runs"`
+	}
+	if err := yaml.Unmarshal(data, &action); err != nil {
+		t.Fatal(err)
+	}
+	var paths string
+	var binaryCached, databaseCached, databaseSaved bool
+	databasePaths := "${{ steps.paths.outputs.trivy_cache }}/db\n${{ steps.paths.outputs.trivy_cache }}/java-db\n"
+	scan, save, evaluate := -1, -1, -1
+	for i, step := range action.Runs.Steps {
+		switch step.Name {
+		case "Set up Trivy":
+			binaryCached = step.With["cache"] == "true"
+		case "Resolve repo root":
+			paths = step.Run
+		case "Restore Trivy databases":
+			databaseCached = step.ID == "trivy-db-cache" && step.With["path"] == databasePaths &&
+				strings.Contains(step.With["key"], "${{ steps.paths.outputs.cache_day }}") &&
+				step.With["restore-keys"] == "trivy-db-${{ runner.os }}-\n"
+		case "Save Trivy databases":
+			save = i
+			databaseSaved = step.With["path"] == databasePaths &&
+				step.With["key"] == "${{ steps.trivy-db-cache.outputs.cache-primary-key }}" &&
+				step.If == "${{ steps.trivy-db-cache.outputs.cache-hit != 'true' }}"
+		case "Trivy vuln scan":
+			scan = i
+			if strings.Contains(step.Run, "--skip-db-update") || strings.Contains(step.Run, "--skip-java-db-update") {
+				t.Fatal("database freshness checks are disabled")
+			}
+		case "Evaluate":
+			evaluate = i
+		}
+	}
+	if !binaryCached || !databaseCached || !databaseSaved || !(scan < save && save < evaluate) {
+		t.Fatalf("Trivy caching is incomplete: binary=%v restore=%v save=%v scan/save/evaluate=%d/%d/%d",
+			binaryCached, databaseCached, databaseSaved, scan, save, evaluate)
+	}
+	actionPath, err := filepath.Abs("../../../.github/actions/scan-image")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, custom := range []bool{false, true} {
+		root := t.TempDir()
+		cache := filepath.Join(root, ".cache/trivy")
+		override := ""
+		if custom {
+			override = filepath.Join(root, "custom cache")
+			cache = override
+		}
+		output := filepath.Join(root, "output")
+		command := exec.Command("bash", "-e", "-c", paths)
+		command.Env = append(os.Environ(), "HOME="+root, "TRIVY_CACHE_DIR="+override,
+			"ACTION_PATH="+actionPath, "GITHUB_OUTPUT="+output)
+		if log, err := command.CombinedOutput(); err != nil {
+			t.Fatalf("cache path resolution failed: %v\n%s", err, log)
+		}
+		resolved, err := os.ReadFile(output)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(string(resolved), "trivy_cache="+cache+"\n") ||
+			!regexp.MustCompile(`(?m)^cache_day=\d{4}-\d{2}-\d{2}$`).Match(resolved) {
+			t.Fatalf("unexpected cache outputs: %s", resolved)
+		}
+	}
+}
 
 func TestActionVEXPreparation(t *testing.T) {
 	data, err := os.ReadFile("../../../.github/actions/scan-image/action.yml")
