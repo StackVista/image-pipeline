@@ -40,33 +40,31 @@ source. Docker can successfully pull image formats that a scanner's local
 Docker extractor may still fail to analyze, so the retry is applied to the
 previously working scanner path instead.
 
-## Trivy caches
+## Scanner binary caches
 
-The setup action caches the Trivy binary by version, operating system, and architecture.
-The vulnerability database uses a daily UTC cache key.
-The Java database has a separate cache key that rotates every three days.
-Each cache contains only its database directory and restores the most recent available entry.
-The action reuses databases already present in the job instead of restoring over them.
-Trivy still checks database freshness and downloads updates.
-Cache paths respect `TRIVY_CACHE_DIR`, or default to `~/.cache/trivy`.
+Trivy binaries and Grype release archives use cache keys based on version,
+operating system, and architecture. Keys have no time-based rotation.
+GitHub may still evict caches under its retention and storage policies.
+The action reuses downloads already present in the job.
 
-GitHub scopes caches to each consumer repository.
-PRs can restore default-branch caches, but a cache created by one PR is unavailable to sibling PRs.
-Database caches save after a successful Trivy vulnerability scan, before later policy gates.
-The Java cache saves only when Trivy changes its metadata during the scan.
-The existing download sources remain in use on cache misses.
+Every use verifies the Trivy binary or Grype archive against
+`scanner-checksums.txt` from the pinned action revision before execution.
+Cached checksum files are not trusted. Trivy restores stay outside `PATH`;
+only a verified binary is copied into the scan's executable directory.
+Grype also checks the installed version. A checksum failure stops the action.
+Cache misses retain the existing download sources.
 
-## Grype caches
+Update `scanner-checksums.txt` when changing either scanner version.
+Trivy entries hash binaries extracted from archives verified against the
+upstream release checksums. Grype entries use the upstream archive checksums.
+Both Linux architectures must have entries.
 
-The action caches the release archive and checksums by version, operating system, and architecture.
-The installer verifies the archive checksum and installed version on each use.
-The database cache uses daily UTC keys and restores a recent entry for the same Grype version.
-The action reuses files already present in the job and saves databases after successful scans, before policy evaluation.
-Database paths respect `GRYPE_DB_CACHE_DIR` and `XDG_CACHE_HOME`, or default to `~/.cache/grype/db`.
-Grype retains its database update, age, and checksum checks.
-Application update checks are disabled because the action pins the Grype version.
-Cache misses use the existing GitHub release and Anchore database sources.
-Grype caches have the same repository and PR access limits as Trivy caches.
+GitHub scopes caches to each consumer repository. PRs can restore default-branch
+caches, but a cache created by one PR is unavailable to sibling PRs.
+Only scanner binaries are cached through GitHub Actions. Vulnerability and
+Java databases retain the scanners' normal download, update, and validation
+behavior. Grype application update checks remain disabled because its version
+is pinned.
 
 ## VEX formats
 

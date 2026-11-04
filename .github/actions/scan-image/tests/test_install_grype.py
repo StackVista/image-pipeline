@@ -12,11 +12,12 @@ INSTALLER = Path(__file__).resolve().parents[1] / "install-grype.sh"
 
 class GrypeInstallation(unittest.TestCase):
     def test_release_verification(self):
-        for case in ("amd64", "arm64", "empty archive", "empty checksums",
+        for case in ("amd64", "arm64", "empty archive",
                      "download failure", "checksum mismatch", "missing checksum",
                      "duplicate checksum", "malformed checksum", "install failure",
                      "missing binary", "wrong version", "cache hit",
-                     "corrupt cache", "cached wrong version", "partial cache"):
+                     "corrupt cache", "cached wrong version", "tampered cache",
+                     "unsupported platform"):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 tools = root / "tools"
@@ -39,15 +40,19 @@ class GrypeInstallation(unittest.TestCase):
                     checksums *= 2
                 elif case == "malformed checksum":
                     checksums = f"invalid  {archive}\n"
-                (root / "grype_0.118.0_checksums.txt").write_text(checksums)
+                (root / "scanner-checksums.txt").write_text(checksums)
                 cache = root / "install cache"
                 cache.mkdir()
-                if case in ("cache hit", "corrupt cache", "cached wrong version", "partial cache"):
+                if case in ("cache hit", "corrupt cache", "cached wrong version", "tampered cache"):
                     (cache / "grype.tar.gz").write_bytes((root / archive).read_bytes())
-                    if case != "partial cache":
-                        (cache / "checksums.txt").write_text(checksums)
                     if case == "corrupt cache":
                         (cache / "grype.tar.gz").write_bytes(b"corrupt")
+                    if case == "tampered cache":
+                        (root / "grype").write_text('#!/bin/sh\ntouch "$TASK_ROOT/executed"\n')
+                        subprocess.run(["tar", "-czf", str(cache / "grype.tar.gz"),
+                                        "-C", str(root), "grype"], check=True)
+                        tampered_digest = hashlib.sha256((cache / "grype.tar.gz").read_bytes()).hexdigest()
+                        (cache / "checksums.txt").write_text(f"{tampered_digest}  {archive}\n")
                 stubs = {
                     "curl": """#!/bin/bash
 set -eu
@@ -56,7 +61,6 @@ test "$TASK_CASE" != "download failure"
 url="${@: -3:1}"
 case "$url" in
   "https://github.com/anchore/grype/releases/download/v0.118.0/$TASK_ARCHIVE") empty="empty archive";;
-  "https://github.com/anchore/grype/releases/download/v0.118.0/grype_0.118.0_checksums.txt") empty="empty checksums";;
   *) exit 99;;
 esac
 while [ "$1" != --output ]; do shift; done
@@ -72,7 +76,9 @@ if [ "$TASK_CASE" != "missing binary" ]; then install -m 0755 "$4" "$TASK_ROOT/i
 """,
                     # A missing install cannot be masked by a host Grype.
                     "grype": '#!/bin/sh\nexec "$TASK_ROOT/installed" "$@"\n',
-                    "uname": '#!/bin/sh\ncase "$1" in -s) echo Linux;; -m) echo '
+                    "uname": '#!/bin/sh\ncase "$1" in -s) echo '
+                             + ("Darwin" if case == "unsupported platform" else "Linux")
+                             + ';; -m) echo '
                              + ("aarch64" if arch == "arm64" else "x86_64") + ";; *) exit 99;; esac\n",
                 }
                 for name, content in stubs.items():
@@ -84,17 +90,20 @@ if [ "$TASK_CASE" != "missing binary" ]; then install -m 0755 "$4" "$TASK_ROOT/i
                     env={**os.environ, "PATH": f"{tools}:{os.environ['PATH']}",
                          "RUNNER_TEMP": str(root), "GRYPE_VERSION": "0.118.0",
                          "GRYPE_INSTALL_CACHE": str(cache),
+                         "ACTION_PATH": str(root),
                          "TASK_ROOT": str(root), "TASK_CASE": case, "TASK_ARCHIVE": archive},
                 )
-                success = case in ("amd64", "arm64", "cache hit", "partial cache")
+                success = case in ("amd64", "arm64", "cache hit")
                 self.assertEqual(result.returncode == 0, success, result.stdout + result.stderr)
                 self.assertEqual((root / "download-called").exists(),
-                                 case not in ("cache hit", "corrupt cache", "cached wrong version"))
+                                 case not in ("cache hit", "corrupt cache", "cached wrong version",
+                                              "tampered cache", "unsupported platform"))
                 if success:
                     self.assertEqual((cache / "grype.tar.gz").read_bytes(), (root / archive).read_bytes())
-                    self.assertEqual((cache / "checksums.txt").read_text(), checksums)
-                if case == "corrupt cache":
+                    self.assertFalse((cache / "checksums.txt").exists())
+                if case in ("corrupt cache", "tampered cache"):
                     self.assertFalse((root / "install-called").exists(), result.stdout + result.stderr)
+                    self.assertFalse((root / "executed").exists(), result.stdout + result.stderr)
                 if "checksum" in case or case.startswith("empty") or case == "download failure":
                     for marker in ("install-called", "installed", "executed"):
                         self.assertFalse((root / marker).exists(), result.stdout + result.stderr)

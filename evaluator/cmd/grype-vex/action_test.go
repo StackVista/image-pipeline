@@ -4,21 +4,22 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
 )
 
-func TestActionGrypeCaching(t *testing.T) {
+func TestActionScannerCaching(t *testing.T) {
 	data, err := os.ReadFile("../../../.github/actions/scan-image/action.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
 	type step struct {
 		Name string            `yaml:"name"`
+		ID   string            `yaml:"id"`
 		If   string            `yaml:"if"`
+		Uses string            `yaml:"uses"`
 		Run  string            `yaml:"run"`
 		Env  map[string]string `yaml:"env"`
 		With map[string]string `yaml:"with"`
@@ -32,76 +33,73 @@ func TestActionGrypeCaching(t *testing.T) {
 		t.Fatal(err)
 	}
 	steps, indices := make(map[string]step), make(map[string]int)
+	cacheSteps := 0
 	for i, step := range action.Runs.Steps {
 		steps[step.Name], indices[step.Name] = step, i
+		if strings.HasPrefix(step.Uses, "actions/cache/") {
+			cacheSteps++
+		}
 	}
-	for _, cache := range []struct{ name, path, present, id, key string }{
-		{"binary download", "grype_install_cache", "grype_install_present", "grype-binary-cache",
-			"grype-binary-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.grype_version }}"},
-		{"vulnerability database", "grype_cache", "grype_db_present", "grype-db-cache",
-			"grype-db-${{ runner.os }}-${{ steps.paths.outputs.grype_version }}-${{ steps.paths.outputs.cache_day }}"},
+	if cacheSteps != 4 {
+		t.Fatal("only the two scanner binaries may be restored and saved")
+	}
+	for _, scanner := range []struct{ name, label, file, gate, verify string }{
+		{"trivy", "Trivy binary", "/trivy", "", "Verify Trivy binary"},
+		{"grype", "Grype binary download", "/grype.tar.gz", "inputs.with-grype == 'true' && ", "Set up Grype"},
 	} {
-		restore, save := steps["Restore Grype "+cache.name], steps["Save Grype "+cache.name]
-		condition := "inputs.with-grype == 'true' && steps.paths.outputs." + cache.present + " != 'true'"
-		if restore.If != "${{ "+condition+" }}" || !strings.Contains(save.If, condition) ||
-			!strings.Contains(save.If, "steps."+cache.id+".outputs.cache-hit != 'true'") ||
-			restore.With["path"] != "${{ steps.paths.outputs."+cache.path+" }}" ||
-			save.With["path"] != restore.With["path"] || restore.With["key"] != cache.key ||
-			save.With["key"] != "${{ steps."+cache.id+".outputs.cache-primary-key }}" {
-			t.Fatalf("Grype %s must reuse local files and save only on a cache miss", cache.name)
+		restore, save := steps["Restore "+scanner.label], steps["Save "+scanner.label]
+		localAbsent := scanner.gate + "steps.paths.outputs." + scanner.name + "_install_present != 'true'"
+		if restore.If != "${{ "+localAbsent+" }}" ||
+			save.If != "${{ "+localAbsent+" && steps."+scanner.name+"-binary-cache.outputs.cache-hit != 'true' }}" ||
+			restore.With["path"] != "${{ steps.paths.outputs."+scanner.name+"_install_cache }}"+scanner.file ||
+			save.With["path"] != restore.With["path"] ||
+			restore.With["key"] != scanner.name+"-binary-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs."+scanner.name+"_version }}" ||
+			restore.With["restore-keys"] != "" ||
+			save.With["key"] != "${{ steps."+scanner.name+"-binary-cache.outputs.cache-primary-key }}" {
+			t.Fatalf("%s must use a version/platform key and save only verified binaries on a miss", scanner.name)
 		}
-		setup := "Set up Grype"
-		if cache.id == "grype-db-cache" {
-			setup = "Grype vuln scan"
-			if restore.With["restore-keys"] != "grype-db-${{ runner.os }}-${{ steps.paths.outputs.grype_version }}-\n" {
-				t.Fatal("Grype databases need a compatible fallback key")
-			}
-		}
-		if !(indices["Restore Grype "+cache.name] < indices[setup] &&
-			indices[setup] < indices["Save Grype "+cache.name] &&
-			indices["Save Grype "+cache.name] < indices["Evaluate"]) ||
-			strings.Contains(save.If, "always()") || strings.Contains(save.If, "failure()") {
-			t.Fatalf("Grype %s must save after success and before policy evaluation", cache.name)
+		if !(indices["Restore "+scanner.label] < indices[scanner.verify] &&
+			indices[scanner.verify] < indices["Save "+scanner.label] &&
+			indices["Save "+scanner.label] < indices["Trivy secrets scan"]) {
+			t.Fatalf("%s must be verified before saving or scanning", scanner.name)
 		}
 	}
-	scan := steps["Grype vuln scan"]
-	if scan.Env["GRYPE_DB_CACHE_DIR"] != "${{ steps.paths.outputs.grype_cache }}" ||
-		scan.Env["GRYPE_CHECK_FOR_APP_UPDATE"] != "false" {
-		t.Fatal("Grype must use the restored database and disable application update checks")
+	setup := steps["Set up Trivy"]
+	if setup.With["cache"] != "false" ||
+		setup.If != "${{ steps.paths.outputs.trivy_install_present != 'true' && steps.trivy-binary-cache.outputs.cache-hit != 'true' }}" ||
+		setup.With["version"] != "v${{ steps.paths.outputs.trivy_version }}" ||
+		steps["Verify Trivy binary"].Env["TRIVY_INSTALL_CACHE"] != "${{ steps.paths.outputs.trivy_install_cache }}" {
+		t.Fatal("Trivy must restore outside PATH, install only on misses, and always verify")
+	}
+	if strings.Contains(steps["Trivy vuln scan"].Run, "--skip-db-update") ||
+		strings.Contains(steps["Trivy vuln scan"].Run, "--skip-java-db-update") ||
+		steps["Grype vuln scan"].Env["GRYPE_DB_CACHE_DIR"] != "" {
+		t.Fatal("scanner database behavior must remain unchanged")
 	}
 	for _, setting := range []string{"GRYPE_DB_AUTO_UPDATE", "GRYPE_DB_VALIDATE_AGE", "GRYPE_DB_VALIDATE_BY_HASH_ON_START"} {
-		if scan.Env[setting] == "false" {
-			t.Fatalf("Grype database validation/update disabled: %s", setting)
+		if steps["Grype vuln scan"].Env[setting] == "false" {
+			t.Fatalf("Grype database validation disabled: %s", setting)
 		}
 	}
 	actionPath, err := filepath.Abs("../../../.github/actions/scan-image")
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, scenario := range []string{"default", "xdg", "custom"} {
+	for _, arch := range []string{"X64", "ARM64"} {
 		for _, present := range []bool{false, true} {
 			root := t.TempDir()
-			cache, xdg, override := filepath.Join(root, ".cache/grype/db"), "", ""
-			if scenario == "xdg" {
-				xdg = filepath.Join(root, "xdg cache")
-				cache = filepath.Join(xdg, "grype/db")
-			} else if scenario == "custom" {
-				override = filepath.Join(root, "custom db")
-				cache = override
-			}
+			trivyCache := filepath.Join(root, ".cache/image-pipeline/trivy/0.76.0/Linux-"+arch)
+			grypeCache := filepath.Join(root, ".cache/image-pipeline/grype/0.118.0/Linux-"+arch)
 			if present {
-				writeCLIFile(t, filepath.Join(cache, "6/vulnerability.db"), []byte("db"))
-				binaryCache := filepath.Join(root, ".cache/image-pipeline/grype/0.118.0/Linux-X64")
-				writeCLIFile(t, filepath.Join(binaryCache, "grype.tar.gz"), []byte("archive"))
-				writeCLIFile(t, filepath.Join(binaryCache, "checksums.txt"), []byte("checksums"))
+				writeCLIFile(t, filepath.Join(trivyCache, "trivy"), []byte("binary"))
+				writeCLIFile(t, filepath.Join(grypeCache, "grype.tar.gz"), []byte("archive"))
 			}
 			output := filepath.Join(root, "outputs")
 			command := exec.Command("bash", "-eu", "-c", steps["Resolve repo root"].Run)
-			command.Env = append(os.Environ(), "HOME="+root, "XDG_CACHE_HOME="+xdg,
-				"GRYPE_DB_CACHE_DIR="+override, "GRYPE_VERSION=0.118.0", "RUNNER_OS=Linux", "RUNNER_ARCH=X64",
-				"ACTION_PATH="+actionPath, "GITHUB_OUTPUT="+output)
+			command.Env = append(os.Environ(), "HOME="+root, "TRIVY_VERSION=0.76.0", "GRYPE_VERSION=0.118.0",
+				"RUNNER_OS=Linux", "RUNNER_ARCH="+arch, "ACTION_PATH="+actionPath, "GITHUB_OUTPUT="+output)
 			if log, err := command.CombinedOutput(); err != nil {
-				t.Fatalf("Grype cache resolution failed: %v\n%s", err, log)
+				t.Fatalf("cache resolution: %v\n%s", err, log)
 			}
 			resolved, err := os.ReadFile(output)
 			if err != nil {
@@ -111,174 +109,12 @@ func TestActionGrypeCaching(t *testing.T) {
 			if present {
 				expected = "true"
 			}
-			for _, line := range []string{"grype_cache=" + cache,
-				"grype_db_present=" + expected, "grype_install_present=" + expected} {
+			for _, line := range []string{"trivy_install_cache=" + trivyCache, "grype_install_cache=" + grypeCache,
+				"trivy_install_present=" + expected, "grype_install_present=" + expected} {
 				if !strings.Contains(string(resolved), line+"\n") {
-					t.Fatalf("missing %q in cache outputs: %s", line, resolved)
+					t.Fatalf("missing %q: %s", line, resolved)
 				}
 			}
-		}
-	}
-}
-
-func TestActionTrivyCaching(t *testing.T) {
-	data, err := os.ReadFile("../../../.github/actions/scan-image/action.yml")
-	if err != nil {
-		t.Fatal(err)
-	}
-	type step struct {
-		Name string            `yaml:"name"`
-		ID   string            `yaml:"id"`
-		If   string            `yaml:"if"`
-		Run  string            `yaml:"run"`
-		With map[string]string `yaml:"with"`
-	}
-	var action struct {
-		Runs struct {
-			Steps []step `yaml:"steps"`
-		} `yaml:"runs"`
-	}
-	if err := yaml.Unmarshal(data, &action); err != nil {
-		t.Fatal(err)
-	}
-	steps := make(map[string]step)
-	indices := make(map[string]int)
-	for i, step := range action.Runs.Steps {
-		steps[step.Name] = step
-		indices[step.Name] = i
-	}
-	if steps["Set up Trivy"].With["cache"] != "true" {
-		t.Fatal("Trivy binary caching is disabled")
-	}
-	scan := steps["Trivy vuln scan"]
-	if !strings.Contains(steps["Save Trivy Java database"].If, "steps.trivy-databases.outputs.java_db_updated == 'true'") ||
-		!(indices["Restore Trivy Java database"] < indices["Read Trivy Java metadata"] &&
-			indices["Read Trivy Java metadata"] < indices["Trivy vuln scan"]) {
-		t.Fatal("unchanged restored Java metadata must not occupy a new cache key")
-	}
-	if strings.Contains(scan.Run, "--skip-db-update") || strings.Contains(scan.Run, "--skip-java-db-update") {
-		t.Fatal("database freshness checks are disabled")
-	}
-	for _, database := range []struct {
-		name, directory, id, prefix, period, present string
-	}{
-		{"vulnerability", "db", "trivy-db-cache", "trivy-vuln-db", "cache_day", "db_present"},
-		{"Java", "java-db", "trivy-java-db-cache", "trivy-java-db", "java_cache_period", "java_db_present"},
-	} {
-		restoreName := "Restore Trivy " + database.name + " database"
-		saveName := "Save Trivy " + database.name + " database"
-		restore, save := steps[restoreName], steps[saveName]
-		path := "${{ steps.paths.outputs.trivy_cache }}/" + database.directory
-		if restore.ID != database.id || restore.With["path"] != path || save.With["path"] != path {
-			t.Fatalf("%s database needs its own cache directory", database.name)
-		}
-		if restore.With["key"] != database.prefix+"-${{ runner.os }}-${{ steps.paths.outputs."+database.period+" }}" ||
-			restore.With["restore-keys"] != database.prefix+"-${{ runner.os }}-\n" ||
-			save.With["key"] != "${{ steps."+database.id+".outputs.cache-primary-key }}" {
-			t.Fatalf("%s database needs its own rotating key and fallback", database.name)
-		}
-		localAbsent := "steps.paths.outputs." + database.present + " != 'true'"
-		if restore.If != "${{ "+localAbsent+" }}" ||
-			!strings.Contains(save.If, localAbsent) ||
-			!strings.Contains(save.If, "steps."+database.id+".outputs.cache-hit != 'true'") ||
-			!strings.Contains(save.If, "steps.trivy-databases.outputs."+database.present+" == 'true'") {
-			t.Fatalf("%s cache must reuse local databases and save only present databases on a miss", database.name)
-		}
-		if !(indices[restoreName] < indices["Trivy vuln scan"] &&
-			indices["Trivy vuln scan"] < indices["Check Trivy databases"] &&
-			indices["Check Trivy databases"] < indices[saveName] && indices[saveName] < indices["Evaluate"]) {
-			t.Fatalf("%s database must save after a successful scan and before policy evaluation", database.name)
-		}
-	}
-	actionPath, err := filepath.Abs("../../../.github/actions/scan-image")
-	if err != nil {
-		t.Fatal(err)
-	}
-	runOutputs := func(script, output string, env ...string) map[string]string {
-		t.Helper()
-		command := exec.Command("bash", "-e", "-c", script)
-		command.Env = append(os.Environ(), append(env, "GITHUB_OUTPUT="+output)...)
-		if log, err := command.CombinedOutput(); err != nil {
-			t.Fatalf("cache metadata resolution failed: %v\n%s", err, log)
-		}
-		resolved, err := os.ReadFile(output)
-		if err != nil {
-			t.Fatal(err)
-		}
-		values := make(map[string]string)
-		for _, line := range strings.Split(strings.TrimSpace(string(resolved)), "\n") {
-			key, value, _ := strings.Cut(line, "=")
-			values[key] = value
-		}
-		return values
-	}
-	for _, custom := range []bool{false, true} {
-		for _, existing := range [][]string{nil, {"db"}, {"java-db"}, {"db", "java-db"}} {
-			root := t.TempDir()
-			cache := filepath.Join(root, ".cache/trivy")
-			override := ""
-			if custom {
-				override = filepath.Join(root, "custom cache")
-				cache = override
-			}
-			for _, directory := range []string{"db", "java-db"} {
-				path := filepath.Join(cache, directory)
-				if err := os.MkdirAll(path, 0755); err != nil {
-					t.Fatal(err)
-				}
-			}
-			for _, directory := range existing {
-				path := filepath.Join(cache, directory)
-				if err := os.WriteFile(filepath.Join(path, "metadata.json"), []byte("{}"), 0644); err != nil {
-					t.Fatal(err)
-				}
-			}
-			before := runOutputs(steps["Resolve repo root"].Run, filepath.Join(root, "before"),
-				"HOME="+root, "TRIVY_CACHE_DIR="+override, "ACTION_PATH="+actionPath)
-			metadata := runOutputs(steps["Read Trivy Java metadata"].Run, filepath.Join(root, "metadata"), "TRIVY_CACHE="+cache)
-			after := runOutputs(steps["Check Trivy databases"].Run, filepath.Join(root, "after"),
-				"TRIVY_CACHE="+cache, "JAVA_DB_HASH="+metadata["hash"])
-			if after["java_db_updated"] != "false" {
-				t.Fatalf("an absent or unchanged Java database must not be saved: %v", after)
-			}
-			if before["trivy_cache"] != cache || !regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`).MatchString(before["cache_day"]) {
-				t.Fatalf("unexpected cache path/date: %v", before)
-			}
-			for _, directory := range []string{"db", "java-db"} {
-				present := "false"
-				for _, cached := range existing {
-					if cached == directory {
-						present = "true"
-					}
-				}
-				key := strings.ReplaceAll(directory, "-", "_") + "_present"
-				if before[key] != present || after[key] != present {
-					t.Fatalf("database %s presence=%s: before=%v after=%v", directory, present, before, after)
-				}
-			}
-			if err := os.WriteFile(filepath.Join(cache, "java-db/metadata.json"), []byte(`{"DownloadedAt":"2026-11-04T10:00:00Z"}`), 0644); err != nil {
-				t.Fatal(err)
-			}
-			updated := runOutputs(steps["Check Trivy databases"].Run, filepath.Join(root, "updated"),
-				"TRIVY_CACHE="+cache, "JAVA_DB_HASH="+metadata["hash"])
-			if updated["java_db_present"] != "true" || updated["java_db_updated"] != "true" {
-				t.Fatalf("new or updated Java metadata must be eligible for saving: %v", updated)
-			}
-		}
-	}
-	root := t.TempDir()
-	date := filepath.Join(root, "date")
-	if err := os.WriteFile(date, []byte("#!/bin/sh\nif [ \"$2\" = +%s ]; then echo \"$CACHE_TEST_SECONDS\"; else echo 2026-11-04; fi\n"), 0755); err != nil {
-		t.Fatal(err)
-	}
-	for _, rotation := range []struct{ seconds, period string }{
-		{"0", "0"}, {"259199", "0"}, {"259200", "1"}, {"518399", "1"}, {"518400", "2"},
-	} {
-		values := runOutputs(steps["Resolve repo root"].Run, filepath.Join(root, "rotation-"+rotation.seconds),
-			"HOME="+root, "TRIVY_CACHE_DIR=", "ACTION_PATH="+actionPath,
-			"PATH="+root+":"+os.Getenv("PATH"), "CACHE_TEST_SECONDS="+rotation.seconds)
-		if values["java_cache_period"] != rotation.period {
-			t.Fatalf("Java cache must rotate every three days: seconds=%s outputs=%v", rotation.seconds, values)
 		}
 	}
 }
