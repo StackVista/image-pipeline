@@ -58,6 +58,8 @@ Update `scanner-checksums.txt` when changing either scanner version.
 Trivy entries hash binaries extracted from archives verified against the
 upstream release checksums. Grype entries use the upstream archive checksums.
 Both Linux architectures must have entries.
+Updatecli uses `scripts/update-scanner-pins.py` to update versions and checksums
+together in a reviewed PR. Failed downloads or verification leave both files unchanged.
 
 GitHub scopes caches to each consumer repository. PRs can restore default-branch
 caches, but a cache created by one PR is unavailable to sibling PRs.

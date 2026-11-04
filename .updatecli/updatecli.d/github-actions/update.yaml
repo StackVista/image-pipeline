@@ -80,25 +80,21 @@ sources:
         pattern: "*"
 
 targets:
-  scanImageTrivyVersion:
-    name: "scan-image: bump Trivy version"
-    kind: file
+  scanImageScannerPins:
+    name: "scan-image: bump scanner versions and checksums"
+    kind: shell
     scmid: default
-    sourceid: trivyVersion
+    disablesourceinput: true
     spec:
-      file: ".github/actions/scan-image/action.yml"
-      content: '        version: {{ source "trivyVersion" }}'
-      matchpattern: '        version: v0\.[0-9]+\.[0-9]+'
-
-  scanImageGrypeVersion:
-    name: "scan-image: bump Grype version"
-    kind: file
-    scmid: default
-    sourceid: grypeVersion
-    spec:
-      file: ".github/actions/scan-image/action.yml"
-      content: '        GRYPE_VERSION: {{ source "grypeVersion" }}'
-      matchpattern: '        GRYPE_VERSION: (.*)'
+      command: 'python3 scripts/update-scanner-pins.py {{ source "trivyVersion" }} {{ source "grypeVersion" }}'
+      environments:
+        - name: PATH
+      changedif:
+        kind: file/checksum
+        spec:
+          files:
+            - ".github/actions/scan-image/action.yml"
+            - ".github/actions/scan-image/scanner-checksums.txt"
 
   actionsBuildxVersion:
     name: "composite actions: bump pinned Buildx version"
