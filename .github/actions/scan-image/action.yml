@@ -123,6 +123,18 @@ runs:
         restore-keys: |
           trivy-java-db-${{ runner.os }}-
 
+    - name: Read Trivy Java metadata
+      id: trivy-java-metadata
+      shell: bash
+      env:
+        TRIVY_CACHE: ${{ steps.paths.outputs.trivy_cache }}
+      run: |
+        metadata_hash=''
+        if [ -f "${TRIVY_CACHE}/java-db/metadata.json" ]; then
+          metadata_hash="$(sha256sum "${TRIVY_CACHE}/java-db/metadata.json" | cut -d ' ' -f 1)"
+        fi
+        echo "hash=${metadata_hash}" >> "$GITHUB_OUTPUT"
+
     - name: Set up Grype
       if: ${{ inputs.with-grype == 'true' }}
       shell: bash
@@ -264,9 +276,18 @@ runs:
       shell: bash
       env:
         TRIVY_CACHE: ${{ steps.paths.outputs.trivy_cache }}
+        JAVA_DB_HASH: ${{ steps.trivy-java-metadata.outputs.hash }}
       run: |
         echo "db_present=$([ -f "${TRIVY_CACHE}/db/metadata.json" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
         echo "java_db_present=$([ -f "${TRIVY_CACHE}/java-db/metadata.json" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+        java_db_updated=false
+        if [ -f "${TRIVY_CACHE}/java-db/metadata.json" ]; then
+          metadata_hash="$(sha256sum "${TRIVY_CACHE}/java-db/metadata.json" | cut -d ' ' -f 1)"
+          if [ "${metadata_hash}" != "${JAVA_DB_HASH}" ]; then
+            java_db_updated=true
+          fi
+        fi
+        echo "java_db_updated=${java_db_updated}" >> "$GITHUB_OUTPUT"
 
     - name: Save Trivy vulnerability database
       if: ${{ steps.paths.outputs.db_present != 'true' && steps.trivy-db-cache.outputs.cache-hit != 'true' && steps.trivy-databases.outputs.db_present == 'true' }}
@@ -276,7 +297,7 @@ runs:
         key: ${{ steps.trivy-db-cache.outputs.cache-primary-key }}
 
     - name: Save Trivy Java database
-      if: ${{ steps.paths.outputs.java_db_present != 'true' && steps.trivy-java-db-cache.outputs.cache-hit != 'true' && steps.trivy-databases.outputs.java_db_present == 'true' }}
+      if: ${{ steps.paths.outputs.java_db_present != 'true' && steps.trivy-java-db-cache.outputs.cache-hit != 'true' && steps.trivy-databases.outputs.java_db_present == 'true' && steps.trivy-databases.outputs.java_db_updated == 'true' }}
       uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ steps.paths.outputs.trivy_cache }}/java-db

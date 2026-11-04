@@ -41,6 +41,11 @@ func TestActionTrivyCaching(t *testing.T) {
 		t.Fatal("Trivy binary caching is disabled")
 	}
 	scan := steps["Trivy vuln scan"]
+	if !strings.Contains(steps["Save Trivy Java database"].If, "steps.trivy-databases.outputs.java_db_updated == 'true'") ||
+		!(indices["Restore Trivy Java database"] < indices["Read Trivy Java metadata"] &&
+			indices["Read Trivy Java metadata"] < indices["Trivy vuln scan"]) {
+		t.Fatal("unchanged restored Java metadata must not occupy a new cache key")
+	}
 	if strings.Contains(scan.Run, "--skip-db-update") || strings.Contains(scan.Run, "--skip-java-db-update") {
 		t.Fatal("database freshness checks are disabled")
 	}
@@ -120,7 +125,12 @@ func TestActionTrivyCaching(t *testing.T) {
 			}
 			before := runOutputs(steps["Resolve repo root"].Run, filepath.Join(root, "before"),
 				"HOME="+root, "TRIVY_CACHE_DIR="+override, "ACTION_PATH="+actionPath)
-			after := runOutputs(steps["Check Trivy databases"].Run, filepath.Join(root, "after"), "TRIVY_CACHE="+cache)
+			metadata := runOutputs(steps["Read Trivy Java metadata"].Run, filepath.Join(root, "metadata"), "TRIVY_CACHE="+cache)
+			after := runOutputs(steps["Check Trivy databases"].Run, filepath.Join(root, "after"),
+				"TRIVY_CACHE="+cache, "JAVA_DB_HASH="+metadata["hash"])
+			if after["java_db_updated"] != "false" {
+				t.Fatalf("an absent or unchanged Java database must not be saved: %v", after)
+			}
 			if before["trivy_cache"] != cache || !regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`).MatchString(before["cache_day"]) {
 				t.Fatalf("unexpected cache path/date: %v", before)
 			}
@@ -135,6 +145,14 @@ func TestActionTrivyCaching(t *testing.T) {
 				if before[key] != present || after[key] != present {
 					t.Fatalf("database %s presence=%s: before=%v after=%v", directory, present, before, after)
 				}
+			}
+			if err := os.WriteFile(filepath.Join(cache, "java-db/metadata.json"), []byte(`{"DownloadedAt":"2026-11-04T10:00:00Z"}`), 0644); err != nil {
+				t.Fatal(err)
+			}
+			updated := runOutputs(steps["Check Trivy databases"].Run, filepath.Join(root, "updated"),
+				"TRIVY_CACHE="+cache, "JAVA_DB_HASH="+metadata["hash"])
+			if updated["java_db_present"] != "true" || updated["java_db_updated"] != "true" {
+				t.Fatalf("new or updated Java metadata must be eligible for saving: %v", updated)
 			}
 		}
 	}

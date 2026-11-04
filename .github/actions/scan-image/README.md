@@ -53,7 +53,7 @@ Cache paths respect `TRIVY_CACHE_DIR`, or default to `~/.cache/trivy`.
 GitHub scopes caches to each consumer repository.
 PRs can restore default-branch caches, but a cache created by one PR is unavailable to sibling PRs.
 Database caches save after a successful Trivy vulnerability scan, before later policy gates.
-The Java cache saves only when Trivy downloaded or restored the Java database.
+The Java cache saves only when Trivy changes its metadata during the scan.
 The existing download sources remain in use on cache misses.
 
 ## VEX formats
