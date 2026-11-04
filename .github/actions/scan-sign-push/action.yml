@@ -209,7 +209,7 @@ runs:
     # result non-blocking per the release contract.
     - name: Scan amd64
       if: ${{ contains(inputs.arches, 'amd64') }}
-      uses: StackVista/image-pipeline/.github/actions/scan-image@716ab9b1f6194d6f11f8d1bea1d6a502e7b7fdc3 # CSAF VEX adapter
+      uses: StackVista/image-pipeline/.github/actions/scan-image@4bdda69a3990b1f67eccc542576787473f56b698 # Trivy caches
       with:
         image: scan-target:amd64
         mode: inform
@@ -222,7 +222,7 @@ runs:
 
     - name: Scan arm64
       if: ${{ contains(inputs.arches, 'arm64') }}
-      uses: StackVista/image-pipeline/.github/actions/scan-image@716ab9b1f6194d6f11f8d1bea1d6a502e7b7fdc3 # CSAF VEX adapter
+      uses: StackVista/image-pipeline/.github/actions/scan-image@4bdda69a3990b1f67eccc542576787473f56b698 # Trivy caches
       with:
         image: scan-target:arm64
         mode: inform
