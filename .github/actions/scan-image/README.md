@@ -43,13 +43,17 @@ previously working scanner path instead.
 ## Trivy caches
 
 The setup action caches the Trivy binary by version, operating system, and architecture.
-Database caches contain only `db/` and `java-db/`, use daily UTC keys, and restore the most recent available cache.
+The vulnerability database uses a daily UTC cache key.
+The Java database has a separate cache key that rotates every three days.
+Each cache contains only its database directory and restores the most recent available entry.
+The action reuses databases already present in the job instead of restoring over them.
 Trivy still checks database freshness and downloads updates.
 Cache paths respect `TRIVY_CACHE_DIR`, or default to `~/.cache/trivy`.
 
 GitHub scopes caches to each consumer repository.
 PRs can restore default-branch caches, but a cache created by one PR is unavailable to sibling PRs.
 Database caches save after a successful Trivy vulnerability scan, before later policy gates.
+The Java cache saves only when Trivy downloaded or restored the Java database.
 The existing download sources remain in use on cache misses.
 
 ## VEX formats

@@ -74,9 +74,13 @@ runs:
       env:
         ACTION_PATH: ${{ github.action_path }}
       run: |
+        trivy_cache="${TRIVY_CACHE_DIR:-${HOME}/.cache/trivy}"
         echo "repo_root=$(realpath "${ACTION_PATH}/../../..")" >> "$GITHUB_OUTPUT"
-        echo "trivy_cache=${TRIVY_CACHE_DIR:-${HOME}/.cache/trivy}" >> "$GITHUB_OUTPUT"
+        echo "trivy_cache=${trivy_cache}" >> "$GITHUB_OUTPUT"
         echo "cache_day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+        echo "java_cache_period=$(( $(date -u +%s) / 259200 ))" >> "$GITHUB_OUTPUT"
+        echo "db_present=$([ -f "${trivy_cache}/db/metadata.json" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+        echo "java_db_present=$([ -f "${trivy_cache}/java-db/metadata.json" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
     - name: Set up Go
       uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
@@ -99,16 +103,25 @@ runs:
         version: v0.76.0
         cache: true
 
-    - name: Restore Trivy databases
+    - name: Restore Trivy vulnerability database
       id: trivy-db-cache
+      if: ${{ steps.paths.outputs.db_present != 'true' }}
       uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
-        path: |
-          ${{ steps.paths.outputs.trivy_cache }}/db
-          ${{ steps.paths.outputs.trivy_cache }}/java-db
-        key: trivy-db-${{ runner.os }}-${{ steps.paths.outputs.cache_day }}
+        path: ${{ steps.paths.outputs.trivy_cache }}/db
+        key: trivy-vuln-db-${{ runner.os }}-${{ steps.paths.outputs.cache_day }}
         restore-keys: |
-          trivy-db-${{ runner.os }}-
+          trivy-vuln-db-${{ runner.os }}-
+
+    - name: Restore Trivy Java database
+      id: trivy-java-db-cache
+      if: ${{ steps.paths.outputs.java_db_present != 'true' }}
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.paths.outputs.trivy_cache }}/java-db
+        key: trivy-java-db-${{ runner.os }}-${{ steps.paths.outputs.java_cache_period }}
+        restore-keys: |
+          trivy-java-db-${{ runner.os }}-
 
     - name: Set up Grype
       if: ${{ inputs.with-grype == 'true' }}
@@ -246,14 +259,28 @@ runs:
         trivy convert --format table reports/trivy.json
         echo "::endgroup::"
 
-    - name: Save Trivy databases
-      if: ${{ steps.trivy-db-cache.outputs.cache-hit != 'true' }}
+    - name: Check Trivy databases
+      id: trivy-databases
+      shell: bash
+      env:
+        TRIVY_CACHE: ${{ steps.paths.outputs.trivy_cache }}
+      run: |
+        echo "db_present=$([ -f "${TRIVY_CACHE}/db/metadata.json" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+        echo "java_db_present=$([ -f "${TRIVY_CACHE}/java-db/metadata.json" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+    - name: Save Trivy vulnerability database
+      if: ${{ steps.paths.outputs.db_present != 'true' && steps.trivy-db-cache.outputs.cache-hit != 'true' && steps.trivy-databases.outputs.db_present == 'true' }}
       uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
-        path: |
-          ${{ steps.paths.outputs.trivy_cache }}/db
-          ${{ steps.paths.outputs.trivy_cache }}/java-db
+        path: ${{ steps.paths.outputs.trivy_cache }}/db
         key: ${{ steps.trivy-db-cache.outputs.cache-primary-key }}
+
+    - name: Save Trivy Java database
+      if: ${{ steps.paths.outputs.java_db_present != 'true' && steps.trivy-java-db-cache.outputs.cache-hit != 'true' && steps.trivy-databases.outputs.java_db_present == 'true' }}
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.paths.outputs.trivy_cache }}/java-db
+        key: ${{ steps.trivy-java-db-cache.outputs.cache-primary-key }}
 
     - name: Grype vuln scan
       if: ${{ inputs.with-grype == 'true' }}
