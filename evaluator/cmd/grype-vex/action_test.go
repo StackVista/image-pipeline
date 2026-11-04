@@ -11,6 +11,116 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+func TestActionGrypeCaching(t *testing.T) {
+	data, err := os.ReadFile("../../../.github/actions/scan-image/action.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	type step struct {
+		Name string            `yaml:"name"`
+		If   string            `yaml:"if"`
+		Run  string            `yaml:"run"`
+		Env  map[string]string `yaml:"env"`
+		With map[string]string `yaml:"with"`
+	}
+	var action struct {
+		Runs struct {
+			Steps []step `yaml:"steps"`
+		} `yaml:"runs"`
+	}
+	if err := yaml.Unmarshal(data, &action); err != nil {
+		t.Fatal(err)
+	}
+	steps, indices := make(map[string]step), make(map[string]int)
+	for i, step := range action.Runs.Steps {
+		steps[step.Name], indices[step.Name] = step, i
+	}
+	for _, cache := range []struct{ name, path, present, id, key string }{
+		{"binary download", "grype_install_cache", "grype_install_present", "grype-binary-cache",
+			"grype-binary-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.grype_version }}"},
+		{"vulnerability database", "grype_cache", "grype_db_present", "grype-db-cache",
+			"grype-db-${{ runner.os }}-${{ steps.paths.outputs.grype_version }}-${{ steps.paths.outputs.cache_day }}"},
+	} {
+		restore, save := steps["Restore Grype "+cache.name], steps["Save Grype "+cache.name]
+		condition := "inputs.with-grype == 'true' && steps.paths.outputs." + cache.present + " != 'true'"
+		if restore.If != "${{ "+condition+" }}" || !strings.Contains(save.If, condition) ||
+			!strings.Contains(save.If, "steps."+cache.id+".outputs.cache-hit != 'true'") ||
+			restore.With["path"] != "${{ steps.paths.outputs."+cache.path+" }}" ||
+			save.With["path"] != restore.With["path"] || restore.With["key"] != cache.key ||
+			save.With["key"] != "${{ steps."+cache.id+".outputs.cache-primary-key }}" {
+			t.Fatalf("Grype %s must reuse local files and save only on a cache miss", cache.name)
+		}
+		setup := "Set up Grype"
+		if cache.id == "grype-db-cache" {
+			setup = "Grype vuln scan"
+			if restore.With["restore-keys"] != "grype-db-${{ runner.os }}-${{ steps.paths.outputs.grype_version }}-\n" {
+				t.Fatal("Grype databases need a compatible fallback key")
+			}
+		}
+		if !(indices["Restore Grype "+cache.name] < indices[setup] &&
+			indices[setup] < indices["Save Grype "+cache.name] &&
+			indices["Save Grype "+cache.name] < indices["Evaluate"]) ||
+			strings.Contains(save.If, "always()") || strings.Contains(save.If, "failure()") {
+			t.Fatalf("Grype %s must save after success and before policy evaluation", cache.name)
+		}
+	}
+	scan := steps["Grype vuln scan"]
+	if scan.Env["GRYPE_DB_CACHE_DIR"] != "${{ steps.paths.outputs.grype_cache }}" ||
+		scan.Env["GRYPE_CHECK_FOR_APP_UPDATE"] != "false" {
+		t.Fatal("Grype must use the restored database and disable application update checks")
+	}
+	for _, setting := range []string{"GRYPE_DB_AUTO_UPDATE", "GRYPE_DB_VALIDATE_AGE", "GRYPE_DB_VALIDATE_BY_HASH_ON_START"} {
+		if scan.Env[setting] == "false" {
+			t.Fatalf("Grype database validation/update disabled: %s", setting)
+		}
+	}
+	actionPath, err := filepath.Abs("../../../.github/actions/scan-image")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, scenario := range []string{"default", "xdg", "custom"} {
+		for _, present := range []bool{false, true} {
+			root := t.TempDir()
+			cache, xdg, override := filepath.Join(root, ".cache/grype/db"), "", ""
+			if scenario == "xdg" {
+				xdg = filepath.Join(root, "xdg cache")
+				cache = filepath.Join(xdg, "grype/db")
+			} else if scenario == "custom" {
+				override = filepath.Join(root, "custom db")
+				cache = override
+			}
+			if present {
+				writeCLIFile(t, filepath.Join(cache, "6/vulnerability.db"), []byte("db"))
+				binaryCache := filepath.Join(root, ".cache/image-pipeline/grype/0.118.0/Linux-X64")
+				writeCLIFile(t, filepath.Join(binaryCache, "grype.tar.gz"), []byte("archive"))
+				writeCLIFile(t, filepath.Join(binaryCache, "checksums.txt"), []byte("checksums"))
+			}
+			output := filepath.Join(root, "outputs")
+			command := exec.Command("bash", "-eu", "-c", steps["Resolve repo root"].Run)
+			command.Env = append(os.Environ(), "HOME="+root, "XDG_CACHE_HOME="+xdg,
+				"GRYPE_DB_CACHE_DIR="+override, "GRYPE_VERSION=0.118.0", "RUNNER_OS=Linux", "RUNNER_ARCH=X64",
+				"ACTION_PATH="+actionPath, "GITHUB_OUTPUT="+output)
+			if log, err := command.CombinedOutput(); err != nil {
+				t.Fatalf("Grype cache resolution failed: %v\n%s", err, log)
+			}
+			resolved, err := os.ReadFile(output)
+			if err != nil {
+				t.Fatal(err)
+			}
+			expected := "false"
+			if present {
+				expected = "true"
+			}
+			for _, line := range []string{"grype_cache=" + cache,
+				"grype_db_present=" + expected, "grype_install_present=" + expected} {
+				if !strings.Contains(string(resolved), line+"\n") {
+					t.Fatalf("missing %q in cache outputs: %s", line, resolved)
+				}
+			}
+		}
+	}
+}
+
 func TestActionTrivyCaching(t *testing.T) {
 	data, err := os.ReadFile("../../../.github/actions/scan-image/action.yml")
 	if err != nil {

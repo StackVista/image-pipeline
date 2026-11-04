@@ -56,6 +56,18 @@ Database caches save after a successful Trivy vulnerability scan, before later p
 The Java cache saves only when Trivy changes its metadata during the scan.
 The existing download sources remain in use on cache misses.
 
+## Grype caches
+
+The action caches the release archive and checksums by version, operating system, and architecture.
+The installer verifies the archive checksum and installed version on each use.
+The database cache uses daily UTC keys and restores a recent entry for the same Grype version.
+The action reuses files already present in the job and saves databases after successful scans, before policy evaluation.
+Database paths respect `GRYPE_DB_CACHE_DIR` and `XDG_CACHE_HOME`, or default to `~/.cache/grype/db`.
+Grype retains its database update, age, and checksum checks.
+Application update checks are disabled because the action pins the Grype version.
+Cache misses use the existing GitHub release and Anchore database sources.
+Grype caches have the same repository and PR access limits as Trivy caches.
+
 ## VEX formats
 
 Trivy reads the original hubs with `--vex repo`. Grype's tested CSAF parsers

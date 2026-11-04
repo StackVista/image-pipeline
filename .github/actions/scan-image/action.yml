@@ -73,9 +73,21 @@ runs:
       shell: bash
       env:
         ACTION_PATH: ${{ github.action_path }}
+        GRYPE_VERSION: 0.118.0
       run: |
         trivy_cache="${TRIVY_CACHE_DIR:-${HOME}/.cache/trivy}"
+        grype_cache="${GRYPE_DB_CACHE_DIR:-${XDG_CACHE_HOME:-${HOME}/.cache}/grype/db}"
+        grype_install_cache="${HOME}/.cache/image-pipeline/grype/${GRYPE_VERSION}/${RUNNER_OS}-${RUNNER_ARCH}"
+        grype_db_present=false
+        for db in "${grype_cache}"/*/vulnerability.db; do
+          if [ -s "${db}" ]; then grype_db_present=true; break; fi
+        done
         echo "repo_root=$(realpath "${ACTION_PATH}/../../..")" >> "$GITHUB_OUTPUT"
+        echo "grype_version=${GRYPE_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "grype_cache=${grype_cache}" >> "$GITHUB_OUTPUT"
+        echo "grype_install_cache=${grype_install_cache}" >> "$GITHUB_OUTPUT"
+        echo "grype_db_present=${grype_db_present}" >> "$GITHUB_OUTPUT"
+        echo "grype_install_present=$([ -s "${grype_install_cache}/grype.tar.gz" ] && [ -s "${grype_install_cache}/checksums.txt" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
         echo "trivy_cache=${trivy_cache}" >> "$GITHUB_OUTPUT"
         echo "cache_day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
         echo "java_cache_period=$(( $(date -u +%s) / 259200 ))" >> "$GITHUB_OUTPUT"
@@ -135,15 +147,42 @@ runs:
         fi
         echo "hash=${metadata_hash}" >> "$GITHUB_OUTPUT"
 
+    - name: Restore Grype binary download
+      id: grype-binary-cache
+      if: ${{ inputs.with-grype == 'true' && steps.paths.outputs.grype_install_present != 'true' }}
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.paths.outputs.grype_install_cache }}
+        key: grype-binary-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.grype_version }}
+
     - name: Set up Grype
       if: ${{ inputs.with-grype == 'true' }}
       shell: bash
       env:
-        GRYPE_VERSION: 0.118.0
+        GRYPE_VERSION: ${{ steps.paths.outputs.grype_version }}
+        GRYPE_INSTALL_CACHE: ${{ steps.paths.outputs.grype_install_cache }}
+        GRYPE_CHECK_FOR_APP_UPDATE: "false"
         ACTION_PATH: ${{ github.action_path }}
       run: |
         set -euo pipefail
         bash "${ACTION_PATH}/install-grype.sh"
+
+    - name: Save Grype binary download
+      if: ${{ inputs.with-grype == 'true' && steps.paths.outputs.grype_install_present != 'true' && steps.grype-binary-cache.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.paths.outputs.grype_install_cache }}
+        key: ${{ steps.grype-binary-cache.outputs.cache-primary-key }}
+
+    - name: Restore Grype vulnerability database
+      id: grype-db-cache
+      if: ${{ inputs.with-grype == 'true' && steps.paths.outputs.grype_db_present != 'true' }}
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.paths.outputs.grype_cache }}
+        key: grype-db-${{ runner.os }}-${{ steps.paths.outputs.grype_version }}-${{ steps.paths.outputs.cache_day }}
+        restore-keys: |
+          grype-db-${{ runner.os }}-${{ steps.paths.outputs.grype_version }}-
 
     - name: Configure and download VEX repos
       shell: bash
@@ -307,6 +346,8 @@ runs:
       if: ${{ inputs.with-grype == 'true' }}
       shell: bash
       env:
+        GRYPE_DB_CACHE_DIR: ${{ steps.paths.outputs.grype_cache }}
+        GRYPE_CHECK_FOR_APP_UPDATE: "false"
         INPUT_IMAGE: ${{ inputs.image }}
         INPUT_SKIP_FILES: ${{ inputs.skip-files }}
         INPUT_MODE: ${{ inputs.mode }}
@@ -336,6 +377,13 @@ runs:
         echo "::group::Grype vuln report (table)"
         grype "${INPUT_IMAGE}" "${vex_args[@]}" "${skip_args[@]}" --by-cve --only-fixed -o table -o "json=reports/grype.json"
         echo "::endgroup::"
+
+    - name: Save Grype vulnerability database
+      if: ${{ inputs.with-grype == 'true' && steps.paths.outputs.grype_db_present != 'true' && steps.grype-db-cache.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.paths.outputs.grype_cache }}
+        key: ${{ steps.grype-db-cache.outputs.cache-primary-key }}
 
     - name: Evaluate
       id: evaluate

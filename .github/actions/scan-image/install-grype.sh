@@ -10,12 +10,19 @@ checksums="grype_${GRYPE_VERSION}_checksums.txt"
 release="https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}"
 download_dir="$(mktemp -d "${RUNNER_TEMP}/grype-install.XXXXXX")"
 trap 'rm -rf -- "${download_dir}"' EXIT
-for file in "${archive}" "${checksums}"; do
-  curl --fail --silent --show-error --location \
-    --retry 3 --retry-all-errors --connect-timeout 10 --max-time 120 \
-    "${release}/${file}" --output "${download_dir}/${file}"
-  test -s "${download_dir}/${file}"
-done
+if [ -n "${GRYPE_INSTALL_CACHE:-}" ] &&
+   [ -s "${GRYPE_INSTALL_CACHE}/grype.tar.gz" ] &&
+   [ -s "${GRYPE_INSTALL_CACHE}/checksums.txt" ]; then
+  cp "${GRYPE_INSTALL_CACHE}/grype.tar.gz" "${download_dir}/${archive}"
+  cp "${GRYPE_INSTALL_CACHE}/checksums.txt" "${download_dir}/${checksums}"
+else
+  for file in "${archive}" "${checksums}"; do
+    curl --fail --silent --show-error --location \
+      --retry 3 --retry-all-errors --connect-timeout 10 --max-time 120 \
+      "${release}/${file}" --output "${download_dir}/${file}"
+    test -s "${download_dir}/${file}"
+  done
+fi
 # Require exactly one checksum for this archive and enforce rejection
 # before extracting or installing anything. The upstream installer's
 # download function does not propagate checksum verification failures.
@@ -27,3 +34,8 @@ tar -xzf "${download_dir}/${archive}" --directory "${download_dir}" grype
 sudo install -m 0755 "${download_dir}/grype" /usr/local/bin/grype
 grype version
 test "$(grype version -o json | jq -r .version)" = "${GRYPE_VERSION}"
+if [ -n "${GRYPE_INSTALL_CACHE:-}" ]; then
+  mkdir -p "${GRYPE_INSTALL_CACHE}"
+  cp "${download_dir}/${archive}" "${GRYPE_INSTALL_CACHE}/grype.tar.gz"
+  cp "${download_dir}/${checksums}" "${GRYPE_INSTALL_CACHE}/checksums.txt"
+fi
