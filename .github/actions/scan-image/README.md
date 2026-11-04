@@ -61,8 +61,10 @@ Both Linux architectures must have entries.
 Updatecli uses `scripts/update-scanner-pins.py` to update versions and checksums
 together in a reviewed PR. Failed downloads or verification leave both files unchanged.
 
-GitHub scopes caches to each consumer repository. PRs can restore default-branch
-caches, but a cache created by one PR is unavailable to sibling PRs.
+GitHub scopes caches to each consumer repository. Only default-branch runs
+outside pull-request events save binary caches. PRs restore accessible caches
+without creating or updating them. If the default branch has not populated a
+version's cache, PRs download binaries from the existing sources.
 Only scanner binaries are cached through GitHub Actions. Vulnerability and
 Java databases retain the scanners' normal download, update, and validation
 behavior. Grype application update checks remain disabled because its version

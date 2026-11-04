@@ -50,7 +50,7 @@ func TestActionScannerCaching(t *testing.T) {
 		restore, save := steps["Restore "+scanner.label], steps["Save "+scanner.label]
 		localAbsent := scanner.gate + "steps.paths.outputs." + scanner.name + "_install_present != 'true'"
 		if restore.If != "${{ "+localAbsent+" }}" ||
-			save.If != "${{ "+localAbsent+" && steps."+scanner.name+"-binary-cache.outputs.cache-hit != 'true' }}" ||
+			save.If != "${{ !startsWith(github.event_name, 'pull_request') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && "+localAbsent+" && steps."+scanner.name+"-binary-cache.outputs.cache-hit != 'true' }}" ||
 			restore.With["path"] != "${{ steps.paths.outputs."+scanner.name+"_install_cache }}"+scanner.file ||
 			save.With["path"] != restore.With["path"] ||
 			restore.With["key"] != scanner.name+"-binary-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs."+scanner.name+"_version }}" ||
