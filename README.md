@@ -90,20 +90,38 @@ Upstream pins are tracked with [updatecli](https://www.updatecli.io/) under
 
 ## Releases
 
-The evaluator binary is released by pushing a SemVer tag from `main`:
+The actions and evaluator share fixed `vMAJOR.MINOR.PATCH` release tags.
+Merging a PR changes `main`; publishing a tag releases that revision.
+Never move or reuse a published release tag.
 
 ```bash
-git tag -a v0.1.0 -m "evaluator v0.1.0"
-git push origin v0.1.0
+git fetch origin main --tags
+git tag -s v1.0.1 origin/main -m "image-pipeline v1.0.1"
+git push origin v1.0.1
 ```
 
-This triggers `.github/workflows/evaluator-release.yml`, which runs
-goreleaser to build linux/darwin × amd64/arm64 archives + checksums
-and publish a GitHub Release.
+Tag a reviewed `main` revision after its action and evaluator checks pass.
+Use a patch release for compatible fixes, a minor release for compatible
+features, and a major release for breaking action inputs or outputs.
 
-The `v*` tag namespace currently belongs to the evaluator. If a
-second releasable artifact is added (e.g. a build action), the
-tagging scheme will need to be revisited.
+The tag makes all actions available at that revision and triggers
+`.github/workflows/evaluator-release.yml` to publish evaluator archives,
+checksums and a GitHub Release.
+
+Consumers must pin the tag's full commit SHA and retain the exact tag in
+the trailing comment:
+
+```yaml
+uses: StackVista/image-pipeline/.github/actions/scan-image@6869879307d976158fa07ee5bff27ceb8eb031af # v1.0.0
+```
+
+Resolve a tag with `gh api repos/StackVista/image-pipeline/commits/v1.0.0 --jq .sha`.
+Keep the SHA and comment together in dependency update PRs. Do not use
+`# main` or a moving major-version tag. Existing Renovate and Updatecli
+GitHub Actions discovery can track these release tags.
+
+Nested action calls also pin a released SHA and tag. Release the scanner
+changes first, then update `scan-sign-push` to that release in a follow-up PR.
 
 ## Roadmap
 

@@ -1,9 +1,4 @@
-name: Evaluator Release
-
-# Tag-driven release of the image-pipeline-evaluate Go binary (see
-# ../../evaluator). Triggered by pushing a v* SemVer tag — goreleaser
-# builds linux/darwin × amd64/arm64 archives + checksums and publishes
-# a GitHub Release. See README.md for the tagging scheme.
+name: Image Pipeline Release
 
 on:
   push:
