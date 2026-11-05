@@ -40,6 +40,36 @@ source. Docker can successfully pull image formats that a scanner's local
 Docker extractor may still fail to analyze, so the retry is applied to the
 previously working scanner path instead.
 
+## Scanner binary caches
+
+Trivy binaries and Grype release archives use cache keys based on version,
+operating system, and architecture. Keys have no time-based rotation.
+GitHub may still evict caches under its retention and storage policies.
+The action reuses downloads already present in the job.
+
+Every use verifies the Trivy binary or Grype archive against
+`scanner-checksums.txt` from the pinned action revision before execution.
+Cached checksum files are not trusted. Trivy restores stay outside `PATH`;
+only a verified binary is copied into the scan's executable directory.
+Grype also checks the installed version. A checksum failure stops the action.
+Cache misses retain the existing download sources.
+
+Update `scanner-checksums.txt` when changing either scanner version.
+Trivy entries hash binaries extracted from archives verified against the
+upstream release checksums. Grype entries use the upstream archive checksums.
+Both Linux architectures must have entries.
+Updatecli uses `scripts/update-scanner-pins.py` to update versions and checksums
+together in a reviewed PR. Failed downloads or verification leave both files unchanged.
+
+GitHub scopes caches to each consumer repository. Only default-branch runs
+outside pull-request events save binary caches. PRs restore accessible caches
+without creating or updating them. If the default branch has not populated a
+version's cache, PRs download binaries from the existing sources.
+Only scanner binaries are cached through GitHub Actions. Vulnerability and
+Java databases retain the scanners' normal download, update, and validation
+behavior. Grype application update checks remain disabled because its version
+is pinned.
+
 ## VEX formats
 
 Trivy reads the original hubs with `--vex repo`. Grype's tested CSAF parsers

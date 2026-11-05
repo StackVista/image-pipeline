@@ -10,6 +10,115 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+func TestActionScannerCaching(t *testing.T) {
+	data, err := os.ReadFile("../../../.github/actions/scan-image/action.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	type step struct {
+		Name string            `yaml:"name"`
+		ID   string            `yaml:"id"`
+		If   string            `yaml:"if"`
+		Uses string            `yaml:"uses"`
+		Run  string            `yaml:"run"`
+		Env  map[string]string `yaml:"env"`
+		With map[string]string `yaml:"with"`
+	}
+	var action struct {
+		Runs struct {
+			Steps []step `yaml:"steps"`
+		} `yaml:"runs"`
+	}
+	if err := yaml.Unmarshal(data, &action); err != nil {
+		t.Fatal(err)
+	}
+	steps, indices := make(map[string]step), make(map[string]int)
+	cacheSteps := 0
+	for i, step := range action.Runs.Steps {
+		steps[step.Name], indices[step.Name] = step, i
+		if strings.HasPrefix(step.Uses, "actions/cache/") {
+			cacheSteps++
+		}
+	}
+	if cacheSteps != 4 {
+		t.Fatal("only the two scanner binaries may be restored and saved")
+	}
+	for _, scanner := range []struct{ name, label, file, gate, verify string }{
+		{"trivy", "Trivy binary", "/trivy", "", "Verify Trivy binary"},
+		{"grype", "Grype binary download", "/grype.tar.gz", "inputs.with-grype == 'true' && ", "Set up Grype"},
+	} {
+		restore, save := steps["Restore "+scanner.label], steps["Save "+scanner.label]
+		localAbsent := scanner.gate + "steps.paths.outputs." + scanner.name + "_install_present != 'true'"
+		if restore.If != "${{ "+localAbsent+" }}" ||
+			save.If != "${{ !startsWith(github.event_name, 'pull_request') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && "+localAbsent+" && steps."+scanner.name+"-binary-cache.outputs.cache-hit != 'true' }}" ||
+			restore.With["path"] != "${{ steps.paths.outputs."+scanner.name+"_install_cache }}"+scanner.file ||
+			save.With["path"] != restore.With["path"] ||
+			restore.With["key"] != scanner.name+"-binary-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs."+scanner.name+"_version }}" ||
+			restore.With["restore-keys"] != "" ||
+			save.With["key"] != "${{ steps."+scanner.name+"-binary-cache.outputs.cache-primary-key }}" {
+			t.Fatalf("%s must use a version/platform key and save only verified binaries on a miss", scanner.name)
+		}
+		if !(indices["Restore "+scanner.label] < indices[scanner.verify] &&
+			indices[scanner.verify] < indices["Save "+scanner.label] &&
+			indices["Save "+scanner.label] < indices["Trivy secrets scan"]) {
+			t.Fatalf("%s must be verified before saving or scanning", scanner.name)
+		}
+	}
+	setup := steps["Set up Trivy"]
+	if setup.With["cache"] != "false" ||
+		setup.If != "${{ steps.paths.outputs.trivy_install_present != 'true' && steps.trivy-binary-cache.outputs.cache-hit != 'true' }}" ||
+		setup.With["version"] != "v${{ steps.paths.outputs.trivy_version }}" ||
+		steps["Verify Trivy binary"].Env["TRIVY_INSTALL_CACHE"] != "${{ steps.paths.outputs.trivy_install_cache }}" {
+		t.Fatal("Trivy must restore outside PATH, install only on misses, and always verify")
+	}
+	if strings.Contains(steps["Trivy vuln scan"].Run, "--skip-db-update") ||
+		strings.Contains(steps["Trivy vuln scan"].Run, "--skip-java-db-update") ||
+		steps["Grype vuln scan"].Env["GRYPE_DB_CACHE_DIR"] != "" {
+		t.Fatal("scanner database behavior must remain unchanged")
+	}
+	for _, setting := range []string{"GRYPE_DB_AUTO_UPDATE", "GRYPE_DB_VALIDATE_AGE", "GRYPE_DB_VALIDATE_BY_HASH_ON_START"} {
+		if steps["Grype vuln scan"].Env[setting] == "false" {
+			t.Fatalf("Grype database validation disabled: %s", setting)
+		}
+	}
+	actionPath, err := filepath.Abs("../../../.github/actions/scan-image")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, arch := range []string{"X64", "ARM64"} {
+		for _, present := range []bool{false, true} {
+			root := t.TempDir()
+			trivyCache := filepath.Join(root, ".cache/image-pipeline/trivy/0.76.0/Linux-"+arch)
+			grypeCache := filepath.Join(root, ".cache/image-pipeline/grype/0.118.0/Linux-"+arch)
+			if present {
+				writeCLIFile(t, filepath.Join(trivyCache, "trivy"), []byte("binary"))
+				writeCLIFile(t, filepath.Join(grypeCache, "grype.tar.gz"), []byte("archive"))
+			}
+			output := filepath.Join(root, "outputs")
+			command := exec.Command("bash", "-eu", "-c", steps["Resolve repo root"].Run)
+			command.Env = append(os.Environ(), "HOME="+root, "TRIVY_VERSION=0.76.0", "GRYPE_VERSION=0.118.0",
+				"RUNNER_OS=Linux", "RUNNER_ARCH="+arch, "ACTION_PATH="+actionPath, "GITHUB_OUTPUT="+output)
+			if log, err := command.CombinedOutput(); err != nil {
+				t.Fatalf("cache resolution: %v\n%s", err, log)
+			}
+			resolved, err := os.ReadFile(output)
+			if err != nil {
+				t.Fatal(err)
+			}
+			expected := "false"
+			if present {
+				expected = "true"
+			}
+			for _, line := range []string{"trivy_install_cache=" + trivyCache, "grype_install_cache=" + grypeCache,
+				"trivy_install_present=" + expected, "grype_install_present=" + expected} {
+				if !strings.Contains(string(resolved), line+"\n") {
+					t.Fatalf("missing %q: %s", line, resolved)
+				}
+			}
+		}
+	}
+}
+
 func TestActionVEXPreparation(t *testing.T) {
 	data, err := os.ReadFile("../../../.github/actions/scan-image/action.yml")
 	if err != nil {
