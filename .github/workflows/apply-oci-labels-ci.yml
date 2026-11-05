@@ -68,7 +68,7 @@ jobs:
 
       - name: Apply OCI labels
         id: apply
-        uses: ./.github/actions/apply-oci-labels
+        uses: $/.github/actions/apply-oci-labels
         with:
           image-name: smoke
           tag: 1.2.3-so1

@@ -59,7 +59,7 @@ jobs:
 
       - name: Scan image with VEX
         id: scan
-        uses: ./.github/actions/scan-image # zizmor: ignore[self-repository] -- pinned CI auditor cannot parse $/
+        uses: $/.github/actions/scan-image
         with:
           image: ${{ inputs.image }}
           mode: ${{ inputs.mode }}
