@@ -120,8 +120,10 @@ Keep the SHA and comment together in dependency update PRs. Do not use
 `# main` or a moving major-version tag. Existing Renovate and Updatecli
 GitHub Actions discovery can track these release tags.
 
-Nested action calls also pin a released SHA and tag. Release the scanner
-changes first, then update `scan-sign-push` to that release in a follow-up PR.
+Nested action calls use GitHub's self-repository syntax, such as
+`uses: $/.github/actions/scan-image`. Sibling actions resolve from the same
+repository and commit as the containing action, covered by the consumer's
+outer SHA pin. They need no separate version or release.
 
 ## Roadmap
 
