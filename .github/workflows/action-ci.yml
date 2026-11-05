@@ -90,7 +90,7 @@ jobs:
 
       - name: Run scan
         id: scan
-        uses: ./.github/actions/scan-image
+        uses: $/.github/actions/scan-image
         continue-on-error: ${{ matrix.case.expected_decision == 'failed' }}
         with:
           image: ${{ matrix.case.image }}
@@ -150,7 +150,7 @@ jobs:
           done
 
       - name: scan-sign-push
-        uses: ./.github/actions/scan-sign-push
+        uses: $/.github/actions/scan-sign-push
         with:
           image: localhost:5000/smoke/scan-sign-push
           tags: |

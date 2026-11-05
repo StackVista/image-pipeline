@@ -209,7 +209,7 @@ runs:
     # result non-blocking per the release contract.
     - name: Scan amd64
       if: ${{ contains(inputs.arches, 'amd64') }}
-      uses: StackVista/image-pipeline/.github/actions/scan-image@48d649df6b3f6f19efbc3cdb46d0418465eecf3e # trivy-caching
+      uses: $/.github/actions/scan-image
       with:
         image: scan-target:amd64
         mode: inform
@@ -222,7 +222,7 @@ runs:
 
     - name: Scan arm64
       if: ${{ contains(inputs.arches, 'arm64') }}
-      uses: StackVista/image-pipeline/.github/actions/scan-image@48d649df6b3f6f19efbc3cdb46d0418465eecf3e # trivy-caching
+      uses: $/.github/actions/scan-image
       with:
         image: scan-target:arm64
         mode: inform
